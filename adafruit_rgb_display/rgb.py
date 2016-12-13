@@ -1,7 +1,7 @@
 import time
 import ustruct
 
-import adafruit_busdevice.spi_device as spi_device
+import adafruit_bus_device.spi_device as spi_device
 
 
 def color565(r, g, b):
