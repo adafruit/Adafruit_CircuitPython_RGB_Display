@@ -54,11 +54,9 @@ class ILI9341(DisplaySPI):
                  baudrate=16000000, polarity=0, phase=0):
         super().__init__(spi, dc, cs, rst=rst, width=width, height=height,
                          baudrate=baudrate, polarity=polarity, phase=phase)
-        """Test doc string."""
         self._scroll = 0
 
     def scroll(self, dy=None):
-        """Test doc string 2."""
         if dy is None:
             return self._scroll
         self._scroll = (self._scroll + dy) % self.height
