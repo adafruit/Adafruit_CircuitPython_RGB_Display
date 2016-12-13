@@ -6,7 +6,6 @@ class ILI9341(DisplaySPI):
     """
     A simple driver for the ILI9341/ILI9340-based displays.
 
-
     >>> import nativeio
     >>> import board
     >>> from adafruit_rgb_display import color565
