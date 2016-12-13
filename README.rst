@@ -8,6 +8,5 @@ boards.
 This driver depends on the Adafruit MicroPython BusDevice module being installed on the
 board too: https://github.com/adafruit/Adafruit_MicroPython_BusDevice
 
-
 Note that this driver currently won't work on micropython.org firmware, instead
 you want the micropython-adafruit-rgb-display driver linked above!
