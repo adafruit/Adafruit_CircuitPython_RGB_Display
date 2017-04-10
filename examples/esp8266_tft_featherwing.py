@@ -3,7 +3,8 @@
 # then fill the screen blue (with no pixel), wait 2 seconds, and repeat.
 import time
 
-import nativeio
+import busio
+import digitalio
 from board import *
 
 from adafruit_rgb_display import color565
@@ -18,11 +19,11 @@ BAUDRATE = 32000000
 
 
 # Setup SPI bus using hardware SPI:
-spi = nativeio.SPI(clock=SCK, MOSI=MOSI, MISO=MISO)
+spi = busio.SPI(clock=SCK, MOSI=MOSI, MISO=MISO)
 
 # Create the ILI9341 display:
-display = ili9341.ILI9341(spi, cs=nativeio.DigitalInOut(CS_PIN),
-                          dc=nativeio.DigitalInOut(DC_PIN), baudrate=BAUDRATE)
+display = ili9341.ILI9341(spi, cs=digitalio.DigitalInOut(CS_PIN),
+                          dc=digitalio.DigitalInOut(DC_PIN), baudrate=BAUDRATE)
 
 # Main loop:
 while True:

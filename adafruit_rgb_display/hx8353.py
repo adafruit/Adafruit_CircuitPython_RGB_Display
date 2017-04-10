@@ -17,12 +17,13 @@ class HX8353(DisplaySPI):
     """
     A simple driver for the ST7735-based displays.
 
-    >>> import nativeio
+    >>> import busio
+    >>> import digitalio
     >>> import board
     >>> from adafruit_rgb_display import color565
     >>> import adafruit_rgb_display.hx8353 as hx8353
-    >>> spi = nativeio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    >>> display = hx8353.HX8383(spi, cs=nativeio.DigitalInOut(board.GPIO0), dc=nativeio.DigitalInOut(board.GPIO15))
+    >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+    >>> display = hx8353.HX8383(spi, cs=digitalio.DigitalInOut(board.GPIO0), dc=digitalio.DigitalInOut(board.GPIO15))
     >>> display.fill(0x7521)
     >>> display.pixel(64, 64, 0)
     """

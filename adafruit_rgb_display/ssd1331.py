@@ -37,12 +37,13 @@ class SSD1331(DisplaySPI):
     """
     A simple driver for the SSD1331-based displays.
 
-    >>> import nativeio
+    >>> import busio
+    >>> import digitalio
     >>> import board
     >>> from adafruit_rgb_display import color565
     >>> import adafruit_rgb_display.ssd1331 as ssd1331
-    >>> spi = nativeio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    >>> display = ssd1331.SSD1331(spi, cs=nativeio.DigitalInOut(board.GPIO0), dc=nativeio.DigitalInOut(board.GPIO15), rst=nativeio.DigitalInOut(board.GPIO16))
+    >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+    >>> display = ssd1331.SSD1331(spi, cs=digitalio.DigitalInOut(board.GPIO0), dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
     >>> display.fill(0x7521)
     >>> display.pixel(32, 32, 0)
 >>>
