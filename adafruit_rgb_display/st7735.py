@@ -1,4 +1,5 @@
 from adafruit_rgb_display.rgb import DisplaySPI
+import ustruct
 
 
 _NOP=const(0x00)
@@ -96,3 +97,48 @@ class ST7735(DisplaySPI):
 
     def __init__(self, spi, dc, cs, rst=None, width=128, height=128):
         super().__init__(spi, dc, cs, rst, width, height)
+
+
+class ST7735R(ST7735):
+    _INIT = (
+        (_SWRESET, None),
+        (_SLPOUT, None),
+
+        (_MADCTL, b'\xc8'),
+        (_COLMOD, b'\x05'),  # 16bit color
+        (_INVCTR, b'\x07'),
+
+        (_FRMCTR1, b'\x01\x2c\x2d'),
+        (_FRMCTR2, b'\x01\x2c\x2d'),
+        (_FRMCTR3, b'\x01\x2c\x2d\x01\x2c\x2d'),
+
+        (_PWCTR1, b'\x02\x02\x84'),
+        (_PWCTR2, b'\xc5'),
+        (_PWCTR3, b'\x0a\x00'),
+        (_PWCTR4, b'\x8a\x2a'),
+        (_PWCTR5, b'\x8a\xee'),
+
+        (_VMCTR1, b'\x0e'),
+        (_INVOFF, None),
+
+        (_GMCTRP1, b'\x02\x1c\x07\x12\x37\x32\x29\x2d'
+                   b'\x29\x25\x2B\x39\x00\x01\x03\x10'), # Gamma
+        (_GMCTRN1, b'\x03\x1d\x07\x06\x2E\x2C\x29\x2D'
+                   b'\x2E\x2E\x37\x3F\x00\x00\x02\x10'),
+    )
+
+    def __init__(self, spi, dc, cs, rst=None, width=128, height=160):
+        super().__init__(spi, dc, cs, rst, width, height)
+
+    def init(self):
+        super().init()
+        cols = ustruct.pack('>HH', 0, self.width - 1)
+        rows = ustruct.pack('>HH', 0, self.height - 1)
+        for command, data in (
+            (_CASET, cols),
+            (_RASET, rows),
+
+            (_NORON, None),
+            (_DISPON, None),
+        ):
+            self._write(command, data)
