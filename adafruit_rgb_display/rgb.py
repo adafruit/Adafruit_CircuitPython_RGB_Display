@@ -1,5 +1,8 @@
 import time
-import ustruct
+try:
+    import struct
+except:
+    import ustruct as struct
 
 import adafruit_bus_device.spi_device as spi_device
 
@@ -45,22 +48,22 @@ class Display:
         self._write(self._COLUMN_SET, self._encode_pos(x0, x1))
         self._write(self._PAGE_SET, self._encode_pos(y0, y1))
         if data is None:
-            size = ustruct.calcsize(self._DECODE_PIXEL)
+            size = struct.calcsize(self._DECODE_PIXEL)
             return self._read(self._RAM_READ,
                               (x1 - x0 + 1) * (y1 - y0 + 1) * size)
         self._write(self._RAM_WRITE, data)
 
     def _encode_pos(self, a, b):
         """Encode a postion into bytes."""
-        return ustruct.pack(self._ENCODE_POS, a, b)
+        return struct.pack(self._ENCODE_POS, a, b)
 
     def _encode_pixel(self, color):
         """Encode a pixel color into bytes."""
-        return ustruct.pack(self._ENCODE_PIXEL, color)
+        return struct.pack(self._ENCODE_PIXEL, color)
 
     def _decode_pixel(self, data):
         """Decode bytes into a pixel color."""
-        return color565(*ustruct.unpack(self._DECODE_PIXEL, data))
+        return color565(*struct.unpack(self._DECODE_PIXEL, data))
 
     def pixel(self, x, y, color=None):
         """Read or write a pixel."""

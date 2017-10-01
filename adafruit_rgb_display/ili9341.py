@@ -1,4 +1,8 @@
-import ustruct
+try:
+    import struct
+except:
+    import ustruct as struct
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 
@@ -60,4 +64,4 @@ class ILI9341(DisplaySPI):
         if dy is None:
             return self._scroll
         self._scroll = (self._scroll + dy) % self.height
-        self._write(0x37, ustruct.pack('>H', self._scroll))
+        self._write(0x37, struct.pack('>H', self._scroll))
