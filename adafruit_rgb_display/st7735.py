@@ -1,5 +1,8 @@
 from adafruit_rgb_display.rgb import DisplaySPI
-import ustruct
+try:
+    import struct
+except ImportError:
+    import ustruct as struct
 
 
 _NOP=const(0x00)
@@ -132,8 +135,8 @@ class ST7735R(ST7735):
 
     def init(self):
         super().init()
-        cols = ustruct.pack('>HH', 0, self.width - 1)
-        rows = ustruct.pack('>HH', 0, self.height - 1)
+        cols = struct.pack('>HH', 0, self.width - 1)
+        rows = struct.pack('>HH', 0, self.height - 1)
         for command, data in (
             (_CASET, cols),
             (_RASET, rows),
