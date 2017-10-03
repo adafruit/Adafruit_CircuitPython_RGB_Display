@@ -1,7 +1,7 @@
 import time
 try:
     import struct
-except:
+except ImportError:
     import ustruct as struct
 
 import adafruit_bus_device.spi_device as spi_device

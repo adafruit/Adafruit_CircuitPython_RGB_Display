@@ -1,6 +1,6 @@
 try:
     import struct
-except:
+except ImportError:
     import ustruct as struct
 
 from adafruit_rgb_display.rgb import DisplaySPI
