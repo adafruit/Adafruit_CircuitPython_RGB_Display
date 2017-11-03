@@ -1,3 +1,4 @@
+from micropython import const
 import time
 try:
     import struct
@@ -5,6 +6,11 @@ except ImportError:
     import ustruct as struct
 
 import adafruit_bus_device.spi_device as spi_device
+
+
+# This is the size of the buffer to be used for fill operations, in 16-bit
+# units. We use 256, which is 512 bytes — size of the DMA buffer on SAMD21.
+_BUFFER_SIZE = const(256)
 
 
 def color565(r, g, b):
@@ -80,10 +86,10 @@ class Display:
         w = min(self.width - x, max(1, width))
         h = min(self.height - y, max(1, height))
         self._block(x, y, x + w - 1, y + h - 1, b'')
-        chunks, rest = divmod(w * h, 512)
+        chunks, rest = divmod(w * h, _BUFFER_SIZE)
         pixel = self._encode_pixel(color)
         if chunks:
-            data = pixel * 512
+            data = pixel * _BUFFER_SIZE
             for count in range(chunks):
                 self._write(None, data)
         self._write(None, pixel * rest)
