@@ -51,7 +51,7 @@ class Display:
             size = struct.calcsize(self._DECODE_PIXEL)
             return self._read(self._RAM_READ,
                               (x1 - x0 + 1) * (y1 - y0 + 1) * size)
-        self._write(self._RAM_WRITE, data)
+        self._write(self._RAM_WRITE, data or None)
 
     def _encode_pos(self, a, b):
         """Encode a postion into bytes."""
@@ -86,7 +86,8 @@ class Display:
             data = pixel * 512
             for count in range(chunks):
                 self._write(None, data)
-        self._write(None, pixel * rest)
+        if rest:
+            self._write(None, pixel * rest)
 
     def fill(self, color=0):
         """Fill whole screen."""
@@ -137,4 +138,4 @@ class DisplaySPI(Display):
                 spi.write(bytearray([command]))
             if count:
                 data = spi.read(count)
-            return data
+                return data
