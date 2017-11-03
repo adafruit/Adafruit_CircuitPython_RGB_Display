@@ -131,10 +131,11 @@ class DisplaySPI(Display):
                 spi.write(data)
 
     def _read(self, command=None, count=0):
+        data = bytearray(count)
         self.dc.value = 0
         with self.spi_device as spi:
             if command is not None:
                 spi.write(bytearray([command]))
             if count:
-                data = spi.read(count)
-            return data
+                spi.readinto(data)
+        return data
