@@ -1,5 +1,6 @@
+"""A simple driver for the SSD1351-based displays."""
 from adafruit_rgb_display.rgb import DisplaySPI
-
+from micropython import const
 
 _SETCOLUMN = const(0x15)
 _SETROW = const(0x75)
@@ -44,7 +45,8 @@ class SSD1351(DisplaySPI):
     >>> from adafruit_rgb_display import color565
     >>> import adafruit_rgb_display.ssd1351 as ssd1351
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    >>> display = ssd1351.SSD1351(spi, cs=digitalio.DigitalInOut(board.GPIO0), dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
+    >>> display = ssd1351.SSD1351(spi, cs=digitalio.DigitalInOut(board.GPIO0),
+        dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
     >>> display.fill(0x7521)
     >>> display.pixel(32, 32, 0)
     """
@@ -80,5 +82,4 @@ class SSD1351(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">BB"
 
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=128):
-        super().__init__(spi, dc, cs, rst, width, height)
+    # def __init__(self, spi, dc, cs, rst=None, width=128, height=128):

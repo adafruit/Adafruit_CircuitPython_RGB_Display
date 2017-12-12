@@ -1,5 +1,6 @@
+"""A simple driver for the SSD1331-based displays."""
 from adafruit_rgb_display.rgb import DisplaySPI
-
+from micropython import const
 
 _DRAWLINE = const(0x21)
 _DRAWRECT = const(0x22)
@@ -43,7 +44,8 @@ class SSD1331(DisplaySPI):
     >>> from adafruit_rgb_display import color565
     >>> import adafruit_rgb_display.ssd1331 as ssd1331
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    >>> display = ssd1331.SSD1331(spi, cs=digitalio.DigitalInOut(board.GPIO0), dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
+    >>> display = ssd1331.SSD1331(spi, cs=digitalio.DigitalInOut(board.GPIO0),
+        dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
     >>> display.fill(0x7521)
     >>> display.pixel(32, 32, 0)
 >>>
@@ -66,27 +68,25 @@ display.pixel(32, 32, 0)
         (_STARTLINE, b'\x00'),
         (_DISPLAYOFFSET, b'\x00'),
         (_NORMALDISPLAY, b''),
-#        (_FILL, b'\x01'),
-
-#	(_PHASEPERIOD, b'\x31'),
-#	(_SETMULTIPLEX, b'\x3f'),
-#	(_SETMASTER, b'\x8e'),
-#	(_POWERMODE,b'\x0b'),
-#	(_PRECHARGE, b'\x31'), #;//0x1F - 0x31
-#	(_CLOCKDIV, b'\xf0'),
-#	(_VCOMH, b'\x3e'), #;//0x3E - 0x3F
-#	(_MASTERCURRENT, b'\x06'), # ;//0x06 - 0x0F
-#	(_PRECHARGEA, b'\x64'),
-#	(_PRECHARGEB, b'\x78'),
-#	(_PRECHARGEC, b'\x64'),
-#	(_PRECHARGELEVEL, b'\x3a'), # 0x3A - 0x00
-#	(_CONTRASTA, b'\x91'), #//0xEF - 0x91
-#	(_CONTRASTB, b'\x50'), #;//0x11 - 0x50
-#	(_CONTRASTC, b'\x7d'), #;//0x48 - 0x7D
-        (_DISPLAYON, b''),
+        # (_FILL, b'\x01'),
+        # (_PHASEPERIOD, b'\x31'),
+        # (_SETMULTIPLEX, b'\x3f'),
+        # (_SETMASTER, b'\x8e'),
+        # (_POWERMODE,b'\x0b'),
+        # (_PRECHARGE, b'\x31'), #;//0x1F - 0x31
+        # (_CLOCKDIV, b'\xf0'),
+        # (_VCOMH, b'\x3e'), #;//0x3E - 0x3F
+        # (_MASTERCURRENT, b'\x06'), # ;//0x06 - 0x0F
+        # (_PRECHARGEA, b'\x64'),
+        # (_PRECHARGEB, b'\x78'),
+        # (_PRECHARGEC, b'\x64'),
+        # (_PRECHARGELEVEL, b'\x3a'), # 0x3A - 0x00
+        # (_CONTRASTA, b'\x91'), #//0xEF - 0x91
+        # (_CONTRASTB, b'\x50'), #;//0x11 - 0x50
+        # (_CONTRASTC, b'\x7d'), #;//0x48 - 0x7D
+        # (_DISPLAYON, b''),
     )
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">BB"
 
-    def __init__(self, spi, dc, cs, rst=None, width=96, height=64):
-        super().__init__(spi, dc, cs, rst, width, height)
+    #def __init__(self, spi, dc, cs, rst=None, width=96, height=64):

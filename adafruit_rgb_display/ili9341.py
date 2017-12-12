@@ -1,3 +1,5 @@
+"""A simple driver for the ILI9341/ILI9340-based displays."""
+
 try:
     import struct
 except ImportError:
@@ -16,7 +18,8 @@ class ILI9341(DisplaySPI):
     >>> from adafruit_rgb_display import color565
     >>> import adafruit_rgb_display.ili9341 as ili9341
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    >>> display = ili9341.ILI9341(spi, cs=digitalio.DigitalInOut(board.GPIO0), dc=digitalio.DigitalInOut(board.GPIO15))
+    >>> display = ili9341.ILI9341(spi, cs=digitalio.DigitalInOut(board.GPIO0),
+        dc=digitalio.DigitalInOut(board.GPIO15))
     >>> display.fill(color565(0xff, 0x11, 0x22))
     >>> display.pixel(120, 160, 0)
     """
@@ -54,14 +57,17 @@ class ILI9341(DisplaySPI):
     _ENCODE_POS = ">HH"
     _DECODE_PIXEL = ">BBB"
 
+    #pylint: disable-msg=too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=240, height=320,
                  baudrate=16000000, polarity=0, phase=0):
         super().__init__(spi, dc, cs, rst=rst, width=width, height=height,
                          baudrate=baudrate, polarity=polarity, phase=phase)
         self._scroll = 0
+    #pylint: enable-msg=too-many-arguments
 
-    def scroll(self, dy=None):
-        if dy is None:
+    def scroll(self, delta_y=None):
+        """Scroll the display by delta y"""
+        if delta_y is None:
             return self._scroll
-        self._scroll = (self._scroll + dy) % self.height
-        self._write(0x37, struct.pack('>H', self._scroll))
+        self._scroll = (self._scroll + delta_y) % self.height
+        self.write(0x37, struct.pack('>H', self._scroll))

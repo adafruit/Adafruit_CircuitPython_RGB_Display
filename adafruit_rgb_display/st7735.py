@@ -1,55 +1,57 @@
+"""A simple driver for the ST7735-based displays."""
+
 from adafruit_rgb_display.rgb import DisplaySPI
 try:
     import struct
 except ImportError:
     import ustruct as struct
+from micropython import const
 
+_NOP = const(0x00)
+_SWRESET = const(0x01)
+_RDDID = const(0x04)
+_RDDST = const(0x09)
 
-_NOP=const(0x00)
-_SWRESET=const(0x01)
-_RDDID=const(0x04)
-_RDDST=const(0x09)
+_SLPIN = const(0x10)
+_SLPOUT = const(0x11)
+_PTLON = const(0x12)
+_NORON = const(0x13)
 
-_SLPIN=const(0x10)
-_SLPOUT=const(0x11)
-_PTLON=const(0x12)
-_NORON=const(0x13)
+_INVOFF = const(0x20)
+_INVON = const(0x21)
+_DISPOFF = const(0x28)
+_DISPON = const(0x29)
+_CASET = const(0x2A)
+_RASET = const(0x2B)
+_RAMWR = const(0x2C)
+_RAMRD = const(0x2E)
 
-_INVOFF=const(0x20)
-_INVON=const(0x21)
-_DISPOFF=const(0x28)
-_DISPON=const(0x29)
-_CASET=const(0x2A)
-_RASET=const(0x2B)
-_RAMWR=const(0x2C)
-_RAMRD=const(0x2E)
+_PTLAR = const(0x30)
+_COLMOD = const(0x3A)
+_MADCTL = const(0x36)
 
-_PTLAR=const(0x30)
-_COLMOD=const(0x3A)
-_MADCTL=const(0x36)
+_FRMCTR1 = const(0xB1)
+_FRMCTR2 = const(0xB2)
+_FRMCTR3 = const(0xB3)
+_INVCTR = const(0xB4)
+_DISSET5 = const(0xB6)
 
-_FRMCTR1=const(0xB1)
-_FRMCTR2=const(0xB2)
-_FRMCTR3=const(0xB3)
-_INVCTR=const(0xB4)
-_DISSET5=const(0xB6)
+_PWCTR1 = const(0xC0)
+_PWCTR2 = const(0xC1)
+_PWCTR3 = const(0xC2)
+_PWCTR4 = const(0xC3)
+_PWCTR5 = const(0xC4)
+_VMCTR1 = const(0xC5)
 
-_PWCTR1=const(0xC0)
-_PWCTR2=const(0xC1)
-_PWCTR3=const(0xC2)
-_PWCTR4=const(0xC3)
-_PWCTR5=const(0xC4)
-_VMCTR1=const(0xC5)
+_RDID1 = const(0xDA)
+_RDID2 = const(0xDB)
+_RDID3 = const(0xDC)
+_RDID4 = const(0xDD)
 
-_RDID1=const(0xDA)
-_RDID2=const(0xDB)
-_RDID3=const(0xDC)
-_RDID4=const(0xDD)
+_PWCTR6 = const(0xFC)
 
-_PWCTR6=const(0xFC)
-
-_GMCTRP1=const(0xE0)
-_GMCTRN1=const(0xE1)
+_GMCTRP1 = const(0xE0)
+_GMCTRN1 = const(0xE1)
 
 
 class ST7735(DisplaySPI):
@@ -62,7 +64,8 @@ class ST7735(DisplaySPI):
     >>> from adafruit_rgb_display import color565
     >>> import adafruit_rgb_display.st7735 as st7735
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    >>> display = st7735.ST7735(spi, cs=digitalio.DigitalInOut(board.GPIO0), dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
+    >>> display = st7735.ST7735(spi, cs=digitalio.DigitalInOut(board.GPIO0),
+        dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
     >>> display.fill(0x7521)
     >>> display.pixel(64, 64, 0)
     """
@@ -97,12 +100,12 @@ class ST7735(DisplaySPI):
     )
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
-
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=128):
-        super().__init__(spi, dc, cs, rst, width, height)
+    #    def __init__(self, spi, dc, cs, rst=None, width=1, height=1, baudrate=1000000,
+    #                 polarity=0, phase=0)
 
 
 class ST7735R(ST7735):
+    """A simple driver for the ST7735R-based displays."""
     _INIT = (
         (_SWRESET, None),
         (_SLPOUT, None),
@@ -130,18 +133,17 @@ class ST7735R(ST7735):
                    b'\x2E\x2E\x37\x3F\x00\x00\x02\x10'),
     )
 
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=160):
-        super().__init__(spi, dc, cs, rst, width, height)
+    #    def __init__(self, spi, dc, cs, rst=None, width=1, height=1, baudrate=1000000,
+    #                 polarity=0, phase=0)
 
     def init(self):
         super().init()
         cols = struct.pack('>HH', 0, self.width - 1)
         rows = struct.pack('>HH', 0, self.height - 1)
         for command, data in (
-            (_CASET, cols),
-            (_RASET, rows),
-
-            (_NORON, None),
-            (_DISPON, None),
+                (_CASET, cols),
+                (_RASET, rows),
+                (_NORON, None),
+                (_DISPON, None),
         ):
-            self._write(command, data)
+            self.write(command, data)
