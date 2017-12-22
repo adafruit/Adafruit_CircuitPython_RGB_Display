@@ -67,6 +67,7 @@ class Display:
             return self.read(self._RAM_READ,
                              (xpos1 - xpos0 + 1) * (ypos1 - ypos0 + 1) * size)
         self.write(self._RAM_WRITE, data)
+        return None
     #pylint: enable-msg=too-many-arguments
 
     def _encode_pos(self, avalue, bvalue):
@@ -88,6 +89,7 @@ class Display:
         if not 0 <= xpos < self.width or not 0 <= ypos < self.height:
             return
         self._block(xpos, ypos, xpos, ypos, self._encode_pixel(color))
+        return None
 
     #pylint: disable-msg=too-many-arguments
     def fill_rectangle(self, xpos, ypos, width, height, color):

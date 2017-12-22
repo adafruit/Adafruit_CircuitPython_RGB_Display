@@ -74,3 +74,4 @@ class ILI9341(DisplaySPI):
             return self._scroll
         self._scroll = (self._scroll + delta_y) % self.height
         self.write(0x37, struct.pack('>H', self._scroll))
+        return None
