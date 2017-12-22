@@ -89,4 +89,6 @@ display.pixel(32, 32, 0)
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">BB"
 
-    #def __init__(self, spi, dc, cs, rst=None, width=96, height=64):
+    #pylint: disable-msg=useless-super-delegation, too-many-arguments
+    def __init__(self, spi, dc, cs, rst=None, width=96, height=64):
+        super().__init__(spi, dc, cs, rst, width, height)

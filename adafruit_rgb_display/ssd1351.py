@@ -82,4 +82,6 @@ class SSD1351(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">BB"
 
-    # def __init__(self, spi, dc, cs, rst=None, width=128, height=128):
+    #pylint: disable-msg=useless-super-delegation, too-many-arguments
+    def __init__(self, spi, dc, cs, rst=None, width=128, height=128):
+        super().__init__(spi, dc, cs, rst, width, height)
