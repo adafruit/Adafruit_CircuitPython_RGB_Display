@@ -2,6 +2,10 @@
 from adafruit_rgb_display.rgb import DisplaySPI
 from micropython import const
 
+__version__ = "0.0.0-auto.0"
+__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
+
+
 _DRAWLINE = const(0x21)
 _DRAWRECT = const(0x22)
 _FILL = const(0x26)

@@ -7,6 +7,9 @@ except ImportError:
 
 from adafruit_rgb_display.rgb import DisplaySPI
 
+__version__ = "0.0.0-auto.0"
+__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
+
 
 class ILI9341(DisplaySPI):
     """
