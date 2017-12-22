@@ -86,9 +86,9 @@ class Display:
         """Read or write a pixel."""
         if color is None:
             return self._decode_pixel(self._block(xpos, ypos, xpos, ypos))
-        if not 0 <= xpos < self.width or not 0 <= ypos < self.height:
-            return
-        self._block(xpos, ypos, xpos, ypos, self._encode_pixel(color))
+
+        if 0 <= xpos < self.width and 0 <= ypos < self.height:
+            self._block(xpos, ypos, xpos, ypos, self._encode_pixel(color))
         return None
 
     #pylint: disable-msg=too-many-arguments
