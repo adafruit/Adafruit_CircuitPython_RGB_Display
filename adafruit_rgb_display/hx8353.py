@@ -30,7 +30,7 @@ class HX8353(DisplaySPI):
     >>> import adafruit_rgb_display.hx8353 as hx8353
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
     >>> display = hx8353.HX8383(spi, cs=digitalio.DigitalInOut(board.GPIO0),
-        dc=digitalio.DigitalInOut(board.GPIO15))
+    ...    dc=digitalio.DigitalInOut(board.GPIO15))
     >>> display.fill(0x7521)
     >>> display.pixel(64, 64, 0)
     """

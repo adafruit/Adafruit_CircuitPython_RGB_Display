@@ -70,9 +70,9 @@ class Display:
         return None
     #pylint: enable-msg=too-many-arguments
 
-    def _encode_pos(self, avalue, bvalue):
+    def _encode_pos(self, x, y): #pylint: disable-msg=invalid-name
         """Encode a postion into bytes."""
-        return struct.pack(self._ENCODE_POS, avalue, bvalue)
+        return struct.pack(self._ENCODE_POS, x, y)
 
     def _encode_pixel(self, color):
         """Encode a pixel color into bytes."""
@@ -82,23 +82,23 @@ class Display:
         """Decode bytes into a pixel color."""
         return color565(*struct.unpack(self._DECODE_PIXEL, data))
 
-    def pixel(self, xpos, ypos, color=None):
+    def pixel(self, x, y, color=None): #pylint: disable-msg=invalid-name
         """Read or write a pixel."""
         if color is None:
-            return self._decode_pixel(self._block(xpos, ypos, xpos, ypos))
+            return self._decode_pixel(self._block(x, y, x, y))
 
-        if 0 <= xpos < self.width and 0 <= ypos < self.height:
-            self._block(xpos, ypos, xpos, ypos, self._encode_pixel(color))
+        if 0 <= x < self.width and 0 <= y < self.height:
+            self._block(x, y, x, y, self._encode_pixel(color))
         return None
 
     #pylint: disable-msg=too-many-arguments
-    def fill_rectangle(self, xpos, ypos, width, height, color):
+    def fill_rectangle(self, x, y, width, height, color):  #pylint: disable-msg=invalid-name
         """Draw a filled rectangle."""
-        xpos = min(self.width - 1, max(0, xpos))
-        ypos = min(self.height - 1, max(0, ypos))
-        width = min(self.width - xpos, max(1, width))
-        height = min(self.height - ypos, max(1, height))
-        self._block(xpos, ypos, xpos + width - 1, ypos + height - 1, b'')
+        x = min(self.width - 1, max(0, x))
+        y = min(self.height - 1, max(0, y))
+        width = min(self.width - x, max(1, width))
+        height = min(self.height - y, max(1, height))
+        self._block(x, y, x + width - 1, y + height - 1, b'')
         chunks, rest = divmod(width * height, _BUFFER_SIZE)
         pixel = self._encode_pixel(color)
         if chunks:
@@ -112,13 +112,13 @@ class Display:
         """Fill whole screen."""
         self.fill_rectangle(0, 0, self.width, self.height, color)
 
-    def hline(self, xpos, ypos, width, color):
+    def hline(self, x, y, width, color): #pylint: disable-msg=invalid-name
         """Draw a horizontal line."""
-        self.fill_rectangle(xpos, ypos, width, 1, color)
+        self.fill_rectangle(x, y, width, 1, color)
 
-    def vline(self, xpos, ypos, height, color):
+    def vline(self, x, y, height, color): #pylint: disable-msg=invalid-name
         """Draw a vertical line."""
-        self.fill_rectangle(xpos, ypos, 1, height, color)
+        self.fill_rectangle(x, y, 1, height, color)
 
     def write(self, command, data):
         """Derived class must implement this"""
@@ -135,9 +135,9 @@ class DisplaySPI(Display):
                  polarity=0, phase=0):
         self.spi_device = spi_device.SPIDevice(spi, cs, baudrate=baudrate,
                                                polarity=polarity, phase=phase)
-        self.d_or_c = dc
+        self.dc_pin = dc
         self.rst = rst
-        self.d_or_c.switch_to_output(value=0)
+        self.dc_pin.switch_to_output(value=0)
         if self.rst:
             self.rst.switch_to_output(value=0)
             self.reset()
@@ -154,18 +154,18 @@ class DisplaySPI(Display):
     def write(self, command=None, data=None):
         """SPI write to the device: commands and data"""
         if command is not None:
-            self.d_or_c.value = 0
+            self.dc_pin.value = 0
             with self.spi_device as spi:
                 spi.write(bytearray([command]))
         if data is not None:
-            self.d_or_c.value = 1
+            self.dc_pin.value = 1
             with self.spi_device as spi:
                 spi.write(data)
 
     def read(self, command=None, count=0):
         """SPI read from device with optional command"""
         data = bytearray(count)
-        self.d_or_c.value = 0
+        self.dc_pin.value = 0
         with self.spi_device as spi:
             if command is not None:
                 spi.write(bytearray([command]))

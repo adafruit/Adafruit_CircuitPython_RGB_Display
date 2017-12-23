@@ -49,7 +49,7 @@ class SSD1331(DisplaySPI):
     >>> import adafruit_rgb_display.ssd1331 as ssd1331
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
     >>> display = ssd1331.SSD1331(spi, cs=digitalio.DigitalInOut(board.GPIO0),
-        dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
+    ...    dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
     >>> display.fill(0x7521)
     >>> display.pixel(32, 32, 0)
 >>>
@@ -88,7 +88,7 @@ display.pixel(32, 32, 0)
         # (_CONTRASTA, b'\x91'), #//0xEF - 0x91
         # (_CONTRASTB, b'\x50'), #;//0x11 - 0x50
         # (_CONTRASTC, b'\x7d'), #;//0x48 - 0x7D
-        # (_DISPLAYON, b''),
+        (_DISPLAYON, b''),
     )
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">BB"

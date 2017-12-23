@@ -68,7 +68,7 @@ class ST7735(DisplaySPI):
     >>> import adafruit_rgb_display.st7735 as st7735
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
     >>> display = st7735.ST7735(spi, cs=digitalio.DigitalInOut(board.GPIO0),
-        dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
+    ...    dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
     >>> display.fill(0x7521)
     >>> display.pixel(64, 64, 0)
     """

@@ -49,7 +49,7 @@ class SSD1351(DisplaySPI):
     >>> import adafruit_rgb_display.ssd1351 as ssd1351
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
     >>> display = ssd1351.SSD1351(spi, cs=digitalio.DigitalInOut(board.GPIO0),
-        dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
+    ...    dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
     >>> display.fill(0x7521)
     >>> display.pixel(32, 32, 0)
     """
