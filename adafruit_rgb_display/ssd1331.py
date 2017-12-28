@@ -97,11 +97,9 @@ class SSD1331(DisplaySPI):
     def __init__(self, spi, dc, cs, rst=None, width=96, height=64):
         super().__init__(spi, dc, cs, rst, width, height)
 
-    # pylint: disable-msg=no-member
-    # dc_pin is inherited from DisplaySPI
     def write(self, command=None, data=None):
         """write procedure specific to SSD1331"""
-        self.dc_pin.value = command is None
+        self.dc.value = command is None
         with self.spi_device as spi:
             if command is not None:
                 spi.write(bytearray([command]))
