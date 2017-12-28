@@ -57,16 +57,6 @@ class SSD1331(DisplaySPI):
       display.fill(0x7521)
       display.pixel(32, 32, 0)
 
-    .. code-block:: python
-
-      from machine import Pin, HSPI
-      import ssd1331
-      # spi = SPI(mosi=Pin(13), sck=Pin(14), polarity=1, phase=1)
-      spi = HSPI(polarity=1, phase=1)
-      display = ssd1331.SSD1331(spi, dc=Pin(2), cs=Pin(15), rst=Pin(16))
-
-      display.fill(0x7521)
-      display.pixel(32, 32, 0)
     """
     _COLUMN_SET = _SETCOLUMN
     _PAGE_SET = _SETROW
@@ -102,10 +92,13 @@ class SSD1331(DisplaySPI):
     _ENCODE_POS = ">BB"
 
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
+    # super required to allow override of default values
+    # All arguments needed due to driver requiring all the given data to function
     def __init__(self, spi, dc, cs, rst=None, width=96, height=64):
         super().__init__(spi, dc, cs, rst, width, height)
 
     # pylint: disable-msg=no-member
+    # dc_pin is inherited from DisplaySPI
     def write(self, command=None, data=None):
         """write procedure specific to SSD1331"""
         self.dc_pin.value = command is None
