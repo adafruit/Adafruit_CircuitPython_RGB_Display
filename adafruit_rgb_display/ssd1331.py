@@ -99,7 +99,7 @@ class SSD1331(DisplaySPI):
 
     def write(self, command=None, data=None):
         """write procedure specific to SSD1331"""
-        self.dc.value = command is None
+        self.dc_pin.value = command is None
         with self.spi_device as spi:
             if command is not None:
                 spi.write(bytearray([command]))
