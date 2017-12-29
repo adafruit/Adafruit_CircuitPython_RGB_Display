@@ -36,7 +36,7 @@ class DummyPin:
         pass
 
 
-class Display:
+class Display: #pylint: disable-msg=no-member
     """Base class for all RGB display devices"""
     _PAGE_SET = None
     _COLUMN_SET = None
@@ -120,13 +120,6 @@ class Display:
         """Draw a vertical line."""
         self.fill_rectangle(x, y, 1, height, color)
 
-    def write(self, command, data):
-        """Derived class must implement this"""
-        raise NotImplementedError
-
-    def read(self, command, count):
-        """Derived class must implement this"""
-        raise NotImplementedError
 
 class DisplaySPI(Display):
     """Base class for SPI type devices"""
