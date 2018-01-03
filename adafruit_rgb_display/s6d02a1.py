@@ -1,4 +1,10 @@
+"""A simple driver for the S6D02A1-based displays."""
+
 from adafruit_rgb_display.rgb import DisplaySPI
+from micropython import const
+
+__version__ = "0.0.0-auto.0"
+__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
 
 _SWRESET = const(0x01)
 _DISPON = const(0x29)
@@ -12,7 +18,7 @@ _MADCTL = const(0x36)
 
 class S6D02A1(DisplaySPI):
     """
-    A simple driver for the ST7735-based displays.
+    A simple driver for the S6D02A1-based displays.
 
     >>> import busio
     >>> import digitalio
@@ -20,7 +26,8 @@ class S6D02A1(DisplaySPI):
     >>> from adafruit_rgb_display import color565
     >>> import adafruit_rgb_display.s6d02a1 as s6d02a1
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    >>> display = s6d02a1.S6D02A1(spi, cs=digitalio.DigitalInOut(board.GPIO0), dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
+    >>> display = s6d02a1.S6D02A1(spi, cs=digitalio.DigitalInOut(board.GPIO0),
+    ...    dc=digitalio.DigitalInOut(board.GPIO15), rst=digitalio.DigitalInOut(board.GPIO16))
     >>> display.fill(0x7521)
     >>> display.pixel(64, 64, 0)
     """
@@ -38,5 +45,6 @@ class S6D02A1(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
 
+    #pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=128, height=160):
         super().__init__(spi, dc, cs, rst, width, height)

@@ -1,4 +1,10 @@
+"""A simple driver for the HX8353-based displays."""
 from adafruit_rgb_display.rgb import DisplaySPI
+from micropython import const
+
+
+__version__ = "0.0.0-auto.0"
+__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
 
 _SWRESET = const(0x01)
 _NORON = const(0x13)
@@ -15,7 +21,7 @@ _COLMOD = const(0x3a)
 
 class HX8353(DisplaySPI):
     """
-    A simple driver for the ST7735-based displays.
+    A simple driver for the HX8353-based displays.
 
     >>> import busio
     >>> import digitalio
@@ -23,7 +29,8 @@ class HX8353(DisplaySPI):
     >>> from adafruit_rgb_display import color565
     >>> import adafruit_rgb_display.hx8353 as hx8353
     >>> spi = busio.SPI(clock=board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-    >>> display = hx8353.HX8383(spi, cs=digitalio.DigitalInOut(board.GPIO0), dc=digitalio.DigitalInOut(board.GPIO15))
+    >>> display = hx8353.HX8383(spi, cs=digitalio.DigitalInOut(board.GPIO0),
+    ...    dc=digitalio.DigitalInOut(board.GPIO15))
     >>> display.fill(0x7521)
     >>> display.pixel(64, 64, 0)
     """
@@ -38,5 +45,6 @@ class HX8353(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
 
+    #pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=128, height=128):
         super().__init__(spi, dc, cs, rst, width, height)

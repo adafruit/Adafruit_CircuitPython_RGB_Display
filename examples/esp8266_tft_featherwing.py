@@ -5,7 +5,7 @@ import time
 
 import busio
 import digitalio
-from board import *
+from board import SCK, MOSI, MISO, GPIO0, GPIO15
 
 from adafruit_rgb_display import color565
 import adafruit_rgb_display.ili9341 as ili9341
@@ -34,6 +34,6 @@ while True:
     # Pause 2 seconds.
     time.sleep(2)
     # Clear the screen blue.
-    display.fill(color565(0,0,255))
+    display.fill(color565(0, 0, 255))
     # Pause 2 seconds.
     time.sleep(2)
