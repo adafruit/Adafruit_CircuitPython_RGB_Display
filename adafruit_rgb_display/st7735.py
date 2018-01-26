@@ -110,7 +110,7 @@ class ST7735(DisplaySPI):
         (_COLMOD, b'\x05'), # 16bit color
         # fastest refresh, 6 lines front porch, 3 line back porch
         (_FRMCTR1, b'\x00\x06\x03'),
-        (_MADCTL, b'\x08'), # bottom to top refresh
+        (_MADCTL, b'\x00'), # bottom to top refresh, RGB color
         # 1 clk cycle nonoverlap, 2 cycle gate rise, 3 sycle osc equalie,
         # fix on VTL
         (_DISSET5, b'\x15\x02'),
@@ -143,8 +143,8 @@ class ST7735R(ST7735):
         (_SWRESET, None),
         (_SLPOUT, None),
 
-        (_MADCTL, b'\xc8'),
-        (_COLMOD, b'\x05'),  # 16bit color
+        (_MADCTL, b'\xc0'), # rotated 90°, RGB color
+        (_COLMOD, b'\x05'), # 16bit color
         (_INVCTR, b'\x07'),
 
         (_FRMCTR1, b'\x01\x2c\x2d'),
