@@ -1,4 +1,33 @@
-""" Base class for all RGB Display devices """
+# The MIT License (MIT)
+#
+# Copyright (c) 2017 Radomir Dopieralski and Adafruit Industries
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+"""
+`adafruit_RGB_Display.rgb`
+====================================================
+
+Base class for all RGB Display devices
+
+* Author(s): Radomir Dopieralski, Michael McWethy
+"""
+
 import time
 from micropython import const
 try:
@@ -17,12 +46,14 @@ _BUFFER_SIZE = const(256)
 
 
 def color565(r, g, b):
-    """Format color code for device"""
+    """Convert red, green and blue values (0-255) into a 16-bit 565 encoding.  As
+    a convenience this is also available in the parent adafruit_rgb_display
+    package namespace."""
     return (r & 0xf8) << 8 | (g & 0xfc) << 3 | b >> 3
 
 
 class DummyPin:
-    """A fake gpio pin for when you want to skip pins."""
+    """Can be used in place of a ``Pin()`` when you don't want to skip it."""
     def init(self, *args, **kwargs):
         """Dummy Pin init"""
         pass
@@ -37,7 +68,10 @@ class DummyPin:
 
 
 class Display: #pylint: disable-msg=no-member
-    """Base class for all RGB display devices"""
+    """Base class for all RGB display devices
+        :param width: number of pixels wide
+        :param height: number of pixels high
+    """
     _PAGE_SET = None
     _COLUMN_SET = None
     _RAM_WRITE = None
@@ -83,7 +117,7 @@ class Display: #pylint: disable-msg=no-member
         return color565(*struct.unpack(self._DECODE_PIXEL, data))
 
     def pixel(self, x, y, color=None):
-        """Read or write a pixel."""
+        """Read or write a pixel at a given position."""
         if color is None:
             return self._decode_pixel(self._block(x, y, x, y))
 
@@ -93,7 +127,8 @@ class Display: #pylint: disable-msg=no-member
 
     #pylint: disable-msg=too-many-arguments
     def fill_rectangle(self, x, y, width, height, color):
-        """Draw a filled rectangle."""
+        """Draw a rectangle at specified position with specified width and
+        height, and fill it with the specified color."""
         x = min(self.width - 1, max(0, x))
         y = min(self.height - 1, max(0, y))
         width = min(self.width - x, max(1, width))
@@ -109,7 +144,7 @@ class Display: #pylint: disable-msg=no-member
     #pylint: enable-msg=too-many-arguments
 
     def fill(self, color=0):
-        """Fill whole screen."""
+        """Fill the whole display with the specified color."""
         self.fill_rectangle(0, 0, self.width, self.height, color)
 
     def hline(self, x, y, width, color):
