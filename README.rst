@@ -36,7 +36,7 @@ Usage Example
 
   import busio
   import digitalio
-  from board import SCK, MOSI, MISO, D2, D2
+  from board import SCK, MOSI, MISO, D2, D3
 
   from adafruit_rgb_display import color565
   import adafruit_rgb_display.ili9341 as ili9341
@@ -64,7 +64,7 @@ Usage Example
       # Clear the screen blue.
       display.fill(color565(0, 0, 255))
       # Pause 2 seconds.
-  time.sleep(2)
+      time.sleep(2)
 
 API Reference
 =============
