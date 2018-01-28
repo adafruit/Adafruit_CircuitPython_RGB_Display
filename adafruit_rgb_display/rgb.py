@@ -159,8 +159,8 @@ class Display: #pylint: disable-msg=no-member
 class DisplaySPI(Display):
     """Base class for SPI type devices"""
     #pylint: disable-msg=too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=1, height=1, baudrate=1000000,
-                 polarity=0, phase=0):
+    def __init__(self, spi, dc, cs, rst=None, width=1, height=1,
+                 baudrate=12000000, polarity=0, phase=0):
         self.spi_device = spi_device.SPIDevice(spi, cs, baudrate=baudrate,
                                                polarity=polarity, phase=phase)
         self.dc_pin = dc
