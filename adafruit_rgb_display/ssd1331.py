@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit_RGB_Display.ssd1331`
+`adafruit_rgb_display.ssd1331`
 ====================================================
 
 A simple driver for the SSD1331-based displays.

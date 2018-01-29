@@ -9,6 +9,10 @@ Introduction
     :target: https://discord.gg/nBQh6qu
     :alt: Discord
 
+.. image:: https://travis-ci.org/adafruit/Adafruit_CircuitPython_RGB_Display.svg?branch=master
+    :target: https://travis-ci.org/adafruit/Adafruit_CircuitPython_RGB_Display
+    :alt: Build Status
+
 Port of display drivers from https://github.com/adafruit/micropython-adafruit-rgb-display
 to Adafruit CircuitPython for use on Adafruit's SAMD21-based and other CircuitPython
 boards.

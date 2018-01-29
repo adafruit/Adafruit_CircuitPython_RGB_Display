@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit_RGB_Display.s6d02a1`
+`adafruit_rgb_display.s6d02a1`
 ====================================================
 
 A simple driver for the S6D02A1-based displays.
