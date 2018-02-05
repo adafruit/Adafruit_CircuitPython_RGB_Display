@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit_RGB_Display.rgb`
+`adafruit_rgb_display.rgb`
 ====================================================
 
 Base class for all RGB Display devices

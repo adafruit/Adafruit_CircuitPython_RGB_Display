@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit_RGB_Display.sst7735`
+`adafruit_rgb_display.st7735`
 ====================================================
 
 A simple driver for the ST7735-based displays.

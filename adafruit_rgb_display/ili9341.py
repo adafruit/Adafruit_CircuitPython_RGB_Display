@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit_RGB_Display.ili9341`
+`adafruit_rgb_display.ili9341`
 ====================================================
 
 A simple driver for the ILI9341/ILI9340-based displays.

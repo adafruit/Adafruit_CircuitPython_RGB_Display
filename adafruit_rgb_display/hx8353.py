@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit_RGB_Display.hx8353`
+`adafruit_rgb_display.hx8353`
 ====================================================
 
 A simple driver for the HX8353-based displays.
