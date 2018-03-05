@@ -9,25 +9,18 @@ Introduction
     :target: https://discord.gg/nBQh6qu
     :alt: Discord
 
-.. image:: https://travis-ci.org/adafruit/Adafruit_CircuitPython_RGB_Display.svg?branch=master
-    :target: https://travis-ci.org/adafruit/Adafruit_CircuitPython_RGB_Display
-    :alt: Build Status
+Port of display drivers from https://github.com/adafruit/micropython-adafruit-rgb-display to Adafruit CircuitPython for use on Adafruit's SAMD21-based and other CircuitPython boards.
 
-Port of display drivers from https://github.com/adafruit/micropython-adafruit-rgb-display
-to Adafruit CircuitPython for use on Adafruit's SAMD21-based and other CircuitPython
-boards.
+.. note:: This driver currently won't work on micropython.org firmware, instead you want the micropython-adafruit-rgb-display driver linked above!
 
-This driver depends on the Adafruit CircuitPython BusDevice module being installed on the
-board too: https://github.com/adafruit/Adafruit_MicroPython_BusDevice
-
-Note that this driver currently won't work on micropython.org firmware, instead
-you want the micropython-adafruit-rgb-display driver linked above!
+This CircuitPython driver currently supports displays that use the following display-driver chips: HX8353, ILI9341, S6D02A1, SSD1331, SSD1351, and ST7735.
 
 Dependencies
 =============
 This driver depends on:
 
 * `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
+* `Bus Device <https://github.com/adafruit/Adafruit_CircuitPython_BusDevice>`_
 
 Please ensure all dependencies are available on the CircuitPython filesystem.
 This is easily achieved by downloading
@@ -70,14 +63,6 @@ Usage Example
       # Pause 2 seconds.
       time.sleep(2)
 
-API Reference
-=============
-
-.. toctree::
-   :maxdepth: 2
-
-   api
-
 Contributing
 ============
 
@@ -108,3 +93,26 @@ Then run the build:
 .. code-block:: shell
 
     circuitpython-build-bundles --filename_prefix adafruit-circuitpython-rgb_display --library_location .
+
+Sphinx documentation
+-----------------------
+
+Sphinx is used to build the documentation based on rST files and comments in the code. First,
+install dependencies (feel free to reuse the virtual environment from above):
+
+.. code-block:: shell
+
+    python3 -m venv .env
+    source .env/bin/activate
+    pip install Sphinx sphinx-rtd-theme
+
+Now, once you have the virtual environment activated:
+
+.. code-block:: shell
+
+    cd docs
+    sphinx-build -E -W -b html . _build/html
+
+This will output the documentation to ``docs/_build/html``. Open the index.html in your browser to
+view them. It will also (due to -W) error out on any warning like Travis will. This is a good way to
+locally verify it will pass.
