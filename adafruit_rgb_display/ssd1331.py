@@ -28,8 +28,8 @@ A simple driver for the SSD1331-based displays.
 * Author(s): Radomir Dopieralski, Michael McWethy
 """
 
-from adafruit_rgb_display.rgb import DisplaySPI
 from micropython import const
+from adafruit_rgb_display.rgb import DisplaySPI
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
@@ -126,6 +126,7 @@ class SSD1331(DisplaySPI):
     def __init__(self, spi, dc, cs, rst=None, width=96, height=64):
         super().__init__(spi, dc, cs, rst, width, height)
 
+    # pylint: disable=no-member
     def write(self, command=None, data=None):
         """write procedure specific to SSD1331"""
         self.dc_pin.value = command is None
