@@ -179,6 +179,7 @@ class DisplaySPI(Display):
         self.rst.value = 1
         time.sleep(0.050)  # 50 milliseconds
 
+    # pylint: disable=no-member
     def write(self, command=None, data=None):
         """SPI write to the device: commands and data"""
         if command is not None:

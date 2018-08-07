@@ -28,8 +28,8 @@ A simple driver for the S6D02A1-based displays.
 * Author(s): Radomir Dopieralski, Michael McWethy
 """
 
-from adafruit_rgb_display.rgb import DisplaySPI
 from micropython import const
+from adafruit_rgb_display.rgb import DisplaySPI
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
