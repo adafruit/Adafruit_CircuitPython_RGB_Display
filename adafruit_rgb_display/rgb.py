@@ -80,6 +80,8 @@ class Display: #pylint: disable-msg=no-member
     _COLUMN_SET = None
     _RAM_WRITE = None
     _RAM_READ = None
+    _X_START = 0
+    _Y_START = 0
     _INIT = ()
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
@@ -98,8 +100,8 @@ class Display: #pylint: disable-msg=no-member
     #pylint: disable-msg=invalid-name,too-many-arguments
     def _block(self, x0, y0, x1, y1, data=None):
         """Read or write a block of data."""
-        self.write(self._COLUMN_SET, self._encode_pos(x0, x1))
-        self.write(self._PAGE_SET, self._encode_pos(y0, y1))
+        self.write(self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START))
+        self.write(self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START))
         if data is None:
             size = struct.calcsize(self._DECODE_PIXEL)
             return self.read(self._RAM_READ,
