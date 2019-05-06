@@ -3,6 +3,6 @@ Simple test
 
 Ensure your device works with this simple test.
 
-.. literalinclude:: ../examples/esp8266_tft_featherwing.py
-    :caption: examples/esp8266_tft_featherwing.py
+.. literalinclude:: ../examples/rgbdisplay_ili9341test.py
+    :caption: examples/rgbdisplay_ili9341test.py
     :linenos:
