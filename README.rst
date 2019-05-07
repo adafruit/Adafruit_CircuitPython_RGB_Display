@@ -17,7 +17,7 @@ Port of display drivers from https://github.com/adafruit/micropython-adafruit-rg
 
 .. note:: This driver currently won't work on micropython.org firmware, instead you want the micropython-adafruit-rgb-display driver linked above!
 
-This CircuitPython driver currently supports displays that use the following display-driver chips: HX8353, ILI9341, S6D02A1, SSD1331, SSD1351, and ST7735.
+This CircuitPython driver currently supports displays that use the following display-driver chips: HX8353, HX8357, ILI9341, S6D02A1, ST7789, SSD1331, SSD1351, and ST7735.
 
 Dependencies
 =============
