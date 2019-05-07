@@ -57,19 +57,45 @@ def color565(r, g=0, b=0):
 
 
 class DummyPin:
-    """Can be used in place of a ``Pin()`` when you don't want to skip it."""
-    def init(self, *args, **kwargs):
-        """Dummy Pin init"""
+    """Can be used in place of a ``DigitalInOut()`` when you don't want to skip it."""
+    def deinit(self):
+        """Dummy DigitalInOut deinit"""
         pass
 
-    def low(self):
-        """Dummy low Pin method"""
+    def switch_to_output(self, *args, **kwargs):
+        """Dummy switch_to_output method"""
         pass
 
-    def high(self):
-        """Dummy high Pin method"""
+    def switch_to_input(self, *args, **kwargs):
+        """Dummy switch_to_input method"""
         pass
 
+    @property
+    def value(self):
+        """Dummy value DigitalInOut property"""
+        pass
+
+    @value.setter
+    def value(self, val):
+        pass
+
+    @property
+    def direction(self):
+        """Dummy direction DigitalInOut property"""
+        pass
+
+    @direction.setter
+    def direction(self, val):
+        pass
+
+    @property
+    def pull(self):
+        """Dummy pull DigitalInOut property"""
+        pass
+
+    @pull.setter
+    def pull(self, val):
+        pass
 
 class Display: #pylint: disable-msg=no-member
     """Base class for all RGB display devices
