@@ -181,7 +181,7 @@ class Display: #pylint: disable-msg=no-member
                 .format(self.width, self.height))
         # Grab all the pixels from the image, faster than getpixel.
         r, g, b = img.split()
-        pixels = Image.merge("RGB",(b,g,r)).convert("BGR;16").tobytes()
+        pixels = Image.merge("RGB",(b,r,g)).convert("BGR;16").tobytes()
         self._block(0, 0, self.width-1, self.height - 1, pixels)
 
     #pylint: disable-msg=too-many-arguments
