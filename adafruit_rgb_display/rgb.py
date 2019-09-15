@@ -41,9 +41,15 @@ __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
 
 # This is the size of the buffer to be used for fill operations, in 16-bit
-# units. We use 256, which is 512 bytes — size of the DMA buffer on SAMD21.
+# units.    #We use 256, which is 512 bytes — size of the DMA buffer on SAMD21.
 _BUFFER_SIZE = const(256)
-
+# If we're on CPython, we have more memory, so get a big ol chunk!
+try:
+    import platform
+    if "CPython" in platform.python_implementation():
+        _BUFFER_SIZE = const(320*240)  # blit the whole thing at once
+except ImportError:
+    pass
 
 def color565(r, g=0, b=0):
     """Convert red, green and blue values (0-255) into a 16-bit 565 encoding.  As
@@ -156,6 +162,27 @@ class Display: #pylint: disable-msg=no-member
         if 0 <= x < self.width and 0 <= y < self.height:
             self._block(x, y, x, y, self._encode_pixel(color))
         return None
+
+    def image(self, img, rotation=0):
+        
+        """Set buffer to value of Python Imaging Library image.  The image should
+        be in 1 bit mode and a size equal to the display size."""
+        from PIL import Image
+
+        if img.mode != 'RGB':
+            raise ValueError('Image must be in mode RGB')
+        if not rotation in (0, 90, 180, 270):
+            raise ValueError('Rotation must be 0/90/180/270')
+        if rotation != 0:
+            img = img.rotate(rotation, expand=True)
+        imwidth, imheight = img.size
+        if imwidth != self.width or imheight != self.height:
+            raise ValueError('Image must be same dimensions as display ({0}x{1}).' \
+                .format(self.width, self.height))
+        # Grab all the pixels from the image, faster than getpixel.
+        r, g, b = img.split()
+        pixels = Image.merge("RGB",(b,g,r)).convert("BGR;16").tobytes()
+        self._block(0, 0, self.width-1, self.height - 1, pixels)
 
     #pylint: disable-msg=too-many-arguments
     def fill_rectangle(self, x, y, width, height, color):
