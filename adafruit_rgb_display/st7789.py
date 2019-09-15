@@ -104,7 +104,6 @@ class ST7789(DisplaySPI):
     _PAGE_SET = _RASET
     _RAM_WRITE = _RAMWR
     _RAM_READ = _RAMRD
-    _Y_START = 80
     _INIT = (
         (_SWRESET, None),
         (_SLPOUT, None),
@@ -113,14 +112,16 @@ class ST7789(DisplaySPI):
     )
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=240, height=240,
-                 baudrate=16000000, polarity=0, phase=0):
+    def __init__(self, spi, dc, cs, rst=None, width=240, height=320,
+                 baudrate=16000000, polarity=0, phase=0, *,
+                 x_offset=0, y_offset=0):
         super().__init__(spi, dc, cs, rst, width, height,
-                         baudrate=baudrate, polarity=polarity, phase=phase)
-
+                         baudrate=baudrate, polarity=polarity, phase=phase,
+                         x_offset=x_offset, y_offset=y_offset)
     def init(self):
+
         super().init()
-        cols = struct.pack('>HH', 0, self.width)
+        cols = struct.pack('>HH', self._X_START, self.width + self._X_START)
         rows = struct.pack('>HH', self._Y_START, self.height + self._Y_START)
         for command, data in (
                 (_CASET, cols),
