@@ -169,8 +169,8 @@ class Display: #pylint: disable-msg=no-member
         be in 1 bit mode and a size equal to the display size."""
         from PIL import Image
 
-        if img.mode != 'RGB':
-            raise ValueError('Image must be in mode RGB')
+        if not img.mode in ('RGB', 'RGBA'):
+            raise ValueError('Image must be in mode RGB or RGBA')
         if not rotation in (0, 90, 180, 270):
             raise ValueError('Rotation must be 0/90/180/270')
         if rotation != 0:
@@ -179,9 +179,15 @@ class Display: #pylint: disable-msg=no-member
         if imwidth != self.width or imheight != self.height:
             raise ValueError('Image must be same dimensions as display ({0}x{1}).' \
                 .format(self.width, self.height))
-        # Grab all the pixels from the image, faster than getpixel.
-        r, g, b = img.split()
-        pixels = Image.merge("RGB",(b,r,g)).convert("BGR;16").tobytes()
+        pixels = bytearray(self.width * self.height * 2)
+        # Iterate through the pixels
+        for x in range(self.width):       # yes this double loop is slow,
+            for y in range(self.height):  #  but these displays are small!
+                pix = color565(img.getpixel((x, y)))
+                pixels[2*(y * self.width + x)] = pix >> 8
+                pixels[2*(y * self.width + x) + 1] = pix & 0xFF
+
+        #print([hex(x) for x in pixels])
         self._block(0, 0, self.width-1, self.height - 1, pixels)
 
     #pylint: disable-msg=too-many-arguments
