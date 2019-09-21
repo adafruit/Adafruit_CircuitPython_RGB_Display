@@ -34,84 +34,84 @@ FB_BLANK_POWERDOWN = 4
 
 
 class Bitfield:
-	def __init__(self, offset, length, msb_right):
-		self.offset = offset
-		self.length = length
-		self.msb_right = msb_right
+    def __init__(self, offset, length, msb_right):
+        self.offset = offset
+        self.length = length
+        self.msb_right = msb_right
 
 # Kind of like a pygame Surface object, or not!
 # http://www.pygame.org/docs/ref/surface.html
 class Framebuffer:
-	
-	def __init__(self, dev):
-		self.dev = dev
-		self.fbfd = os.open(dev, os.O_RDWR)
-		vinfo = struct.unpack("8I12I16I4I", fcntl.ioctl(self.fbfd, FBIOGET_VSCREENINFO, " "*((8+12+16+4)*4)))
-		finfo = struct.unpack("16cL4I3HI", fcntl.ioctl(self.fbfd, FBIOGET_FSCREENINFO, " "*48))
+    
+    def __init__(self, dev):
+        self.dev = dev
+        self.fbfd = os.open(dev, os.O_RDWR)
+        vinfo = struct.unpack("8I12I16I4I", fcntl.ioctl(self.fbfd, FBIOGET_VSCREENINFO, " "*((8+12+16+4)*4)))
+        finfo = struct.unpack("16cL4I3HI", fcntl.ioctl(self.fbfd, FBIOGET_FSCREENINFO, " "*48))
 
-		bytes_per_pixel = (vinfo[6] + 7) // 8
-		screensize = vinfo[0] * vinfo[1] * bytes_per_pixel
+        bytes_per_pixel = (vinfo[6] + 7) // 8
+        screensize = vinfo[0] * vinfo[1] * bytes_per_pixel
 
-		fbp = mmap.mmap(self.fbfd, screensize, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ)
+        fbp = mmap.mmap(self.fbfd, screensize, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ)
 
-		self.fbp = fbp
-		self.xres = vinfo[0]
-		self.yres = vinfo[1]
-		self.xoffset = vinfo[4]
-		self.yoffset = vinfo[5]
-		self.bits_per_pixel = vinfo[6]
-		self.bytes_per_pixel = bytes_per_pixel
-		self.grayscale = vinfo[7]
-		self.red = Bitfield(vinfo[8], vinfo[9], vinfo[10])
-		self.green = Bitfield(vinfo[11], vinfo[12], vinfo[13])
-		self.blue = Bitfield(vinfo[14], vinfo[15], vinfo[16])
-		self.transp = Bitfield(vinfo[17], vinfo[18], vinfo[19])
-		self.nonstd = vinfo[20]
-		self.name = b''.join([x for x in finfo[0:15] if x != b'\x00'])
-		self.type = finfo[18]
-		self.visual = finfo[20]
-		self.line_length = finfo[24]
-		self.screensize = screensize
+        self.fbp = fbp
+        self.xres = vinfo[0]
+        self.yres = vinfo[1]
+        self.xoffset = vinfo[4]
+        self.yoffset = vinfo[5]
+        self.bits_per_pixel = vinfo[6]
+        self.bytes_per_pixel = bytes_per_pixel
+        self.grayscale = vinfo[7]
+        self.red = Bitfield(vinfo[8], vinfo[9], vinfo[10])
+        self.green = Bitfield(vinfo[11], vinfo[12], vinfo[13])
+        self.blue = Bitfield(vinfo[14], vinfo[15], vinfo[16])
+        self.transp = Bitfield(vinfo[17], vinfo[18], vinfo[19])
+        self.nonstd = vinfo[20]
+        self.name = b''.join([x for x in finfo[0:15] if x != b'\x00'])
+        self.type = finfo[18]
+        self.visual = finfo[20]
+        self.line_length = finfo[24]
+        self.screensize = screensize
 
-	def close(self):
-		self.fbp.close()
-		os.close(self.fbfd)
+    def close(self):
+        self.fbp.close()
+        os.close(self.fbfd)
 
-	def blank(self, blank):
-		# Blanking is not supported by all drivers
-		try:
-			if blank:
-				fcntl.ioctl(self.fbfd, FBIOBLANK, FB_BLANK_POWERDOWN)
-			else:
-				fcntl.ioctl(self.fbfd, FBIOBLANK, FB_BLANK_UNBLANK)
-		except IOError:
-			pass
+    def blank(self, blank):
+        # Blanking is not supported by all drivers
+        try:
+            if blank:
+                fcntl.ioctl(self.fbfd, FBIOBLANK, FB_BLANK_POWERDOWN)
+            else:
+                fcntl.ioctl(self.fbfd, FBIOBLANK, FB_BLANK_UNBLANK)
+        except IOError:
+            pass
 
-	def __str__(self):
-		visual_list = ['MONO01', 'MONO10', 'TRUECOLOR', 'PSEUDOCOLOR', 'DIRECTCOLOR', 'STATIC PSEUDOCOLOR', 'FOURCC']
-		type_list = ['PACKED_PIXELS', 'PLANES', 'INTERLEAVED_PLANES', 'TEXT', 'VGA_PLANES', 'FOURCC']
-		visual_name = 'unknown'
-		if self.visual < len(visual_list):
-			visual_name = visual_list[self.visual] 
-		type_name = 'unknown'
-		if self.type < len(type_list):
-			type_name = type_list[self.type]
+    def __str__(self):
+        visual_list = ['MONO01', 'MONO10', 'TRUECOLOR', 'PSEUDOCOLOR', 'DIRECTCOLOR', 'STATIC PSEUDOCOLOR', 'FOURCC']
+        type_list = ['PACKED_PIXELS', 'PLANES', 'INTERLEAVED_PLANES', 'TEXT', 'VGA_PLANES', 'FOURCC']
+        visual_name = 'unknown'
+        if self.visual < len(visual_list):
+            visual_name = visual_list[self.visual] 
+        type_name = 'unknown'
+        if self.type < len(type_list):
+            type_name = type_list[self.type]
 
-		return \
-		"mode \"%sx%s\"\n" % (self.xres, self.yres) + \
-		"    nonstd %s\n" % self.nonstd + \
-		"    rgba %s/%s,%s/%s,%s/%s,%s/%s\n" % (self.red.length, self.red.offset, self.green.length, self.green.offset, self.blue.length, self.blue.offset, self.transp.length, self.transp.offset) + \
-		"endmode\n" + \
-		"\n" + \
-		"Frame buffer device information:\n" + \
-		"    Device      : %s\n" % self.dev + \
-		"    Name        : %s\n" % self.name + \
+        return \
+        "mode \"%sx%s\"\n" % (self.xres, self.yres) + \
+        "    nonstd %s\n" % self.nonstd + \
+        "    rgba %s/%s,%s/%s,%s/%s,%s/%s\n" % (self.red.length, self.red.offset, self.green.length, self.green.offset, self.blue.length, self.blue.offset, self.transp.length, self.transp.offset) + \
+        "endmode\n" + \
+        "\n" + \
+        "Frame buffer device information:\n" + \
+        "    Device      : %s\n" % self.dev + \
+        "    Name        : %s\n" % self.name + \
         "    Size        : (%d, %d)\n" % (self.xres, self.yres) + \
-		"    Length      : %s\n" % self.screensize + \
+        "    Length      : %s\n" % self.screensize + \
         "    BPP         : %d\n" % self.bits_per_pixel + \
-		"    Type        : %s\n" % type_name + \
-		"    Visual      : %s\n" % visual_name + \
-		"    LineLength  : %s\n" % self.line_length
+        "    Type        : %s\n" % type_name + \
+        "    Visual      : %s\n" % visual_name + \
+        "    LineLength  : %s\n" % self.line_length
 
 device = '/dev/fb0'
 fb = Framebuffer(device)
@@ -130,7 +130,7 @@ spi = board.SPI()
 
 # Create the ST7789 display:
 disp = st7789.ST7789(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE,
-                        width=135, height=240, x_offset=53, y_offset=40)
+                     width=135, height=240, x_offset=53, y_offset=40)
 
 height = disp.width   # we swap height/width to rotate it to landscape!
 width = disp.height
