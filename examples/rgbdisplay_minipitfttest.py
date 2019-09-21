@@ -1,5 +1,3 @@
-import time
-import random
 import digitalio
 import board
 
@@ -35,4 +33,3 @@ while True:
         display.fill(color565(0, 0, 255))    # blue
     if buttonA.value and buttonB.value:      # none pressed
         display.fill(color565(0, 255, 0))    # green
-

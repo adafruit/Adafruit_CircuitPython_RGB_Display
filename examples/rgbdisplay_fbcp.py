@@ -1,14 +1,12 @@
 import time
-import digitalio
-import board
-from PIL import Image, ImageDraw, ImageFont
-from adafruit_rgb_display.rgb import color565
-import adafruit_rgb_display.st7789 as st7789
 import os
-import sys
 import fcntl
 import mmap
 import struct
+import digitalio
+import board
+from PIL import Image, ImageDraw
+import adafruit_rgb_display.st7789 as st7789
 
 # definitions from linux/fb.h
 FBIOGET_VSCREENINFO = 0x4600
@@ -96,11 +94,14 @@ class Framebuffer:
             pass
 
     def __str__(self):
-        visual_list = ['MONO01', 'MONO10', 'TRUECOLOR', 'PSEUDOCOLOR', 'DIRECTCOLOR', 'STATIC PSEUDOCOLOR', 'FOURCC']
-        type_list = ['PACKED_PIXELS', 'PLANES', 'INTERLEAVED_PLANES', 'TEXT', 'VGA_PLANES', 'FOURCC']
+        visual_list = ['MONO01', 'MONO10', 'TRUECOLOR',
+                       'PSEUDOCOLOR', 'DIRECTCOLOR',
+                       'STATIC PSEUDOCOLOR', 'FOURCC']
+        type_list = ['PACKED_PIXELS', 'PLANES', 'INTERLEAVED_PLANES',
+                     'TEXT', 'VGA_PLANES', 'FOURCC']
         visual_name = 'unknown'
         if self.visual < len(visual_list):
-            visual_name = visual_list[self.visual] 
+            visual_name = visual_list[self.visual]
         type_name = 'unknown'
         if self.type < len(type_list):
             type_name = type_list[self.type]
@@ -137,7 +138,8 @@ BAUDRATE = 64000000
 spi = board.SPI()
 
 # Create the ST7789 display:
-disp = st7789.ST7789(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE,
+disp = st7789.ST7789(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin,
+                     baudrate=BAUDRATE,
                      width=135, height=240, x_offset=53, y_offset=40)
 
 height = disp.width   # we swap height/width to rotate it to landscape!

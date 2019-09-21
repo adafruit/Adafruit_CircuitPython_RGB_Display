@@ -2,11 +2,9 @@
 
 import time
 import subprocess
-import random
 import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
-from adafruit_rgb_display.rgb import color565
 import adafruit_rgb_display.st7789 as st7789
 
 
@@ -77,9 +75,9 @@ while True:
     y += font.getsize(CPU)[1]
     draw.text((x, y), MemUsage, font=font, fill="#00FF00")
     y += font.getsize(MemUsage)[1]
-    draw.text((x, y), Disk, font=font,  fill="#0000FF")
+    draw.text((x, y), Disk, font=font, fill="#0000FF")
     y += font.getsize(Disk)[1]
-    draw.text((x, y), Temp, font=font,  fill="#FF00FF")
+    draw.text((x, y), Temp, font=font, fill="#FF00FF")
 
     # Display image.
     disp.image(image, rotation)
