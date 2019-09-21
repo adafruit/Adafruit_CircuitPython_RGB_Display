@@ -33,7 +33,7 @@ FB_BLANK_POWERDOWN = 4
 
 
 
-class Bitfield:
+class Bitfield: # pylint: disable=too-few-public-methods
     def __init__(self, offset, length, msb_right):
         self.offset = offset
         self.length = length
@@ -41,7 +41,7 @@ class Bitfield:
 
 # Kind of like a pygame Surface object, or not!
 # http://www.pygame.org/docs/ref/surface.html
-class Framebuffer:
+class Framebuffer: # pylint: disable=too-many-instance-attributes
 
     def __init__(self, dev):
         self.dev = dev
@@ -109,7 +109,14 @@ class Framebuffer:
         return \
         "mode \"%sx%s\"\n" % (self.xres, self.yres) + \
         "    nonstd %s\n" % self.nonstd + \
-        "    rgba %s/%s,%s/%s,%s/%s,%s/%s\n" % (self.red.length, self.red.offset, self.green.length, self.green.offset, self.blue.length, self.blue.offset, self.transp.length, self.transp.offset) + \
+        "    rgba %s/%s,%s/%s,%s/%s,%s/%s\n" % (self.red.length,
+                                                self.red.offset,
+                                                self.green.length,
+                                                self.green.offset,
+                                                self.blue.length,
+                                                self.blue.offset,
+                                                self.transp.length,
+                                                self.transp.offset) + \
         "endmode\n" + \
         "\n" + \
         "Frame buffer device information:\n" + \
@@ -157,7 +164,7 @@ disp.image(image, rotation)
 while True:
     t = time.monotonic()
     fb.fbp.seek(0)
-    b = fb.fbp.read(fb.screensize)    
+    b = fb.fbp.read(fb.screensize)
     fbimage = Image.frombytes('RGBA', (fb.xres, fb.yres), b, 'raw')
     b, g, r, a = fbimage.split()
     fbimage = Image.merge("RGB", (r, g, b))
@@ -166,5 +173,3 @@ while True:
     disp.image(fbimage, rotation)
     print(1.0 / (time.monotonic()-t))
 fb.close()
-
-
