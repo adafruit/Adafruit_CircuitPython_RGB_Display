@@ -1,19 +1,21 @@
 import time
-import random
 import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display.rgb import color565
 import adafruit_rgb_display.st7789 as st7789
-import os, sys
-import fcntl, mmap, struct
+import os
+import sys
+import fcntl
+import mmap
+import struct
 
 # definitions from linux/fb.h
 FBIOGET_VSCREENINFO = 0x4600
 FBIOGET_FSCREENINFO = 0x4602
 FBIOBLANK = 0x4611
 
-FB_TYPE_PACKED_PIXELS= 0
+FB_TYPE_PACKED_PIXELS = 0
 FB_TYPE_PLANES = 1
 FB_TYPE_INTERLEAVED_PLANES = 2
 FB_TYPE_TEXT = 3
@@ -42,17 +44,23 @@ class Bitfield:
 # Kind of like a pygame Surface object, or not!
 # http://www.pygame.org/docs/ref/surface.html
 class Framebuffer:
-    
+
     def __init__(self, dev):
         self.dev = dev
         self.fbfd = os.open(dev, os.O_RDWR)
-        vinfo = struct.unpack("8I12I16I4I", fcntl.ioctl(self.fbfd, FBIOGET_VSCREENINFO, " "*((8+12+16+4)*4)))
-        finfo = struct.unpack("16cL4I3HI", fcntl.ioctl(self.fbfd, FBIOGET_FSCREENINFO, " "*48))
+        vinfo = struct.unpack("8I12I16I4I",
+                              fcntl.ioctl(self.fbfd,
+                                          FBIOGET_VSCREENINFO,
+                                          " "*((8+12+16+4)*4)))
+        finfo = struct.unpack("16cL4I3HI",
+                              fcntl.ioctl(self.fbfd,
+                                          FBIOGET_FSCREENINFO, " "*48))
 
         bytes_per_pixel = (vinfo[6] + 7) // 8
         screensize = vinfo[0] * vinfo[1] * bytes_per_pixel
 
-        fbp = mmap.mmap(self.fbfd, screensize, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ)
+        fbp = mmap.mmap(self.fbfd, screensize,
+                        flags=mmap.MAP_SHARED, prot=mmap.PROT_READ)
 
         self.fbp = fbp
         self.xres = vinfo[0]
@@ -149,8 +157,8 @@ while True:
     fb.fbp.seek(0)
     b = fb.fbp.read(fb.screensize)    
     fbimage = Image.frombytes('RGBA', (fb.xres, fb.yres), b, 'raw')
-    b, g, r, a  = fbimage.split()
-    fbimage = Image.merge("RGB",(r,g,b))
+    b, g, r, a = fbimage.split()
+    fbimage = Image.merge("RGB", (r, g, b))
     fbimage = fbimage.resize((width, height))
 
     disp.image(fbimage, rotation)
