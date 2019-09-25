@@ -29,7 +29,6 @@ Base class for all RGB Display devices
 """
 
 import time
-from micropython import const
 try:
     import struct
 except ImportError:
@@ -47,13 +46,14 @@ try:
     import platform
     if "CPython" in platform.python_implementation():
         # check for FT232H special case
-        import os
-        if os.environ['BLINKA_FT232H']:
-            # we are limited by pyftdi's max SPI payload
-            from pyftdi.spi import SpiController
-            _BUFFER_SIZE = SpiController.PAYLOAD_MAX_LENGTH // 2 # max bytes / bytes per pixel
-        else:
-            # set it to blit the whole thing
+        try:
+            import os
+            if os.environ['BLINKA_FT232H']:
+                # we are limited by pyftdi's max SPI payload
+                from pyftdi.spi import SpiController
+                _BUFFER_SIZE = SpiController.PAYLOAD_MAX_LENGTH // 2 # max bytes / bytes per pixel
+        except KeyError:
+            # otherwise set it to blit the whole thing
             _BUFFER_SIZE = 320 * 240
     else:
         # in case CircuitPython ever implements platform
@@ -211,7 +211,6 @@ class Display: #pylint: disable-msg=no-member
         pixel = self._encode_pixel(color)
         if chunks:
             data = pixel * _BUFFER_SIZE
-            print(pixel, len(data))
             for _ in range(chunks):
                 self.write(None, data)
         self.write(None, pixel * rest)
