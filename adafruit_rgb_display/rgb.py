@@ -232,8 +232,8 @@ class DisplaySPI(Display):
         if self.rst:
             self.rst.switch_to_output(value=0)
             self.reset()
-        self._X_START = x_offset
-        self._Y_START = y_offset
+        self._X_START = x_offset # pylint: disable=invalid-name
+        self._Y_START = y_offset # pylint: disable=invalid-name
         super().__init__(width, height)
     #pylint: enable-msg=too-many-arguments
 
