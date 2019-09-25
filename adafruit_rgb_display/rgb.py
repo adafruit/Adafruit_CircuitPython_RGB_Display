@@ -41,15 +41,26 @@ __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
 
 # This is the size of the buffer to be used for fill operations, in 16-bit
-# units.    #We use 256, which is 512 bytes — size of the DMA buffer on SAMD21.
-_BUFFER_SIZE = const(256)
-# If we're on CPython, we have more memory, so get a big ol chunk!
+# units.
 try:
+    # If we're on CPython, try to set as large as possible
     import platform
     if "CPython" in platform.python_implementation():
-        _BUFFER_SIZE = const(320*240)  # blit the whole thing at once
+        # check for FT232H special case
+        import os
+        if os.environ['BLINKA_FT232H']:
+            # we are limited by pyftdi's max SPI payload
+            from pyftdi.spi import SpiController
+            _BUFFER_SIZE = SpiController.PAYLOAD_MAX_LENGTH // 2 # max bytes / bytes per pixel
+        else:
+            # set it to blit the whole thing
+            _BUFFER_SIZE = 320 * 240
+    else:
+        # in case CircuitPython ever implements platform
+        _BUFFER_SIZE = 256
 except ImportError:
-    pass
+    # Otherwise set smaller MCU friendly size
+    _BUFFER_SIZE = 256
 
 def color565(r, g=0, b=0):
     """Convert red, green and blue values (0-255) into a 16-bit 565 encoding.  As
@@ -200,6 +211,7 @@ class Display: #pylint: disable-msg=no-member
         pixel = self._encode_pixel(color)
         if chunks:
             data = pixel * _BUFFER_SIZE
+            print(pixel, len(data))
             for _ in range(chunks):
                 self.write(None, data)
         self.write(None, pixel * rest)
