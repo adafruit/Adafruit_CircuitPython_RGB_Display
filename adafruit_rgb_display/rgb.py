@@ -29,7 +29,6 @@ Base class for all RGB Display devices
 """
 
 import time
-from micropython import const
 try:
     import struct
 except ImportError:
@@ -41,9 +40,27 @@ __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
 
 # This is the size of the buffer to be used for fill operations, in 16-bit
-# units. We use 256, which is 512 bytes — size of the DMA buffer on SAMD21.
-_BUFFER_SIZE = const(256)
-
+# units.
+try:
+    # If we're on CPython, try to set as large as possible
+    import platform
+    if "CPython" in platform.python_implementation():
+        # check for FT232H special case
+        try:
+            import os
+            if os.environ['BLINKA_FT232H']:
+                # we are limited by pyftdi's max SPI payload
+                from pyftdi.spi import SpiController
+                _BUFFER_SIZE = SpiController.PAYLOAD_MAX_LENGTH // 2 # max bytes / bytes per pixel
+        except KeyError:
+            # otherwise set it to blit the whole thing
+            _BUFFER_SIZE = 320 * 240
+    else:
+        # in case CircuitPython ever implements platform
+        _BUFFER_SIZE = 256
+except ImportError:
+    # Otherwise set smaller MCU friendly size
+    _BUFFER_SIZE = 256
 
 def color565(r, g=0, b=0):
     """Convert red, green and blue values (0-255) into a 16-bit 565 encoding.  As
@@ -106,8 +123,8 @@ class Display: #pylint: disable-msg=no-member
     _COLUMN_SET = None
     _RAM_WRITE = None
     _RAM_READ = None
-    _X_START = 0
-    _Y_START = 0
+    _X_START = 0 # pylint: disable=invalid-name
+    _Y_START = 0 # pylint: disable=invalid-name
     _INIT = ()
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
@@ -157,6 +174,30 @@ class Display: #pylint: disable-msg=no-member
             self._block(x, y, x, y, self._encode_pixel(color))
         return None
 
+    def image(self, img, rotation=0):
+        """Set buffer to value of Python Imaging Library image.  The image should
+        be in 1 bit mode and a size equal to the display size."""
+        if not img.mode in ('RGB', 'RGBA'):
+            raise ValueError('Image must be in mode RGB or RGBA')
+        if rotation not in (0, 90, 180, 270):
+            raise ValueError('Rotation must be 0/90/180/270')
+        if rotation != 0:
+            img = img.rotate(rotation, expand=True)
+        imwidth, imheight = img.size
+        if imwidth != self.width or imheight != self.height:
+            raise ValueError('Image must be same dimensions as display ({0}x{1}).' \
+                .format(self.width, self.height))
+        pixels = bytearray(self.width * self.height * 2)
+        # Iterate through the pixels
+        for x in range(self.width):       # yes this double loop is slow,
+            for y in range(self.height):  #  but these displays are small!
+                pix = color565(img.getpixel((x, y)))
+                pixels[2*(y * self.width + x)] = pix >> 8
+                pixels[2*(y * self.width + x) + 1] = pix & 0xFF
+
+        #print([hex(x) for x in pixels])
+        self._block(0, 0, self.width-1, self.height - 1, pixels)
+
     #pylint: disable-msg=too-many-arguments
     def fill_rectangle(self, x, y, width, height, color):
         """Draw a rectangle at specified position with specified width and
@@ -192,7 +233,8 @@ class DisplaySPI(Display):
     """Base class for SPI type devices"""
     #pylint: disable-msg=too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=1, height=1,
-                 baudrate=12000000, polarity=0, phase=0):
+                 baudrate=12000000, polarity=0, phase=0, *,
+                 x_offset=0, y_offset=0):
         self.spi_device = spi_device.SPIDevice(spi, cs, baudrate=baudrate,
                                                polarity=polarity, phase=phase)
         self.dc_pin = dc
@@ -201,6 +243,8 @@ class DisplaySPI(Display):
         if self.rst:
             self.rst.switch_to_output(value=0)
             self.reset()
+        self._X_START = x_offset # pylint: disable=invalid-name
+        self._Y_START = y_offset # pylint: disable=invalid-name
         super().__init__(width, height)
     #pylint: enable-msg=too-many-arguments
 
