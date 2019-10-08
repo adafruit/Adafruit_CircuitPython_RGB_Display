@@ -5,7 +5,6 @@ import board
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.ili9341 as ili9341
 
-
 # Configuration for CS and DC pins (these are FeatherWing defaults on M0/M4):
 cs_pin = digitalio.DigitalInOut(board.CE0)
 dc_pin = digitalio.DigitalInOut(board.D25)
@@ -18,7 +17,7 @@ BAUDRATE = 24000000
 spi = board.SPI()
 
 # Create the ILI9341 display:
-disp = ili9341.ILI9341(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)
+disp = ili9341.ILI9341(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)     #ILI9341
 
 # Create blank image for drawing.
 # Make sure to create image with mode 'RGB' for full color.
