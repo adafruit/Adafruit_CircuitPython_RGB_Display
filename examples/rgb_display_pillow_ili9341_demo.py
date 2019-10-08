@@ -32,12 +32,12 @@ rotation = 90
 draw = ImageDraw.Draw(image)
 
 # Draw a green filled box as the background
-draw.rectangle((0, 0, width, height),  fill=(0, 255, 0))
+draw.rectangle((0, 0, width, height), fill=(0, 255, 0))
 disp.image(image, rotation)
 
 # Draw a smaller inner purple rectangle
 draw.rectangle((BORDER, BORDER, width - BORDER - 1, height - BORDER - 1),
-               fill=(170,0, 136))
+               fill=(170, 0, 136))
 
 # Load a TTF Font
 font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', FONTSIZE)
