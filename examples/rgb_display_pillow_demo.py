@@ -19,7 +19,7 @@ BAUDRATE = 24000000
 spi = board.SPI()
 
 # Create the ILI9341 display:
-disp = ili9341.ILI9341(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)
+disp = ili9341.ILI9341(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)     #ILI9341
 
 # Create blank image for drawing.
 # Make sure to create image with mode 'RGB' for full color.
