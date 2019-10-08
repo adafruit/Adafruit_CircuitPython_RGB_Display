@@ -1,5 +1,3 @@
-import time
-import subprocess
 import digitalio
 import board
 from PIL import Image, ImageDraw
