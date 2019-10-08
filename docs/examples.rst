@@ -3,10 +3,10 @@ Simple test
 
 Ensure your device works with this simple test.
 
-.. literalinclude:: ../examples/rgbdisplay_simpletest.py
-    :caption: examples/rgbdisplay_simpletest.py
+.. literalinclude:: ../examples/rgb_display_simpletest.py
+    :caption: examples/rgb_display_simpletest.py
     :linenos:
 
-.. literalinclude:: ../examples/rgbdisplay_ili9341test.py
-    :caption: examples/rgbdisplay_ili9341test.py
+.. literalinclude:: ../examples/rgb_display_ili9341test.py
+    :caption: examples/rgb_display_ili9341test.py
     :linenos:
