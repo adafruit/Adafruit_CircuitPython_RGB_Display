@@ -7,13 +7,13 @@ import adafruit_rgb_display.ili9341 as ili9341
 BORDER = 20
 FONTSIZE = 24
 
-# Configuration for CS and DC pins (these are FeatherWing defaults on M0/M4):
+# Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
 dc_pin = digitalio.DigitalInOut(board.D25)
 reset_pin = digitalio.DigitalInOut(board.D24)
 
 # Config for display baudrate (default max is 24mhz):
-BAUDRATE = 24000000
+BAUDRATE = 64000000
 
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
