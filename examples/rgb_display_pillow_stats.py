@@ -5,13 +5,13 @@ import board
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.ili9341 as ili9341
 
-# Configuration for CS and DC pins (these are FeatherWing defaults on M0/M4):
+# Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
 dc_pin = digitalio.DigitalInOut(board.D25)
 reset_pin = digitalio.DigitalInOut(board.D24)
 
 # Config for display baudrate (default max is 24mhz):
-BAUDRATE = 24000000
+BAUDRATE = 64000000
 
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
@@ -33,17 +33,11 @@ draw = ImageDraw.Draw(image)
 draw.rectangle((0, 0, width, height), outline=0, fill=(0, 0, 0))
 disp.image(image, rotation)
 
-# Draw some shapes.
-# First define some constants to allow easy resizing of shapes.
+# First define some constants to allow easy positioning of text.
 padding = -2
-top = padding
-bottom = height-padding
-
-# Move left to right keeping track of the current x position for drawing shapes.
 x = 0
 
-
-# Alternatively load a TTF font.  Make sure the .ttf font file is in the
+# Load a TTF font.  Make sure the .ttf font file is in the
 # same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
 font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 24)
@@ -66,7 +60,7 @@ while True:
     Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
     # Write four lines of text.
-    y = top
+    y = padding
     draw.text((x, y), IP, font=font, fill="#FFFFFF")
     y += font.getsize(IP)[1]
     draw.text((x, y), CPU, font=font, fill="#FFFF00")
