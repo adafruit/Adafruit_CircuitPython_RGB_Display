@@ -31,7 +31,7 @@ draw = ImageDraw.Draw(image)
 draw.rectangle((0, 0, width, height), outline=0, fill=(0, 0, 0))
 disp.image(image, rotation)
 
-image = Image.open("blinka.png")
+image = Image.open("blinka.jpg")
 
 # Scale the image to the smaller screen dimension
 image_ratio = image.width / image.height
