@@ -117,9 +117,10 @@ class Display: #pylint: disable-msg=no-member
     _ENCODE_POS = ">HH"
     _DECODE_PIXEL = ">BBB"
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, rotation):
         self.width = width
         self.height = height
+        self.rotation = rotation
         self.init()
 
     def init(self):
@@ -161,9 +162,11 @@ class Display: #pylint: disable-msg=no-member
             self._block(x, y, x, y, self._encode_pixel(color))
         return None
 
-    def image(self, img, rotation=0):
+    def image(self, img, rotation=None):
         """Set buffer to value of Python Imaging Library image.  The image should
         be in 1 bit mode and a size equal to the display size."""
+        if rotation is None:
+            rotation = self.rotation
         if not img.mode in ('RGB', 'RGBA'):
             raise ValueError('Image must be in mode RGB or RGBA')
         if rotation not in (0, 90, 180, 270):
@@ -215,13 +218,23 @@ class Display: #pylint: disable-msg=no-member
         """Draw a vertical line."""
         self.fill_rectangle(x, y, 1, height, color)
 
+    @property
+    def rotation(self):
+        """Set the default rotation"""
+        return self._rotation
+
+    @rotation.setter
+    def rotation(self, val):
+        if val not in (0, 90, 180, 270):
+            raise ValueError('Rotation must be 0/90/180/270')
+        self._rotation = val
 
 class DisplaySPI(Display):
     """Base class for SPI type devices"""
     #pylint: disable-msg=too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=1, height=1,
                  baudrate=12000000, polarity=0, phase=0, *,
-                 x_offset=0, y_offset=0):
+                 x_offset=0, y_offset=0, rotation=0):
         self.spi_device = spi_device.SPIDevice(spi, cs, baudrate=baudrate,
                                                polarity=polarity, phase=phase)
         self.dc_pin = dc
@@ -232,7 +245,7 @@ class DisplaySPI(Display):
             self.reset()
         self._X_START = x_offset # pylint: disable=invalid-name
         self._Y_START = y_offset # pylint: disable=invalid-name
-        super().__init__(width, height)
+        super().__init__(width, height, rotation)
     #pylint: enable-msg=too-many-arguments
 
     def reset(self):
