@@ -2,6 +2,7 @@ import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.ili9341 as ili9341
+import adafruit_rgb_display.st7789 as st7789
 
 # First define some constants to allow easy resizing of shapes.
 BORDER = 20
@@ -20,6 +21,7 @@ spi = board.SPI()
 
 # Create the ILI9341 display:
 disp = ili9341.ILI9341(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)     #ILI9341
+#disp = st7789.ST7789(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)      #ST7789
 
 # Create blank image for drawing.
 # Make sure to create image with mode 'RGB' for full color.
