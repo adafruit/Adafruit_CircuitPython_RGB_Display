@@ -19,9 +19,12 @@ BAUDRATE = 64000000
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
 
-# Create the ILI9341 display:
-disp = ili9341.ILI9341(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)     #ILI9341
-#disp = st7789.ST7789(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)      #ST7789
+# Create the display:
+#disp = st7789.ST7789(spi,                                         # 2.0" ST7789
+#disp = st7789.ST7789(spi, width=240, height=240, y_offset=80,     # 1.3", 1.54" ST7789
+disp = ili9341.ILI9341(spi,                                        # 2.2", 2.4", 2.8", 3.2" ILI9341
+                       cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)
+
 
 # Create blank image for drawing.
 # Make sure to create image with mode 'RGB' for full color.
