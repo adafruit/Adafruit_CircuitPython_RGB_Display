@@ -115,5 +115,10 @@ class SSD1351(DisplaySPI):
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=128, height=128,
-                 rotation=0):
-        super().__init__(spi, dc, cs, rst, width, height, rotation)
+                 baudrate=16000000, polarity=0, phase=0, *,
+                 x_offset=0, y_offset=0, rotation=0):
+        if baudrate > 16000000: # Limit to Display Max Baudrate
+            baudrate = 16000000
+        super().__init__(spi, dc, cs, rst, width, height,
+                         baudrate=baudrate, polarity=polarity, phase=phase,
+                         x_offset=x_offset, y_offset=y_offset, rotation=rotation)
