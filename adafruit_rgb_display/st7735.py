@@ -133,8 +133,12 @@ class ST7735(DisplaySPI):
     _ENCODE_POS = ">HH"
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=128, rotation=0):
-        super().__init__(spi, dc, cs, rst, width, height, rotation)
+    def __init__(self, spi, dc, cs, rst=None, width=128, height=128,
+                 baudrate=16000000, polarity=0, phase=0, *,
+                 x_offset=0, y_offset=0, rotation=0):
+        super().__init__(spi, dc, cs, rst, width, height,
+                         baudrate=baudrate, polarity=polarity, phase=phase,
+                         x_offset=x_offset, y_offset=y_offset, rotation=rotation)
 
 
 class ST7735R(ST7735):
@@ -167,13 +171,19 @@ class ST7735R(ST7735):
     )
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=160, rotation=0):
-        super().__init__(spi, dc, cs, rst, width, height, rotation)
+    def __init__(self, spi, dc, cs, rst=None, width=128, height=160,
+                 baudrate=16000000, polarity=0, phase=0, *,
+                 x_offset=0, y_offset=0, rotation=0, bgr=False):
+        self._bgr = bgr
+        super().__init__(spi, dc, cs, rst, width, height,
+                         baudrate=baudrate, polarity=polarity, phase=phase,
+                         x_offset=x_offset, y_offset=y_offset, rotation=rotation)
 
     def init(self):
         super().init()
         cols = struct.pack('>HH', 0, self.width - 1)
         rows = struct.pack('>HH', 0, self.height - 1)
+
         for command, data in (
                 (_CASET, cols),
                 (_RASET, rows),
@@ -181,3 +191,5 @@ class ST7735R(ST7735):
                 (_DISPON, None),
         ):
             self.write(command, data)
+        if self._bgr:
+            self.write(_MADCTL, b'\xc0')

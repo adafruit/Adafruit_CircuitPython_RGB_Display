@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.ili9341 as ili9341
 import adafruit_rgb_display.st7789 as st7789        # pylint: disable=unused-import
 import adafruit_rgb_display.hx8357 as hx8357        # pylint: disable=unused-import
+import adafruit_rgb_display.st7735 as st7735        # pylint: disable=unused-import
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
@@ -22,6 +23,9 @@ spi = board.SPI()
 #disp = st7789.ST7789(spi, rotation=90                          # 2.0" ST7789
 #disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=90 # 1.3", 1.54" ST7789
 #disp = hx8357.HX8357(spi, rotation=180,                        # 3.5" HX8357
+#disp = st7735.ST7735R(spi, rotation=90,                        # 1.8" ST7735R
+#disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
+#disp = st7735.ST7735R(spi, rotation=90, bgr=True,              # 0.96" MiniTFT ST7735R
 disp = ili9341.ILI9341(spi, rotation=90,                        # 2.2", 2.4", 2.8", 3.2" ILI9341
                        cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)
 
