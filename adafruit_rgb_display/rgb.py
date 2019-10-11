@@ -120,7 +120,9 @@ class Display: #pylint: disable-msg=no-member
     def __init__(self, width, height, rotation):
         self.width = width
         self.height = height
-        self.rotation = rotation
+        if rotation not in (0, 90, 180, 270):
+            raise ValueError('Rotation must be 0/90/180/270')
+        self._rotation = rotation
         self.init()
 
     def init(self):
