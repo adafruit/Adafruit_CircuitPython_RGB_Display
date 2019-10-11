@@ -133,8 +133,8 @@ class ST7735(DisplaySPI):
     _ENCODE_POS = ">HH"
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=128):
-        super().__init__(spi, dc, cs, rst, width, height)
+    def __init__(self, spi, dc, cs, rst=None, width=128, height=128, rotation=0):
+        super().__init__(spi, dc, cs, rst, width, height, rotation)
 
 
 class ST7735R(ST7735):
@@ -167,8 +167,8 @@ class ST7735R(ST7735):
     )
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=160):
-        super().__init__(spi, dc, cs, rst, width, height)
+    def __init__(self, spi, dc, cs, rst=None, width=128, height=160, rotation=0):
+        super().__init__(spi, dc, cs, rst, width, height, rotation)
 
     def init(self):
         super().init()
