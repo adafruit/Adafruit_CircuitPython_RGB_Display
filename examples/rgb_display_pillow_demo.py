@@ -23,6 +23,7 @@ BAUDRATE = 24000000
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
 
+# pylint: disable=line-too-long
 # Create the display:
 #disp = st7789.ST7789(spi, rotation=90                             # 2.0" ST7789
 #disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=90    # 1.3", 1.54" ST7789
@@ -36,6 +37,7 @@ spi = board.SPI()
 #disp = ssd1331.SSD1331(spi, rotation=180,                         # 0.96" SSD1331
 disp = ili9341.ILI9341(spi, rotation=90,                           # 2.2", 2.4", 2.8", 3.2" ILI9341
                        cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)
+# pylint: enable=line-too-long
 
 # Create blank image for drawing.
 # Make sure to create image with mode 'RGB' for full color.
