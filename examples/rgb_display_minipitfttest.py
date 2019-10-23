@@ -23,7 +23,7 @@ buttonB.switch_to_input()
 
 # Main loop:
 while True:
-    if not buttonA.value and not buttonB.value:
+    if buttonA.value and buttonB.value:
         backlight.value = False              # turn off backlight
     else:
         backlight.value = True               # turn on backlight
@@ -31,5 +31,5 @@ while True:
         display.fill(color565(255, 0, 0))    # red
     if buttonA.value and not buttonB.value:  # just button B pressed
         display.fill(color565(0, 0, 255))    # blue
-    if buttonA.value and buttonB.value:      # none pressed
+    if not buttonA.value and not buttonB.value:      # none pressed
         display.fill(color565(0, 255, 0))    # green
