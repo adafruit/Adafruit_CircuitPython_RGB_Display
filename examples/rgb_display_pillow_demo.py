@@ -14,8 +14,8 @@ FONTSIZE = 24
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
-dc_pin = digitalio.DigitalInOut(board.D25)
-reset_pin = digitalio.DigitalInOut(board.D24)
+dc_pin = digitalio.DigitalInOut(board.D24)
+reset_pin = digitalio.DigitalInOut(board.D25)
 
 # Config for display baudrate (default max is 24mhz):
 BAUDRATE = 24000000
