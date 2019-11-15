@@ -30,6 +30,10 @@ Base class for all RGB Display devices
 
 import time
 try:
+    import numpy
+except ImportError:
+    numpy = None
+try:
     import struct
 except ImportError:
     import ustruct as struct
@@ -59,6 +63,13 @@ def color565(r, g=0, b=0):
         pass
     return (r & 0xf8) << 8 | (g & 0xfc) << 3 | b >> 3
 
+def image_to_data(image):
+    """Generator function to convert a PIL image to 16-bit 565 RGB bytes."""
+    #NumPy is much faster at doing this. NumPy code provided by:
+    #Keith (https://www.blogger.com/profile/02555547344016007163)
+    data = numpy.array(image.convert('RGB')).astype('uint16')
+    color = ((data[:, :, 0] & 0xF8) << 8) | ((data[:, :, 1] & 0xFC) << 3) | (data[:, :, 2] >> 3)
+    return numpy.dstack(((color >> 8) & 0xFF, color & 0xFF)).flatten().tolist()
 
 class DummyPin:
     """Can be used in place of a ``DigitalInOut()`` when you don't want to skip it."""
@@ -179,16 +190,17 @@ class Display: #pylint: disable-msg=no-member
         if imwidth != self.width or imheight != self.height:
             raise ValueError('Image must be same dimensions as display ({0}x{1}).' \
                 .format(self.width, self.height))
-        pixels = bytearray(self.width * self.height * 2)
-        # Iterate through the pixels
-        for x in range(self.width):       # yes this double loop is slow,
-            for y in range(self.height):  #  but these displays are small!
-                pix = color565(img.getpixel((x, y)))
-                pixels[2*(y * self.width + x)] = pix >> 8
-                pixels[2*(y * self.width + x) + 1] = pix & 0xFF
-
-        #print([hex(x) for x in pixels])
-        self._block(0, 0, self.width-1, self.height - 1, pixels)
+        if numpy:
+            pixels = list(image_to_data(img))
+        else:
+            # Slower but doesn't require numpy
+            pixels = bytearray(self.width * self.height * 2)
+            for x in range(self.width):
+                for y in range(self.height):
+                    pix = color565(img.getpixel((x, y)))
+                    pixels[2*(y * self.width + x)] = pix >> 8
+                    pixels[2*(y * self.width + x) + 1] = pix & 0xFF
+        self._block(0, 0, self.width - 1, self.height - 1, pixels)
 
     #pylint: disable-msg=too-many-arguments
     def fill_rectangle(self, x, y, width, height, color):
