@@ -175,9 +175,10 @@ class Display: #pylint: disable-msg=no-member
             self._block(x, y, x, y, self._encode_pixel(color))
         return None
 
-    def image(self, img, rotation=None):
-        """Set buffer to value of Python Imaging Library image.  The image should
-        be in 1 bit mode and a size equal to the display size."""
+    def image(self, img, rotation=None, x=0, y=0):
+        """Set buffer to value of Python Imaging Library image. The image should
+        be in 1 bit mode and a size not exceeding the display size when drawn at
+        the supplied origin."""
         if rotation is None:
             rotation = self.rotation
         if not img.mode in ('RGB', 'RGBA'):
@@ -187,20 +188,20 @@ class Display: #pylint: disable-msg=no-member
         if rotation != 0:
             img = img.rotate(rotation, expand=True)
         imwidth, imheight = img.size
-        if imwidth != self.width or imheight != self.height:
-            raise ValueError('Image must be same dimensions as display ({0}x{1}).' \
+        if x + imwidth > self.width or y + imheight > self.height:
+            raise ValueError('Image must not exceed dimensions of display ({0}x{1}).' \
                 .format(self.width, self.height))
         if numpy:
             pixels = list(image_to_data(img))
         else:
             # Slower but doesn't require numpy
-            pixels = bytearray(self.width * self.height * 2)
-            for x in range(self.width):
-                for y in range(self.height):
-                    pix = color565(img.getpixel((x, y)))
-                    pixels[2*(y * self.width + x)] = pix >> 8
-                    pixels[2*(y * self.width + x) + 1] = pix & 0xFF
-        self._block(0, 0, self.width - 1, self.height - 1, pixels)
+            pixels = bytearray(imwidth * imheight * 2)
+            for i in range(imwidth):
+                for j in range(imheight):
+                    pix = color565(img.getpixel((i, j)))
+                    pixels[2*(j * imwidth + i)] = pix >> 8
+                    pixels[2*(j * imwidth + i) + 1] = pix & 0xFF
+        self._block(x, y, x + imwidth - 1, y + imheight - 1, pixels)
 
     #pylint: disable-msg=too-many-arguments
     def fill_rectangle(self, x, y, width, height, color):
