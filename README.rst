@@ -62,6 +62,7 @@ Usage Example
 
 .. code-block:: python
 
+  import time
   import busio
   import digitalio
   from board import SCK, MOSI, MISO, D2, D3
