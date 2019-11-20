@@ -12,8 +12,8 @@ import adafruit_rgb_display.ssd1331 as ssd1331      # pylint: disable=unused-imp
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
-dc_pin = digitalio.DigitalInOut(board.D24)
-reset_pin = digitalio.DigitalInOut(board.D25)
+dc_pin = digitalio.DigitalInOut(board.D25)
+reset_pin = digitalio.DigitalInOut(board.D24)
 
 # Config for display baudrate (default max is 24mhz):
 BAUDRATE = 24000000
