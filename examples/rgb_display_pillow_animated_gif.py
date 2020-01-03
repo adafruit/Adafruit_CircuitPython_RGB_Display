@@ -64,7 +64,7 @@ class AnimatedGif:
     def load_files(self, folder):
         self._gif_files = [f for f in os.listdir(folder) if f[-4:] == '.gif']
         print("Found", self._gif_files)
-        if len(self._gif_files) == 0:
+        if not self._gif_files:
             print("No Gif files found in current folder")
             exit()
 
@@ -89,9 +89,9 @@ class AnimatedGif:
 
     def play(self):
         self.preload()
-        
+
         # Check if we have loaded any files first
-        if len(self._gif_files) == 0:
+        if not self._gif_files:
             print("There are no Gif Images to Play")
 
         for frame_image in self._frames:
@@ -113,7 +113,7 @@ class AnimatedGif:
             self.advance(True)
 
 # Config for display baudrate (default max is 24mhz):
-BAUDRATE = 24000000
+BAUDRATE = 64000000
 
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
