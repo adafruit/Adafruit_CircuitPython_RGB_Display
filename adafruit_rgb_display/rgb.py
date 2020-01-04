@@ -138,6 +138,7 @@ class Display: #pylint: disable-msg=no-member
 
     def init(self):
         """Run the initialization commands."""
+        print('init commands')
         for command, data in self._INIT:
             self.write(command, data)
 
