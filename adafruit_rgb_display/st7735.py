@@ -221,10 +221,6 @@ class ST7735S(ST7735):
 
         (_GMCTRN1, b'\x0f\x1b\x0f\x17\x33\x2c\x29\x2e'
                    b'\x30\x30\x39\x3f\x00\x07\x03\x10'),
-        # Enable test command
-        # (_TSTCMD1, b'\x01'),
-        # Disable ram power save mode
-        # (_DISRPSM1, b'\x00'),
         # 65k mode
         (_COLMOD, b'\x05'),
         # set scan direction: up to down, right to left
