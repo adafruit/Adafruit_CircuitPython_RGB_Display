@@ -84,6 +84,7 @@ _PWCTR6 = const(0xFC)
 _GMCTRP1 = const(0xE0)
 _GMCTRN1 = const(0xE1)
 
+
 class ST7735(DisplaySPI):
     """
     A simple driver for the ST7735-based displays.
