@@ -236,11 +236,10 @@ class ST7735S(ST7735):
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(self, spi, dc, cs, bl, rst=None, width=128, height=160,
                  baudrate=16000000, polarity=0, phase=0, *,
-                 x_offset=2, y_offset=1, rotation=0, bgr=False):
+                 x_offset=2, y_offset=1, rotation=0):
         self._bl = bl
         # Turn on backlight
         self._bl.switch_to_output(value=1)
         super().__init__(spi, dc, cs, rst, width, height,
                          baudrate=baudrate, polarity=polarity, phase=phase,
                          x_offset=x_offset, y_offset=y_offset, rotation=rotation)
-
