@@ -28,8 +28,6 @@ A simple driver for the ST7735-based displays.
 * Author(s): Radomir Dopieralski, Michael McWethy
 """
 
-import time
-
 try:
     import struct
 except ImportError:
@@ -85,10 +83,6 @@ _PWCTR6 = const(0xFC)
 
 _GMCTRP1 = const(0xE0)
 _GMCTRN1 = const(0xE1)
-
-_TSTCMD1 = const(0xF0)
-_DISRPSM1 = const(0xF6)
-
 
 class ST7735(DisplaySPI):
     """
@@ -203,37 +197,39 @@ class ST7735S(ST7735):
     """A simple driver for the ST7735S-based displays."""
     _INIT = (
         # Frame Rate
-        (_FRMCTR1, b'\x01\x2c\x2d'),              # B1
-        (_FRMCTR2, b'\x01\x2c\x2d'),              # B2
-        (_FRMCTR3, b'\x01\x2c\x2d\x01\x2c\x2d'),  # B3
+        (_FRMCTR1, b'\x01\x2c\x2d'),
+        (_FRMCTR2, b'\x01\x2c\x2d'),
+        (_FRMCTR3, b'\x01\x2c\x2d\x01\x2c\x2d'),
 
         # Column inversion
-        (_INVCTR, b'\x07'),                       # B4
+        (_INVCTR, b'\x07'),
 
         # Power Sequence
-        (_PWCTR1, b'\xa2\x02\x84'),               # C0
-        (_PWCTR2, b'\xc5'),                       # C1
-        (_PWCTR3, b'\x0a\x00'),                   # C2
-        (_PWCTR4, b'\x8a\x2a'),                   # C3
-        (_PWCTR5, b'\x8a\xee'),                   # C4
+        (_PWCTR1, b'\xa2\x02\x84'),
+        (_PWCTR2, b'\xc5'),
+        (_PWCTR3, b'\x0a\x00'),
+        (_PWCTR4, b'\x8a\x2a'),
+        (_PWCTR5, b'\x8a\xee'),
 
         # VCOM
-        (_VMCTR1, b'\x0e'),                       # C5
+        (_VMCTR1, b'\x0e'),
 
         # Gamma
-        (_GMCTRP1, b'\x0f\x1a\x0f\x18\x2f\x28\x20\x22'     # E0
+        (_GMCTRP1, b'\x0f\x1a\x0f\x18\x2f\x28\x20\x22'
                    b'\x1f\x1b\x23\x37\x00\x07\x02\x10'),
 
-        (_GMCTRN1, b'\x0f\x1b\x0f\x17\x33\x2c\x29\x2e'     # E1
+        (_GMCTRN1, b'\x0f\x1b\x0f\x17\x33\x2c\x29\x2e'
                    b'\x30\x30\x39\x3f\x00\x07\x03\x10'),
         # Enable test command
-        (_TSTCMD1, b'\x01'),                               # F0
+        # (_TSTCMD1, b'\x01'),
         # Disable ram power save mode
-        (_DISRPSM1, b'\x00'),                              # F6
+        # (_DISRPSM1, b'\x00'),
         # 65k mode
-        (_COLMOD, b'\x05'),                                # 3A
+        (_COLMOD, b'\x05'),
         # set scan direction: up to down, right to left
-        (_MADCTL, b'\x60'),                                # 36
+        (_MADCTL, b'\x60'),
+        (_SLPOUT, None),
+        (_DISPON, None),
     )
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
@@ -242,37 +238,8 @@ class ST7735S(ST7735):
                  x_offset=2, y_offset=1, rotation=0, bgr=False):
         self._bl = bl
         # Turn on backlight
-        print('turn on backlight')
         self._bl.switch_to_output(value=1)
         super().__init__(spi, dc, cs, rst, width, height,
                          baudrate=baudrate, polarity=polarity, phase=phase,
                          x_offset=x_offset, y_offset=y_offset, rotation=rotation)
 
-    # def reset(self):
-        # print('reset')
-        # self.rst.value = 1
-        # time.sleep(0.100)
-        # self.rst.value = 0
-        # time.sleep(0.100)
-        # self.rst.value = 1
-        # time.sleep(0.100)
-
-    def init(self):
-
-        super().init()
-        print('last commands of init')
-
-        # cols = struct.pack('>HH', 0, self.width - 1)
-        # rows = struct.pack('>HH', 0, self.height - 1)
-
-        # for command, data in (
-                # (_CASET, cols),
-                # (_RASET, rows),
-                # (_NORON, None),
-                # (_DISPON, None),
-        # ):
-            # self.write(command, data)
-        time.sleep(0.200)
-        self.write(_SLPOUT)
-        time.sleep(0.120)
-        self.write(_DISPON)
