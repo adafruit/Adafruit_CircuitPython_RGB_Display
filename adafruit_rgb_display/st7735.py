@@ -193,3 +193,49 @@ class ST7735R(ST7735):
             self.write(command, data)
         if self._bgr:
             self.write(_MADCTL, b'\xc0')
+
+class ST7735S(ST7735):
+    """A simple driver for the ST7735S-based displays."""
+    _INIT = (
+        # Frame Rate
+        (_FRMCTR1, b'\x01\x2c\x2d'),
+        (_FRMCTR2, b'\x01\x2c\x2d'),
+        (_FRMCTR3, b'\x01\x2c\x2d\x01\x2c\x2d'),
+
+        # Column inversion
+        (_INVCTR, b'\x07'),
+
+        # Power Sequence
+        (_PWCTR1, b'\xa2\x02\x84'),
+        (_PWCTR2, b'\xc5'),
+        (_PWCTR3, b'\x0a\x00'),
+        (_PWCTR4, b'\x8a\x2a'),
+        (_PWCTR5, b'\x8a\xee'),
+
+        # VCOM
+        (_VMCTR1, b'\x0e'),
+
+        # Gamma
+        (_GMCTRP1, b'\x0f\x1a\x0f\x18\x2f\x28\x20\x22'
+                   b'\x1f\x1b\x23\x37\x00\x07\x02\x10'),
+
+        (_GMCTRN1, b'\x0f\x1b\x0f\x17\x33\x2c\x29\x2e'
+                   b'\x30\x30\x39\x3f\x00\x07\x03\x10'),
+        # 65k mode
+        (_COLMOD, b'\x05'),
+        # set scan direction: up to down, right to left
+        (_MADCTL, b'\x60'),
+        (_SLPOUT, None),
+        (_DISPON, None),
+    )
+
+    #pylint: disable-msg=useless-super-delegation, too-many-arguments
+    def __init__(self, spi, dc, cs, bl, rst=None, width=128, height=160,
+                 baudrate=16000000, polarity=0, phase=0, *,
+                 x_offset=2, y_offset=1, rotation=0):
+        self._bl = bl
+        # Turn on backlight
+        self._bl.switch_to_output(value=1)
+        super().__init__(spi, dc, cs, rst, width, height,
+                         baudrate=baudrate, polarity=polarity, phase=phase,
+                         x_offset=x_offset, y_offset=y_offset, rotation=rotation)
