@@ -78,6 +78,7 @@ class AnimatedGif:
             self._loop = 1
         self._frame_count = image.n_frames
 
+        self._frames.clear()
         for frame in range(self._frame_count):
             image.seek(frame)
             # Create blank image for drawing.
