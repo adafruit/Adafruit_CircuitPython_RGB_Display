@@ -15,7 +15,7 @@ import os
 import time
 import digitalio
 import board
-from PIL import Image
+from PIL import Image, ImageDraw
 import adafruit_rgb_display.ili9341 as ili9341
 import adafruit_rgb_display.st7789 as st7789        # pylint: disable=unused-import
 import adafruit_rgb_display.hx8357 as hx8357        # pylint: disable=unused-import
@@ -34,14 +34,30 @@ def init_button(pin):
     button.pull = digitalio.Pull.UP
     return button
 
+# pylint: disable=too-few-public-methods
+class Frame:
+    def __init__(self, duration=0):
+        self.duration = duration
+        self.image = None
+# pylint: enable=too-few-public-methods
+
 class AnimatedGif:
-    def __init__(self, display, folder=None):
+    def __init__(self, display, width=None, height=None, folder=None):
         self._frame_count = 0
         self._loop = 0
         self._index = 0
-        self._delay = 0
+        self._duration = 0
         self._gif_files = []
         self._frames = []
+
+        if width is not None:
+            self._width = width
+        else:
+            self._width = disp.width
+        if height is not None:
+            self._height = height
+        else:
+            self._height = disp.height
         self.display = display
         self.advance_button = init_button(board.D17)
         self.back_button = init_button(board.D22)
@@ -71,22 +87,45 @@ class AnimatedGif:
     def preload(self):
         image = Image.open(self._gif_files[self._index])
         print("Loading {}...".format(self._gif_files[self._index]))
-        self._delay = image.info['duration']
+        if "duration" in image.info:
+            self._duration = image.info['duration']
+        else:
+            self._duration = 0
         if "loop" in image.info:
             self._loop = image.info['loop']
         else:
             self._loop = 1
         self._frame_count = image.n_frames
+        screen_ratio = self._width / self._height
+        image_ratio = image.width / image.height
+        if screen_ratio > image_ratio:
+            scaled_width = image.width * self._height // image.height
+            scaled_height = self._height
+        else:
+            scaled_width = self._width
+            scaled_height = image.height * self._width // image.width
 
         self._frames.clear()
         for frame in range(self._frame_count):
             image.seek(frame)
             # Create blank image for drawing.
             # Make sure to create image with mode 'RGB' for full color.
-            frame_image = Image.new('RGB', (width, height))
-            frame_image.paste(image, (width // 2 - image.width // 2,
-                                      height // 2 - image.height // 2))
-            self._frames.append(frame_image)
+            frame_object = Frame(duration=self._duration)
+            if "duration" in image.info:
+                frame_object.duration = image.info['duration']
+            frame_object.image = Image.new('RGB', (self._width, self._height))
+
+            # Get drawing object to draw on image.
+            draw = ImageDraw.Draw(frame_object.image)
+            draw.rectangle((0, 0, self._width, self._height), outline=0, fill=(0, 0, 0))
+
+            frame_image = image.copy()
+            frame_image = frame_image.resize((scaled_width, scaled_height), Image.BICUBIC)
+            x = scaled_width // 2 - self._width // 2
+            y = scaled_height // 2 - self._height // 2
+            frame_image = frame_image.crop((x, y, x + self._width, y + self._height))
+            frame_object.image.paste(frame_image)
+            self._frames.append(frame_object)
 
     def play(self):
         self.preload()
@@ -95,13 +134,13 @@ class AnimatedGif:
         if not self._gif_files:
             print("There are no Gif Images to Play")
 
-        for frame_image in self._frames:
-            self.display.image(frame_image)
+        for frame_object in self._frames:
+            self.display.image(frame_object.image)
             if not self.advance_button.value:
                 self.advance()
             elif not self.back_button.value:
                 self.back()
-            time.sleep(self._delay / 1000)
+            time.sleep(frame_object.duration / 1000)
 
         if self._loop == 1:
             return
@@ -136,10 +175,10 @@ disp = ili9341.ILI9341(spi, rotation=90,                           # 2.2", 2.4",
 # pylint: enable=line-too-long
 
 if disp.rotation % 180 == 90:
-    height = disp.width   # we swap height/width to rotate it to landscape!
-    width = disp.height
+    disp_height = disp.width   # we swap height/width to rotate it to landscape!
+    disp_width = disp.height
 else:
-    width = disp.width   # we swap height/width to rotate it to landscape!
-    height = disp.height
+    disp_width = disp.width   # we swap height/width to rotate it to landscape!
+    disp_height = disp.height
 
-gif_player = AnimatedGif(disp, ".")
+gif_player = AnimatedGif(disp, width=disp_width, height=disp_height, folder=".")
