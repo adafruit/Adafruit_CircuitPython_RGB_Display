@@ -88,7 +88,7 @@ class AnimatedGif:
             # Only add animated Gifs
             if image.is_animated:
                 self._gif_files.append(gif_file)
-            
+
         print("Found", self._gif_files)
         if not self._gif_files:
             print("No Gif files found in current folder")
