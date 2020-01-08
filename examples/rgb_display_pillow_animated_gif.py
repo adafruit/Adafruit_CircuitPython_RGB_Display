@@ -30,6 +30,8 @@ BUTTON_PREVIOUS = board.D22
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
 dc_pin = digitalio.DigitalInOut(board.D25)
+
+# Set this to None on the Mini PiTFT
 reset_pin = digitalio.DigitalInOut(board.D24)
 
 def init_button(pin):
