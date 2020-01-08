@@ -15,7 +15,7 @@ import os
 import time
 import digitalio
 import board
-from PIL import Image, ImageDraw
+from PIL import Image, ImageOps
 import adafruit_rgb_display.ili9341 as ili9341
 import adafruit_rgb_display.st7789 as st7789        # pylint: disable=unused-import
 import adafruit_rgb_display.hx8357 as hx8357        # pylint: disable=unused-import
@@ -59,11 +59,11 @@ class AnimatedGif:
         if width is not None:
             self._width = width
         else:
-            self._width = disp.width
+            self._width = display.width
         if height is not None:
             self._height = height
         else:
-            self._height = disp.height
+            self._height = display.height
         self.display = display
         self.advance_button = init_button(BUTTON_NEXT)
         self.back_button = init_button(BUTTON_PREVIOUS)
@@ -71,24 +71,14 @@ class AnimatedGif:
             self.load_files(folder)
             self.run()
 
-    def advance(self, loop=False):
-        initial_index = self._index
-        if self._index < len(self._gif_files) - 1:
-            self._index += 1
-        elif loop and self._index == len(self._gif_files) - 1:
-            self._index = 0
-        return initial_index != self._index
+    def advance(self):
+        self._index = (self._index + 1) % len(self._gif_files)
 
-    def back(self, loop=False):
-        initial_index = self._index
-        if self._index > 0:
-            self._index -= 1
-        elif loop and self._index == 0:
-            self._index = len(self._gif_files) - 1
-        return initial_index != self._index
+    def back(self):
+        self._index = (self._index - 1 + len(self._gif_files))  % len(self._gif_files)
 
     def load_files(self, folder):
-        gif_files = [f for f in os.listdir(folder) if f[-4:] == '.gif']
+        gif_files = [f for f in os.listdir(folder) if f.endswith('.gif')]
         for gif_file in gif_files:
             image = Image.open(gif_file)
             # Only add animated Gifs
@@ -112,15 +102,6 @@ class AnimatedGif:
         else:
             self._loop = 1
         self._frame_count = image.n_frames
-        screen_ratio = self._width / self._height
-        image_ratio = image.width / image.height
-        if screen_ratio > image_ratio:
-            scaled_width = image.width * self._height // image.height
-            scaled_height = self._height
-        else:
-            scaled_width = self._width
-            scaled_height = image.height * self._width // image.width
-
         self._frames.clear()
         for frame in range(self._frame_count):
             image.seek(frame)
@@ -129,18 +110,11 @@ class AnimatedGif:
             frame_object = Frame(duration=self._duration)
             if "duration" in image.info:
                 frame_object.duration = image.info['duration']
-            frame_object.image = Image.new('RGB', (self._width, self._height))
-
-            # Get drawing object to draw on image.
-            draw = ImageDraw.Draw(frame_object.image)
-            draw.rectangle((0, 0, self._width, self._height), outline=0, fill=(0, 0, 0))
-
-            frame_image = image.copy()
-            frame_image = frame_image.resize((scaled_width, scaled_height), Image.BICUBIC)
-            x = scaled_width // 2 - self._width // 2
-            y = scaled_height // 2 - self._height // 2
-            frame_image = frame_image.crop((x, y, x + self._width, y + self._height))
-            frame_object.image.paste(frame_image)
+            frame_object.image = ImageOps.pad(image.convert("RGB"),
+                                              (self._width, self._height),
+                                              method=Image.NEAREST,
+                                              color=(0, 0, 0),
+                                              centering=(0.5, 0.5))
             self._frames.append(frame_object)
 
     def play(self):
@@ -154,11 +128,11 @@ class AnimatedGif:
             for frame_object in self._frames:
                 self.display.image(frame_object.image)
                 if not self.advance_button.value:
-                    if self.advance():
-                        return False
-                elif not self.back_button.value:
-                    if self.back():
-                        return False
+                    self.advance()
+                    return False
+                if not self.back_button.value:
+                    self.back()
+                    return False
                 time.sleep(frame_object.duration / 1000)
 
             if self._loop == 1:
@@ -170,7 +144,7 @@ class AnimatedGif:
         while True:
             auto_advance = self.play()
             if auto_advance:
-                self.advance(True)
+                self.advance()
 
 # Config for display baudrate (default max is 64mhz):
 BAUDRATE = 64000000
