@@ -23,9 +23,15 @@ import adafruit_rgb_display.st7735 as st7735        # pylint: disable=unused-imp
 import adafruit_rgb_display.ssd1351 as ssd1351      # pylint: disable=unused-import
 import adafruit_rgb_display.ssd1331 as ssd1331      # pylint: disable=unused-import
 
+# Change to match your display
+BUTTON_NEXT = board.D17
+BUTTON_PREVIOUS = board.D22
+
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
 dc_pin = digitalio.DigitalInOut(board.D25)
+
+# Set this to None on the Mini PiTFT
 reset_pin = digitalio.DigitalInOut(board.D24)
 
 def init_button(pin):
@@ -59,8 +65,8 @@ class AnimatedGif:
         else:
             self._height = disp.height
         self.display = display
-        self.advance_button = init_button(board.D17)
-        self.back_button = init_button(board.D22)
+        self.advance_button = init_button(BUTTON_NEXT)
+        self.back_button = init_button(BUTTON_PREVIOUS)
         if folder is not None:
             self.load_files(folder)
             self.run()
@@ -142,7 +148,8 @@ class AnimatedGif:
 
         # Check if we have loaded any files first
         if not self._gif_files:
-            print("There are no Gif Images to Play")
+            print("There are no Gif Images loaded to Play")
+            return False
         while True:
             for frame_object in self._frames:
                 self.display.image(frame_object.image)
@@ -165,7 +172,7 @@ class AnimatedGif:
             if auto_advance:
                 self.advance(True)
 
-# Config for display baudrate (default max is 24mhz):
+# Config for display baudrate (default max is 64mhz):
 BAUDRATE = 64000000
 
 # Setup SPI bus using hardware SPI:
@@ -191,7 +198,7 @@ if disp.rotation % 180 == 90:
     disp_height = disp.width   # we swap height/width to rotate it to landscape!
     disp_width = disp.height
 else:
-    disp_width = disp.width   # we swap height/width to rotate it to landscape!
+    disp_width = disp.width
     disp_height = disp.height
 
 gif_player = AnimatedGif(disp, width=disp_width, height=disp_height, folder=".")
