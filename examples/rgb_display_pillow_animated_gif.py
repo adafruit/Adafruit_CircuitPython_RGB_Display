@@ -66,19 +66,29 @@ class AnimatedGif:
             self.run()
 
     def advance(self, loop=False):
+        initial_index = self._index
         if self._index < len(self._gif_files) - 1:
             self._index += 1
         elif loop and self._index == len(self._gif_files) - 1:
             self._index = 0
+        return initial_index != self._index
 
     def back(self, loop=False):
+        initial_index = self._index
         if self._index > 0:
             self._index -= 1
         elif loop and self._index == 0:
             self._index = len(self._gif_files) - 1
+        return initial_index != self._index
 
     def load_files(self, folder):
-        self._gif_files = [f for f in os.listdir(folder) if f[-4:] == '.gif']
+        gif_files = [f for f in os.listdir(folder) if f[-4:] == '.gif']
+        for gif_file in gif_files:
+            image = Image.open(gif_file)
+            # Only add animated Gifs
+            if image.is_animated:
+                self._gif_files.append(gif_file)
+            
         print("Found", self._gif_files)
         if not self._gif_files:
             print("No Gif files found in current folder")
@@ -133,24 +143,27 @@ class AnimatedGif:
         # Check if we have loaded any files first
         if not self._gif_files:
             print("There are no Gif Images to Play")
+        while True:
+            for frame_object in self._frames:
+                self.display.image(frame_object.image)
+                if not self.advance_button.value:
+                    if self.advance():
+                        return False
+                elif not self.back_button.value:
+                    if self.back():
+                        return False
+                time.sleep(frame_object.duration / 1000)
 
-        for frame_object in self._frames:
-            self.display.image(frame_object.image)
-            if not self.advance_button.value:
-                self.advance()
-            elif not self.back_button.value:
-                self.back()
-            time.sleep(frame_object.duration / 1000)
-
-        if self._loop == 1:
-            return
-        if self._loop > 0:
-            self._loop -= 1
+            if self._loop == 1:
+                return True
+            if self._loop > 0:
+                self._loop -= 1
 
     def run(self):
         while True:
-            self.play()
-            self.advance(True)
+            auto_advance = self.play()
+            if auto_advance:
+                self.advance(True)
 
 # Config for display baudrate (default max is 24mhz):
 BAUDRATE = 64000000
