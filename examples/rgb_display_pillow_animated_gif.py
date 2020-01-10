@@ -126,6 +126,7 @@ class AnimatedGif:
             return False
         while True:
             for frame_object in self._frames:
+                start_time = time.monotonic()
                 self.display.image(frame_object.image)
                 if not self.advance_button.value:
                     self.advance()
@@ -133,7 +134,8 @@ class AnimatedGif:
                 if not self.back_button.value:
                     self.back()
                     return False
-                time.sleep(frame_object.duration / 1000)
+                while time.monotonic() < (start_time + frame_object.duration / 1000):
+                    pass
 
             if self._loop == 1:
                 return True
