@@ -175,10 +175,14 @@ class Display: #pylint: disable-msg=no-member
             self._block(x, y, x, y, self._encode_pixel(color))
         return None
 
-    def image(self, img, rotation=None, x=0, y=0):
+    def image(self, img, rotation=None, x=0, y=0, no_numpy=False):
         """Set buffer to value of Python Imaging Library image. The image should
         be in 1 bit mode and a size not exceeding the display size when drawn at
-        the supplied origin."""
+        the supplied origin.
+        :param no_numpy: set this to true if you want to force to run image()
+                         without numpy. This will suffer from being around 8 times
+                         as slow as it would be with numpy.
+        """
         if rotation is None:
             rotation = self.rotation
         if not img.mode in ('RGB', 'RGBA'):
@@ -195,6 +199,9 @@ class Display: #pylint: disable-msg=no-member
             pixels = list(image_to_data(img))
         else:
             # Slower but doesn't require numpy
+            if not no_numpy:
+                raise ValueError('numpy not found. Either install numpy or run with'
+                'no_numpy=True (will be around 8 times slower though!)')
             pixels = bytearray(imwidth * imheight * 2)
             for i in range(imwidth):
                 for j in range(imheight):

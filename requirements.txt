@@ -1,2 +1,3 @@
 Adafruit-Blinka
 adafruit-circuitpython-busdevice
+numpy
