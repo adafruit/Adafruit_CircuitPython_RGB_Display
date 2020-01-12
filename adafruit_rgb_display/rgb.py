@@ -180,9 +180,10 @@ class Display: #pylint: disable-msg=no-member
         """Set buffer to value of Python Imaging Library image. The image should
         be in 1 bit mode and a size not exceeding the display size when drawn at
         the supplied origin.
+        
         :param no_numpy: set this to true if you want to force to run image()
-                         without numpy. This will suffer from being around 8 times
-                         as slow as it would be with numpy.
+               without numpy. This will suffer from being around 8 times
+               as slow as it would be with numpy.
         """
         if rotation is None:
             rotation = self.rotation
