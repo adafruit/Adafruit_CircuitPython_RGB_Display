@@ -129,6 +129,19 @@ class ST7789(DisplaySPI):
                 (_INVON, None),
                 (_NORON, None),
                 (_DISPON, None),
-                (_MADCTL, b'\xc0'), #Set rotation to 0 and use RGB
         ):
             self.write(command, data)
+        
+        
+        #Set rotation  and use RGB, x/y offsets need to be manually adjusted for each screen
+        rotation = self._rotation
+        if rotation == 0:
+            data = b'\xc0'
+        elif rotation == 90:
+            data = b'\xb0'
+        elif rotation == 180:
+            data = b'\x00'
+        elif rotation == 270:
+            data = b'\x60'
+        
+        self.write(_MADCTL, data)
