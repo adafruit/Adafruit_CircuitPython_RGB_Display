@@ -131,8 +131,7 @@ class ST7789(DisplaySPI):
                 (_DISPON, None),
         ):
             self.write(command, data)
-        
-        
+
         #Set rotation  and use RGB, x/y offsets need to be manually adjusted for each screen
         rotation = self._rotation
         if rotation == 0:
@@ -143,5 +142,5 @@ class ST7789(DisplaySPI):
             data = b'\x00'
         elif rotation == 270:
             data = b'\x60'
-        
+
         self.write(_MADCTL, data)
