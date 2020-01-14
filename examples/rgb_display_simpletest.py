@@ -24,8 +24,8 @@ BAUDRATE = 24000000
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
 
-# Create the ST7789 display:
-display = st7789.ST7789(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)
+# Create the ST7789 display: adjust x / y offsets depending on rotation and your screen (often by 80)
+display = st7789.ST7789(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, x_offset=0, y_offset=0, rotation=0, baudrate=BAUDRATE)
 
 # Main loop:
 while True:
