@@ -256,16 +256,14 @@ class Display: #pylint: disable-msg=no-member
         """The width of the screen relative to the rotation and origin """
         if self._rotation in(0, 180):
             return self._width
-        else:
-            return self._height
+        return self._height
 
     @property
     def height(self):
         """The height of the screen relative to the rotation and origin"""
         if self._rotation in(0, 180):
             return self._height
-        else:
-            return self._width
+        return self._width
 
 class DisplaySPI(Display):
     """Base class for SPI type devices"""
@@ -329,6 +327,8 @@ class DisplaySPI(Display):
         if (type(angle) != int) or ((angle%90) != 0):
             raise ValueError("angle must be an 'int' mulitple of 90")
 
+        #this should be seperated into sub funtions, however:
+        #pylint: disable=too-many-branches
         angle = angle % 360
 
         if not self._CAN_ROTATE:
