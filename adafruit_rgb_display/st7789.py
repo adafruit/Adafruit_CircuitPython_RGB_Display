@@ -108,8 +108,10 @@ class ST7789(DisplaySPI):
         (_SWRESET, None),
         (_SLPOUT, None),
         (_COLMOD, b'\x55'),  # 16bit color
-        (_MADCTL, b'\x08'),
+        (_MADCTL, b'\xc0'),
     )
+
+    _CAN_ROTATE = True
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=240, height=320,
@@ -129,18 +131,13 @@ class ST7789(DisplaySPI):
                 (_INVON, None),
                 (_NORON, None),
                 (_DISPON, None),
+                (_MADCTL, b'\xc0'),
         ):
             self.write(command, data)
 
-        #Set rotation  and use RGB, x/y offsets need to be manually adjusted for each screen
-        rotation = self._rotation
-        if rotation == 0:
-            data = b'\xc0'
-        elif rotation == 90:
-            data = b'\xb0'
-        elif rotation == 180:
-            data = b'\x00'
-        elif rotation == 270:
-            data = b'\x60'
 
+    def _writeout_rotation(self, angle):
+        super()._writeout_rotation(angle)
+        data = (b'\xc0', b'\xb0', b'\x00', b'\x60')[angle//90]
         self.write(_MADCTL, data)
+        return True
