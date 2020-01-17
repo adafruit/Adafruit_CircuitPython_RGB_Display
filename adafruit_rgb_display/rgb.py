@@ -351,9 +351,7 @@ class Display: #pylint: disable-msg=no-member
             for line_index in range(len(lines)): # intentional
                 line = lines[line_index]
                 if center:
-                    #domain_lines, buffer_width, buffer_height = self._last_calcualted_string_specs
-                    print(x , (buffer_width - domain_lines[line_index][-1]) // 2, x + (buffer_width - domain_lines[line_index][-1]) // 2)
-                    x_adj = x + (buffer_width/size - domain_lines[line_index][-1]) // 2
+                    x_adj = x + round((buffer_width - domain_lines[line_index][-1]) // 2)
                 else:
                     x_adj = x
                 new_width, new_height = self.text(x_adj, y+total_height, line, size=size,
@@ -411,9 +409,7 @@ class Display: #pylint: disable-msg=no-member
                     #add the glyph to the current line
                     domain_line.append((char, glyph_domain, line_width, buffer_height))
                     line_width += glyph_domain[1] + 1
-                print('line_width', line_width)
                 domain_line.append(line_width)
-                print(domain_line[-1])
                 buffer_width = max(buffer_width, line_width)
                 buffer_height += fontmap.height
             del line, lines, line_width
@@ -436,8 +432,8 @@ class Display: #pylint: disable-msg=no-member
             for positioned_domain in domain_line[:-1]:
                 char, domain, char_x, char_y = positioned_domain
                 index, width, height = domain
-                if center and fast: # if slow handled below line by line
-                    char_x += (buffer_width - domain_line[-1])//2
+                #if center and fast: # if slow handled below line by line
+                #    char_x += (buffer_width - domain_line[-1])//2
 
                 for pixel_y in range(height):
                     #stripe the left sode of the char w/ background
