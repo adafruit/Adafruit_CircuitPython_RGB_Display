@@ -25,10 +25,12 @@
 
 Base class for all RGB Display devices
 
-* Author(s): Radomir Dopieralski, Michael McWethy
+* Author(s): Radomir Dopieralski, Michael McWethy, Jonah Yolles-Murphy
 """
 
 import time
+import gc
+
 try:
     import numpy
 except ImportError:
@@ -39,6 +41,12 @@ except ImportError:
     import ustruct as struct
 
 import adafruit_bus_device.spi_device as spi_device
+
+try:
+    from terminalio import FONT as _FONT
+    #from fonts.default import font as _FONT
+except:
+    _FONT = None
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
@@ -116,6 +124,7 @@ class Display: #pylint: disable-msg=no-member
     """Base class for all RGB display devices
         :param width: number of pixels wide
         :param height: number of pixels high
+        :param rotation: the rotation of the display in degrees
     """
     _PAGE_SET = None
     _COLUMN_SET = None
@@ -128,13 +137,22 @@ class Display: #pylint: disable-msg=no-member
     _ENCODE_POS = ">HH"
     _DECODE_PIXEL = ">BBB"
 
-    def __init__(self, width, height, rotation):
+    def __init__(self, width, height, rotation, default_font = _FONT, DEBUG = False):
         self.width = width
         self.height = height
         if rotation not in (0, 90, 180, 270):
             raise ValueError('Rotation must be 0/90/180/270')
         self._rotation = rotation
+        self.default_font = default_font
+        self._font_glyph_coord_caches = {}
+
+        self.DEBUG = DEBUG
+
         self.init()
+
+    def _dbgout(self, *args, **kwargs):
+        if self.DEBUG:
+            print(args, kwargs)
 
     def init(self):
         """Run the initialization commands."""
@@ -142,16 +160,64 @@ class Display: #pylint: disable-msg=no-member
             self.write(command, data)
 
     #pylint: disable-msg=invalid-name,too-many-arguments
-    def _block(self, x0, y0, x1, y1, data=None):
+    def _block(self, x0, y0, x1, y1, data=None, scale=1):
         """Read or write a block of data."""
-        self.write(self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START))
-        self.write(self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START))
         if data is None:
+            #write destination to display
+            self.write(self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START))
+            self.write(self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START))
+
             size = struct.calcsize(self._DECODE_PIXEL)
-            return self.read(self._RAM_READ,
-                             (x1 - x0 + 1) * (y1 - y0 + 1) * size)
-        self.write(self._RAM_WRITE, data)
-        return None
+            return self.read(self._RAM_READ, (x1 - x0 + 1) * (y1 - y0 + 1) * size)
+        else:
+            #make a larger bytearray
+            if scale > 1:
+                #self._dbgout(x0, y0, x1, y1)
+                #self._dbgout(x1 - x0 + 1, y1 - y0 + 1)
+                source_width = (x1 - x0 + 1)
+                source_height = (y1 - y0 + 1)
+                source = data
+
+                data_width = source_width * scale
+                data_height = source_height * scale
+                data = bytearray(source_width * 2  * source_height * scale**2)
+
+                #self._dbgout(source_width=source_width, source_height=source_height, source_length=len(source))
+                #self._dbgout(data_width=source_width, data_height=source_height, data_length=len(data))
+
+                # scale x and y to match new size
+                print('data_width:', data_width, ', source width:', source_width)
+
+
+                for y in range(source_height):
+                    for x in range(source_width):
+                        high_byte = source[x * 2 + source_width*2*y]
+                        low_byte =  source[x * 2 + source_width*2*y + 1]
+                        x_base = x * 2 * scale #
+                        for line in range(scale):
+                            for pixel in range(scale):
+                                data[x_base + pixel*2 + (y * scale + line) * 2 * data_width ] = high_byte
+                                data[x_base + pixel*2 + (y * scale + line) * 2 * data_width + 1] = low_byte
+
+                #print(source, len(source))
+                #print(data, len(data))
+
+
+
+                x1 = x0 + data_width -1
+                y1 = y0 + data_height -1
+
+                #self._dbgout(source_width=source_width, source_height=source_height, source_length=len(source))
+                #self._dbgout(data_width=source_width, data_height=source_height, data_length=len(data))
+
+                #print(source_width, source_height, len(source), source)
+                #print(data_width, data_height, len(data), data)
+            #write destination to display
+            self.write(self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START))
+            self.write(self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START))
+
+            self.write(self._RAM_WRITE, data)
+            return None
     #pylint: enable-msg=invalid-name,too-many-arguments
 
     def _encode_pos(self, x, y):
@@ -233,6 +299,127 @@ class Display: #pylint: disable-msg=no-member
         """Draw a vertical line."""
         self.fill_rectangle(x, y, 1, height, color)
 
+    def text(self, x, y, string, size = 1, color=0xffff, background=0x00, font=None):
+        """draws text on the display of specififed color and background"""
+        # later add backgound = None for transparent, but needs lower level tie-ins
+
+        #check input types and defaults
+        if (type(size) != int) or (size <=0):
+            raise ValueError("size must be a whole number of type 'int'")
+        if (type(color) != int) or (type(background) != int):
+            raise ValueError("color and background must be a whole number of type 'int'")
+        if font == None: # set to default font
+            if self.default_font == None:
+                raise ValueError("No font or default_font specified")
+            else:
+                font = self.default_font
+
+        #calculate color bytes ahead of time
+        color_high = (color & 0xff00) >> 8
+        color_low  = (color & 0x00ff) >> 0
+        background_high = (background & 0xff00) >> 8
+        background_low  = (background & 0x00ff) >> 0
+
+        #fetch the font_glyph_cache of letter locations and dimensions
+        #the cache is identified by it's python object id
+        fontmap = font.bitmap
+        font_id = id(fontmap)
+        font_caches = self._font_glyph_coord_caches
+        if font_id in font_caches:
+            self._dbgout('found desired font cached! id:', font_id)
+            font_cache = font_caches[font_id]
+        else:
+            self._dbgout('desired font NOT cached! id:', font_id)
+            font_cache = {}
+            font_caches[font_id] = font_cache
+        del font_caches, font_id
+
+        # create a list of
+        buffer_width = 1 # in pixels (not scalled by size)
+        buffer_height = 0#1 #
+
+        lines = string.split('\n')
+        domain_lines = []
+        for line in lines:
+            domain_line = []
+            line_width = 1
+            domain_lines.append(domain_line)
+            for char in line:
+
+                #get the glyph from the cache or the font
+                glyph_domain = font_cache.get(char)
+                # if glyph is not cached cache it
+                if glyph_domain == None:
+                    self._dbgout("caching new char:'"+char+"'")
+                    glyph = font.get_glyph(ord(char))
+                    glyph_domain = (glyph.tile_index, glyph.width, glyph.height)
+                    font_cache[char] = glyph_domain
+
+                #add the glyph to the current line
+                domain_line.append((char, glyph_domain, line_width, buffer_height))
+                line_width += glyph_domain[1]
+
+            buffer_width = max(buffer_width, line_width)
+            buffer_height += fontmap.height
+        del line, lines, line_width
+        gc.collect()# incase low on ram
+
+        #buffer_width *= size
+        #buffer_height *= size
+        buffer_length = buffer_width * buffer_height * 2 #* size**2
+        buffer = bytearray(buffer_length)
+        self._dbgout(buffer_len = buffer_length, buffer_width=buffer_width, buffer_height=buffer_height)
+
+        #stripe the left edge of the buffer as background
+        for edge_y in range(buffer_height):
+            buffer[edge_y * buffer_width * 2] = background_high
+            buffer[edge_y * buffer_width * 2 + 1] = background_low
+
+        #write the
+        for domain_line in domain_lines:
+            for positioned_domain in domain_line:
+                char, domain, char_x, char_y = positioned_domain
+                index, width, height = domain
+                for pixel_y in range(height):
+                    for pixel_x in range(width):
+                        #if size == 1: # yeah, it;s an optimization but  ¯\_(ツ)_/¯
+                        pixel_index = (((char_y + pixel_y) * buffer_width) + char_x + pixel_x) * 2
+                        if fontmap[index*width + pixel_x, pixel_y]:
+                            buffer[pixel_index] = color_high
+                            buffer[pixel_index + 1] = color_low
+                        else:
+                            buffer[pixel_index] = background_high
+                            buffer[pixel_index + 1] = background_low
+                        '''
+                        else:
+                            if fontmap[index*width + pixel_x, pixel_y]:
+                                pixel_color_high = color_high
+                                pixel_color_low = color_low
+                            else:
+                                pixel_color_high = background_high
+                                pixel_color_low = background_low
+
+                            #pixel_index = (((char_y + pixel_y) * buffer_width) + char_x + pixel_x) * 2 * size
+                            #write pixel to buffer: pixel by pixel
+                            for sub_y_offset in range(size):
+                                for sub_x_offset in range(size):
+                                    pixel_index = (((char_y + pixel_y + sub_y_offset) * buffer_width) + char_x + pixel_x + sub_x_offset) * 2 * size
+                                    print(pixel_index, sub_x_offset, sub_y_offset, buffer_length)
+                                    sub_pixel_index = pixel_index
+                                    buffer[sub_pixel_index] = pixel_color_high
+                                    buffer[sub_pixel_index + 1] = pixel_color_low'''
+
+        del domain_line, domain_lines, positioned_domain
+        del char, domain, char_x, char_y
+        del index, width, height
+        del pixel_y, pixel_x, pixel_index
+        del color_high, color_low, background_high, background_low
+
+        #sendt he buffer to the display
+        gc.collect() # incase low on ram before block goes out
+        self._block(x, y, buffer_width + x - 1, buffer_height + y - 1, data=buffer, scale=size) # scale=size
+        del buffer
+
     @property
     def rotation(self):
         """Set the default rotation"""
@@ -249,7 +436,7 @@ class DisplaySPI(Display):
     #pylint: disable-msg=too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=1, height=1,
                  baudrate=12000000, polarity=0, phase=0, *,
-                 x_offset=0, y_offset=0, rotation=0):
+                 x_offset=0, y_offset=0, rotation=0, **kwargs):
         self.spi_device = spi_device.SPIDevice(spi, cs, baudrate=baudrate,
                                                polarity=polarity, phase=phase)
         self.dc_pin = dc
@@ -260,7 +447,7 @@ class DisplaySPI(Display):
             self.reset()
         self._X_START = x_offset # pylint: disable=invalid-name
         self._Y_START = y_offset # pylint: disable=invalid-name
-        super().__init__(width, height, rotation)
+        super().__init__(width, height, rotation, **kwargs)
     #pylint: enable-msg=too-many-arguments
 
     def reset(self):

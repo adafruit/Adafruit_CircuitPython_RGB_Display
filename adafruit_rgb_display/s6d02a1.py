@@ -74,5 +74,5 @@ class S6D02A1(DisplaySPI):
     _ENCODE_POS = ">HH"
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=160, rotation=0):
-        super().__init__(spi, dc, cs, rst, width, height, rotation)
+    def __init__(self, spi, dc, cs, rst=None, width=128, height=160, rotation=0, **kwargs):
+        super().__init__(spi, dc, cs, rst, width, height, rotation, **kwargs)

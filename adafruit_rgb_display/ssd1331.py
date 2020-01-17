@@ -123,10 +123,10 @@ class SSD1331(DisplaySPI):
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
     # super required to allow override of default values
     def __init__(self, spi, dc, cs, rst=None, width=96, height=64,
-                 baudrate=16000000, polarity=0, phase=0, *, rotation=0):
+                 baudrate=16000000, polarity=0, phase=0, *, rotation=0, **kwargs):
         super().__init__(spi, dc, cs, rst, width, height,
                          baudrate=baudrate, polarity=polarity, phase=phase,
-                         rotation=rotation)
+                         rotation=rotation, **kwargs)
 
     # pylint: disable=no-member
     def write(self, command=None, data=None):

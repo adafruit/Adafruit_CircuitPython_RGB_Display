@@ -135,10 +135,10 @@ class ST7735(DisplaySPI):
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=128, height=128,
                  baudrate=16000000, polarity=0, phase=0, *,
-                 x_offset=0, y_offset=0, rotation=0):
+                 x_offset=0, y_offset=0, rotation=0, **kwargs):
         super().__init__(spi, dc, cs, rst, width, height,
                          baudrate=baudrate, polarity=polarity, phase=phase,
-                         x_offset=x_offset, y_offset=y_offset, rotation=rotation)
+                         x_offset=x_offset, y_offset=y_offset, rotation=rotation, **kwargs)
 
 
 class ST7735R(ST7735):
