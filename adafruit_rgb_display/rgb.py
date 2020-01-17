@@ -323,12 +323,13 @@ class DisplaySPI(Display):
     @rotation.setter
     def rotation(self, angle):
         """auto re-congifures x/y offets and rotation"""
+        # pylint: disable=too-many-branches
+
         #subclasses need to implement: _writeout_rotation(angle) -> bool(can/can't rotate)
         if (not isinstance(angle, int)) or ((angle%90) != 0):
             raise ValueError("angle must be an 'int' mulitple of 90")
 
-        #this should be seperated into sub funtions, however:
-        # pylint: disable=too-many-branches
+
         angle = angle % 360
 
         if not self._CAN_ROTATE:
