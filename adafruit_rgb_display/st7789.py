@@ -25,7 +25,7 @@
 
 A simple driver for the ST7789-based displays.
 
-* Author(s): Melissa LeBlanc-Williams
+* Author(s): Melissa LeBlanc-Williams, Jonah Yolles-Murphy
 """
 
 try:
