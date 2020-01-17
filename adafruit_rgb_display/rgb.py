@@ -253,6 +253,7 @@ class Display: #pylint: disable-msg=no-member
 
     @property
     def width(self):
+        """The width of the screen relative to the rotation and origin """
         if self._rotation in(0, 180):
             return self._width
         else:
@@ -260,6 +261,7 @@ class Display: #pylint: disable-msg=no-member
 
     @property
     def height(self):
+        """The height of the screen relative to the rotation and origin"""
         if self._rotation in(0, 180):
             return self._height
         else:
@@ -339,7 +341,7 @@ class DisplaySPI(Display):
                 if self._x_offset:
                     self._X_START = self._x_offset
                 else:
-                     self._X_START = 0
+                    self._X_START = 0
 
                 #set y_offset
                 if self._y_offset:
@@ -351,7 +353,7 @@ class DisplaySPI(Display):
                 if self._y_offset:
                     self._X_START = self._y_offset
                 else:
-                     self._X_START = 0
+                    self._X_START = 0
 
                 #set y_offset
                 if self._x_offset:
@@ -363,7 +365,7 @@ class DisplaySPI(Display):
                 if self._x_offset:
                     self._X_START = 0
                 else:
-                     self._X_START = self._x_offset
+                    self._X_START = self._x_offset
 
                 #set y_offset
                 if self._y_offset:
@@ -375,7 +377,7 @@ class DisplaySPI(Display):
                 if self._y_offset:
                     self._X_START = self._x_offset
                 else:
-                     self._X_START = 0
+                    self._X_START = 0
 
                 #set y_offset
                 if self._x_offset:
