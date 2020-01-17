@@ -75,5 +75,5 @@ class HX8353(DisplaySPI):
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=128, height=128,
-                 rotation=0):
-        super().__init__(spi, dc, cs, rst, width, height, rotation)
+                 rotation=0, **kwargs):
+        super().__init__(spi, dc, cs, rst, width, height, rotation, **kwargs)

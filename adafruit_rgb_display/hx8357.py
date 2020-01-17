@@ -102,7 +102,7 @@ class HX8357(DisplaySPI):
 
     #pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=480, height=320,
-                 baudrate=16000000, polarity=0, phase=0, rotation=0):
+                 baudrate=16000000, polarity=0, phase=0, rotation=0, **kwargs):
         super().__init__(spi, dc, cs, rst, width, height,
                          baudrate=baudrate, polarity=polarity, phase=phase,
-                         rotation=rotation)
+                         rotation=rotation, **kwargs)

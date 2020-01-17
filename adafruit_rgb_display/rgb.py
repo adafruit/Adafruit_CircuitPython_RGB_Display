@@ -128,18 +128,25 @@ class Display: #pylint: disable-msg=no-member
     _ENCODE_POS = ">HH"
     _DECODE_PIXEL = ">BBB"
 
+    _CAN_ROTATE = False
+
     def __init__(self, width, height, rotation):
-        self.width = width
-        self.height = height
+        self._width = width
+        self._height = height
         if rotation not in (0, 90, 180, 270):
             raise ValueError('Rotation must be 0/90/180/270')
         self._rotation = rotation
         self.init()
+        #Set rotation  and use RGB, x/y offsets need to be manually adjusted for each screen
+        self.rotation = self._rotation
 
     def init(self):
         """Run the initialization commands."""
         for command, data in self._INIT:
             self.write(command, data)
+
+    def _writeout_rotation(self, angle):
+        pass #  cannot rotate as a default. if can set classes' _CAN_ROTATE True
 
     #pylint: disable-msg=invalid-name,too-many-arguments
     def _block(self, x0, y0, x1, y1, data=None):
@@ -244,6 +251,20 @@ class Display: #pylint: disable-msg=no-member
             raise ValueError('Rotation must be 0/90/180/270')
         self._rotation = val
 
+    @property
+    def width(self):
+        if self._rotation in(0,180):
+            return self._height
+        else:
+            return self._width
+
+    @property
+    def height(self):
+        if self._rotation in(0,180):
+            return self._width
+        else:
+            return self._height
+
 class DisplaySPI(Display):
     """Base class for SPI type devices"""
     #pylint: disable-msg=too-many-arguments
@@ -258,6 +279,8 @@ class DisplaySPI(Display):
         if self.rst:
             self.rst.switch_to_output(value=0)
             self.reset()
+        self._x_offset = x_offset
+        self._y_offset = y_offset
         self._X_START = x_offset # pylint: disable=invalid-name
         self._Y_START = y_offset # pylint: disable=invalid-name
         super().__init__(width, height, rotation)
@@ -292,3 +315,70 @@ class DisplaySPI(Display):
             if count:
                 spi.readinto(data)
         return data
+
+    @property
+    def rotation(self):
+        return self._rotation
+
+    @rotation.setter
+    def rotation(self, angle):
+        """auto re-congifures x/y offets and rotation"""
+        #subclasses need to implement: _writeout_rotation(angle) -> bool(can/can't rotate)
+        if (type(angle) != int ) or ((angle%90) != 0):
+            raise ValueError("angle must be an 'int' mulitple of 90")
+
+        angle = angle % 360
+
+        if not self._CAN_ROTATE:
+            raise Exception('rotation not currently supported for this display, see datasheet')
+        else:
+            self._writeout_rotation(angle)
+            #configure offsets (provided 0,0 if top left)
+            if angle == 0:
+                #set x_offset
+                if self._x_offset:
+                    self._X_START  = self._x_offset
+                else:
+                     self._X_START = 0
+
+                #set y_offset
+                if self._y_offset:
+                    self._Y_START = self._y_offset
+                else:
+                    self._Y_START = 0
+            elif angle == 90:
+                #set x_offset
+                if self._y_offset:
+                    self._X_START  = self._y_offset
+                else:
+                     self._X_START = 0
+
+                #set y_offset
+                if self._x_offset:
+                    self._Y_START = 0
+                else:
+                    self._Y_START = self._x_offset
+            elif angle == 180:
+                #set x_offset
+                if self._x_offset:
+                    self._X_START  = 0
+                else:
+                     self._X_START = self._x_offset
+
+                #set y_offset
+                if self._y_offset:
+                    self._Y_START = 0
+                else:
+                    self._Y_START = self._y_offset
+            elif angle == 270:
+                #set x_offset
+                if self._y_offset:
+                    self._X_START  = self._x_offset
+                else:
+                     self._X_START = 0
+
+                #set y_offset
+                if self._x_offset:
+                    self._Y_START = self._y_offset
+                else:
+                    self._Y_START = 0

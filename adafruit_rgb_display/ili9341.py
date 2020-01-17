@@ -90,10 +90,10 @@ class ILI9341(DisplaySPI):
 
     #pylint: disable-msg=too-many-arguments
     def __init__(self, spi, dc, cs, rst=None, width=240, height=320,
-                 baudrate=16000000, polarity=0, phase=0, rotation=0):
+                 baudrate=16000000, polarity=0, phase=0, rotation=0, **kwargs):
         super().__init__(spi, dc, cs, rst=rst, width=width, height=height,
                          baudrate=baudrate, polarity=polarity, phase=phase,
-                         rotation=rotation)
+                         rotation=rotation, **kwargs)
         self._scroll = 0
     #pylint: enable-msg=too-many-arguments
 
