@@ -25,7 +25,7 @@
 
 Base class for all RGB Display devices
 
-* Author(s): Radomir Dopieralski, Michael McWethy
+* Author(s): Radomir Dopieralski, Michael McWethy, Jonah Yolles-Murphy
 """
 
 import time
