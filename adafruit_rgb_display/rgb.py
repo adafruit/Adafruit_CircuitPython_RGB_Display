@@ -357,7 +357,7 @@ class Display: #pylint: disable-msg=no-member
 
                 #add the glyph to the current line
                 domain_line.append((char, glyph_domain, line_width, buffer_height))
-                line_width += glyph_domain[1]
+                line_width += glyph_domain[1] + 1
 
             buffer_width = max(buffer_width, line_width)
             buffer_height += fontmap.height
@@ -370,17 +370,23 @@ class Display: #pylint: disable-msg=no-member
         buffer = bytearray(buffer_length)
         self._dbgout(buffer_len = buffer_length, buffer_width=buffer_width, buffer_height=buffer_height)
 
-        #stripe the left edge of the buffer as background
+        '''#stripe the left edge of the char
         for edge_y in range(buffer_height):
             buffer[edge_y * buffer_width * 2] = background_high
-            buffer[edge_y * buffer_width * 2 + 1] = background_low
+            buffer[edge_y * buffer_width * 2 + 1] = background_low'''
 
         #write the
         for domain_line in domain_lines:
             for positioned_domain in domain_line:
                 char, domain, char_x, char_y = positioned_domain
                 index, width, height = domain
+
                 for pixel_y in range(height):
+                    #stripe the left sode of the char w/ background
+                    edge_pixel_index = (((char_y + pixel_y ) * buffer_width) + char_x - 1) * 2
+                    buffer[edge_pixel_index] = background_high
+                    buffer[edge_pixel_index + 1] = background_low
+
                     for pixel_x in range(width):
                         #if size == 1: # yeah, it;s an optimization but  ¯\_(ツ)_/¯
                         pixel_index = (((char_y + pixel_y) * buffer_width) + char_x + pixel_x) * 2
