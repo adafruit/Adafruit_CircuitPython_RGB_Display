@@ -324,7 +324,7 @@ class DisplaySPI(Display):
     def rotation(self, angle):
         """auto re-congifures x/y offets and rotation"""
         #subclasses need to implement: _writeout_rotation(angle) -> bool(can/can't rotate)
-        if (isinstance(angle) != int) or ((angle%90) != 0):
+        if (not isinstance(angle, int)) or ((angle%90) != 0):
             raise ValueError("angle must be an 'int' mulitple of 90")
 
         #this should be seperated into sub funtions, however:
@@ -337,50 +337,48 @@ class DisplaySPI(Display):
             self._writeout_rotation(angle)
             #configure offsets (provided 0,0 if top left)
             if angle == 0:
+                self._X_START = 0
+                self._Y_START = 0
+
                 #set x_offset
                 if self._x_offset:
                     self._X_START = self._x_offset
-                else:
-                    self._X_START = 0
 
                 #set y_offset
                 if self._y_offset:
                     self._Y_START = self._y_offset
-                else:
-                    self._Y_START = 0
+
             elif angle == 90:
+                self._X_START = 0
+                self._Y_START = 0
+
                 #set x_offset
                 if self._y_offset:
                     self._X_START = self._y_offset
-                else:
-                    self._X_START = 0
 
                 #set y_offset
-                if self._x_offset:
-                    self._Y_START = 0
-                else:
+                if not self._x_offset:
                     self._Y_START = self._x_offset
             elif angle == 180:
+                self._X_START = 0
+                self._Y_START = 0
+
                 #set x_offset
-                if self._x_offset:
-                    self._X_START = 0
-                else:
+                if not self._x_offset:
                     self._X_START = self._x_offset
 
                 #set y_offset
-                if self._y_offset:
-                    self._Y_START = 0
-                else:
+                if not self._y_offset:
                     self._Y_START = self._y_offset
             elif angle == 270:
+
+                self._X_START = 0
+                self._Y_START = 0
+
                 #set x_offset
                 if self._y_offset:
                     self._X_START = self._x_offset
-                else:
-                    self._X_START = 0
 
                 #set y_offset
                 if self._x_offset:
                     self._Y_START = self._y_offset
-                else:
-                    self._Y_START = 0
