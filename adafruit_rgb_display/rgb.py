@@ -137,7 +137,7 @@ class Display: #pylint: disable-msg=no-member
     _ENCODE_POS = ">HH"
     _DECODE_PIXEL = ">BBB"
 
-    def __init__(self, width, height, rotation, default_font = _FONT, DEBUG = False):
+    def __init__(self, width, height, rotation, default_font = _FONT, fast_text = True, DEBUG = False):
         self.width = width
         self.height = height
         if rotation not in (0, 90, 180, 270):
@@ -145,6 +145,7 @@ class Display: #pylint: disable-msg=no-member
         self._rotation = rotation
         self.default_font = default_font
         self._font_glyph_coord_caches = {}
+        self.fast_text = fast_text
 
         self.DEBUG = DEBUG
 
@@ -170,10 +171,10 @@ class Display: #pylint: disable-msg=no-member
             size = struct.calcsize(self._DECODE_PIXEL)
             return self.read(self._RAM_READ, (x1 - x0 + 1) * (y1 - y0 + 1) * size)
         else:
-            #make a larger bytearray
+            #make a larger bytearray if > 1
             if scale > 1:
-                #self._dbgout(x0, y0, x1, y1)
-                #self._dbgout(x1 - x0 + 1, y1 - y0 + 1)
+                ##self._dbgout(x0, y0, x1, y1)
+                ##self._dbgout(x1 - x0 + 1, y1 - y0 + 1)
                 source_width = (x1 - x0 + 1)
                 source_height = (y1 - y0 + 1)
                 source = data
@@ -182,41 +183,35 @@ class Display: #pylint: disable-msg=no-member
                 data_height = source_height * scale
                 data = bytearray(source_width * 2  * source_height * scale**2)
 
-                #self._dbgout(source_width=source_width, source_height=source_height, source_length=len(source))
-                #self._dbgout(data_width=source_width, data_height=source_height, data_length=len(data))
+                #magic :-)
+                for y in range(0, source_height*2, 2): # evey pixel in the source (bytearray adressed)
+                    for x in range(0, source_width*2, 2):
+                        high_byte = source[x + source_width*y]
+                        low_byte =  source[x + source_width*y + 1]
+                        x_base = x * scale #left most pos of pixel
+                        y_base = y * scale * data_width  #the top most pos of the pixe
+                        for line in range(0, scale*2* data_width , 2*data_width ):
+                            for pixel in range(0, scale*2, 2):
+                                data[x_base + pixel + (y_base) + line ] = high_byte
+                                data[x_base + pixel + (y_base) + line + 1] = low_byte
 
-                # scale x and y to match new size
-                print('data_width:', data_width, ', source width:', source_width)
-
-
-                for y in range(source_height):
-                    for x in range(source_width):
-                        high_byte = source[x * 2 + source_width*2*y]
-                        low_byte =  source[x * 2 + source_width*2*y + 1]
-                        x_base = x * 2 * scale #
-                        for line in range(scale):
-                            for pixel in range(scale):
-                                data[x_base + pixel*2 + (y * scale + line) * 2 * data_width ] = high_byte
-                                data[x_base + pixel*2 + (y * scale + line) * 2 * data_width + 1] = low_byte
-
-                #print(source, len(source))
-                #print(data, len(data))
-
-
-
+                #adjust x1 to match new size
                 x1 = x0 + data_width -1
                 y1 = y0 + data_height -1
 
-                #self._dbgout(source_width=source_width, source_height=source_height, source_length=len(source))
-                #self._dbgout(data_width=source_width, data_height=source_height, data_length=len(data))
+                del source, source_width, source_height
+                del data_width, data_height
+                del x, y, high_byte, low_byte, x_base, y_base
+                del line, pixel
 
-                #print(source_width, source_height, len(source), source)
-                #print(data_width, data_height, len(data), data)
-            #write destination to display
+            # write destination  to display
             self.write(self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START))
             self.write(self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START))
 
+            # write data to display
             self.write(self._RAM_WRITE, data)
+            del data, x0, x1, y0, y1
+            gc.collect()
             return None
     #pylint: enable-msg=invalid-name,too-many-arguments
 
@@ -299,8 +294,13 @@ class Display: #pylint: disable-msg=no-member
         """Draw a vertical line."""
         self.fill_rectangle(x, y, 1, height, color)
 
-    def text(self, x, y, string, size = 1, color=0xffff, background=0x00, font=None):
-        """draws text on the display of specififed color and background"""
+    def text(self, x, y, string, size=1, color=0xffff, background=0x00, font=None, fast = None, estiamte = False):
+        """draws text on the display of specififed color and background
+            :param x: the horizontal position of the left side of the text
+            :param y: the vertical position of the top of the text
+            :param string: the text to be displayed on the screen
+            :param :
+        """
         # later add backgound = None for transparent, but needs lower level tie-ins
 
         #check input types and defaults
@@ -308,11 +308,27 @@ class Display: #pylint: disable-msg=no-member
             raise ValueError("size must be a whole number of type 'int'")
         if (type(color) != int) or (type(background) != int):
             raise ValueError("color and background must be a whole number of type 'int'")
+
         if font == None: # set to default font
             if self.default_font == None:
                 raise ValueError("No font or default_font specified")
             else:
                 font = self.default_font
+        if fast == None:
+            fast = self.fast_text
+
+        lines = string.split('\n')
+
+
+
+        if (not fast) and (estiamte == False):
+            max_width = 0
+            total_height = 0
+            for line in lines:
+                new_width, new_height = self.text(x, y+total_height, line, size=size, color=color, background=background, font=font, fast=True)
+                max_width = max(max_width, new_width)
+                total_height += new_height
+            return max_width, total_height
 
         #calculate color bytes ahead of time
         color_high = (color & 0xff00) >> 8
@@ -326,10 +342,10 @@ class Display: #pylint: disable-msg=no-member
         font_id = id(fontmap)
         font_caches = self._font_glyph_coord_caches
         if font_id in font_caches:
-            self._dbgout('found desired font cached! id:', font_id)
+            #self._dbgout('found desired font cached! id:', font_id)
             font_cache = font_caches[font_id]
         else:
-            self._dbgout('desired font NOT cached! id:', font_id)
+            #self._dbgout('desired font NOT cached! id:', font_id)
             font_cache = {}
             font_caches[font_id] = font_cache
         del font_caches, font_id
@@ -338,7 +354,6 @@ class Display: #pylint: disable-msg=no-member
         buffer_width = 1 # in pixels (not scalled by size)
         buffer_height = 0#1 #
 
-        lines = string.split('\n')
         domain_lines = []
         for line in lines:
             domain_line = []
@@ -350,7 +365,7 @@ class Display: #pylint: disable-msg=no-member
                 glyph_domain = font_cache.get(char)
                 # if glyph is not cached cache it
                 if glyph_domain == None:
-                    self._dbgout("caching new char:'"+char+"'")
+                    #self._dbgout("caching new char:'"+char+"'")
                     glyph = font.get_glyph(ord(char))
                     glyph_domain = (glyph.tile_index, glyph.width, glyph.height)
                     font_cache[char] = glyph_domain
@@ -364,16 +379,13 @@ class Display: #pylint: disable-msg=no-member
         del line, lines, line_width
         gc.collect()# incase low on ram
 
+        if estiamte:
+            return buffer_width*size, buffer_height*size
         #buffer_width *= size
         #buffer_height *= size
         buffer_length = buffer_width * buffer_height * 2 #* size**2
         buffer = bytearray(buffer_length)
-        self._dbgout(buffer_len = buffer_length, buffer_width=buffer_width, buffer_height=buffer_height)
-
-        '''#stripe the left edge of the char
-        for edge_y in range(buffer_height):
-            buffer[edge_y * buffer_width * 2] = background_high
-            buffer[edge_y * buffer_width * 2 + 1] = background_low'''
+        #self._dbgout(buffer_len = buffer_length, buffer_width=buffer_width, buffer_height=buffer_height)
 
         #write the
         for domain_line in domain_lines:
@@ -396,24 +408,6 @@ class Display: #pylint: disable-msg=no-member
                         else:
                             buffer[pixel_index] = background_high
                             buffer[pixel_index + 1] = background_low
-                        '''
-                        else:
-                            if fontmap[index*width + pixel_x, pixel_y]:
-                                pixel_color_high = color_high
-                                pixel_color_low = color_low
-                            else:
-                                pixel_color_high = background_high
-                                pixel_color_low = background_low
-
-                            #pixel_index = (((char_y + pixel_y) * buffer_width) + char_x + pixel_x) * 2 * size
-                            #write pixel to buffer: pixel by pixel
-                            for sub_y_offset in range(size):
-                                for sub_x_offset in range(size):
-                                    pixel_index = (((char_y + pixel_y + sub_y_offset) * buffer_width) + char_x + pixel_x + sub_x_offset) * 2 * size
-                                    print(pixel_index, sub_x_offset, sub_y_offset, buffer_length)
-                                    sub_pixel_index = pixel_index
-                                    buffer[sub_pixel_index] = pixel_color_high
-                                    buffer[sub_pixel_index + 1] = pixel_color_low'''
 
         del domain_line, domain_lines, positioned_domain
         del char, domain, char_x, char_y
@@ -425,6 +419,9 @@ class Display: #pylint: disable-msg=no-member
         gc.collect() # incase low on ram before block goes out
         self._block(x, y, buffer_width + x - 1, buffer_height + y - 1, data=buffer, scale=size) # scale=size
         del buffer
+        gc.collect()
+
+        return buffer_width*size, buffer_height*size
 
     @property
     def rotation(self):
