@@ -137,15 +137,18 @@ class Display: #pylint: disable-msg=no-member
     _ENCODE_POS = ">HH"
     _DECODE_PIXEL = ">BBB"
 
-    def __init__(self, width, height, rotation, default_font = _FONT, fast_text = True, DEBUG = False):
+    def __init__(self, width, height, rotation, default_text_size = 1, default_font = _FONT, fast_text = True, DEBUG = False):
         self.width = width
         self.height = height
         if rotation not in (0, 90, 180, 270):
             raise ValueError('Rotation must be 0/90/180/270')
         self._rotation = rotation
         self.default_font = default_font
+        self.default_text_size = default_text_size
         self._font_glyph_coord_caches = {}
         self.fast_text = fast_text
+
+        self._last_calcualted_string_specs = ([None], -1, -1)
 
         self.DEBUG = DEBUG
 
@@ -294,14 +297,21 @@ class Display: #pylint: disable-msg=no-member
         """Draw a vertical line."""
         self.fill_rectangle(x, y, 1, height, color)
 
-    def text(self, x, y, string, size=1, color=0xffff, background=0x00, font=None, fast = None, estiamte = False):
-        """draws text on the display of specififed color and background
-            :param x: the horizontal position of the left side of the text
-            :param y: the vertical position of the top of the text
-            :param string: the text to be displayed on the screen
-            :param :
+    def text(self, x, y, string, size=0, color=0xffff, background=0x00, font=None, fast=None, estimate = False, center = False):
+        """draws text on the display of specififed color and background,
+            returns the width and hieght of the text placed
+            :param int x: the horizontal position of the left side of the text
+            :param int y: the vertical position of the top of the text
+            :param str string: the text to be displayed on the screen
+            :param int size: the scaling factor of the text, must be a whole number, defaults to display.default_text_size
+            :param int color: the color filling the characters, in rgb565 format, defaults to white
+            :param int backgound: is the color surrounding the characters, in rgb565 format, defaults to black
+            :param BuiltinFont font: the font to be used for the characters, defaults to display.default_font
+            :param bool fast: specifies to prioritize speed or memory usage.
+            :param bool estimate: does not place text, just retuns the (width, height) tuple
+            :param bool center: centers the text around the x,y coordinates specified
         """
-        # later add backgound = None for transparent, but needs lower level tie-ins
+        # later addin: backgound = None for transparent, but needs lower level tie-ins
 
         #check input types and defaults
         if (type(size) != int) or (size <=0):
@@ -311,24 +321,49 @@ class Display: #pylint: disable-msg=no-member
 
         if font == None: # set to default font
             if self.default_font == None:
-                raise ValueError("No font or default_font specified")
+                raise ValueError("No font or .default_font specified")
             else:
                 font = self.default_font
+
+        if size <= 0:
+            size = self.default_text_size
+
         if fast == None:
             fast = self.fast_text
 
-        lines = string.split('\n')
+        lines = [line.strip() for line in string.split('\n')]
+
+        if center: # if centered find the toal size
+            #note calculations are stored in self._last_calcualted_string_specs
+            width, height = self.text(x, y, string, size=size,
+                                        color=color, background=background,
+                                        font=font, estimate = True,
+                                        fast = True, center = False)
+            domain_lines, buffer_width, buffer_height = self._last_calcualted_string_specs
+            x -= width //2
+            y -= height //2
+            #del width, height
 
 
-
-        if (not fast) and (estiamte == False):
+        if (fast == False) and (estimate == False):
             max_width = 0
             total_height = 0
-            for line in lines:
-                new_width, new_height = self.text(x, y+total_height, line, size=size, color=color, background=background, font=font, fast=True)
+            for line_index in range(len(lines)): # intentional
+                line = lines[line_index]
+                if center:
+                    #domain_lines, buffer_width, buffer_height = self._last_calcualted_string_specs
+                    print(x , (buffer_width - domain_lines[line_index][-1]) // 2, x + (buffer_width - domain_lines[line_index][-1]) // 2)
+                    x_adj = x + (buffer_width/size - domain_lines[line_index][-1]) // 2
+                else:
+                    x_adj = x
+                new_width, new_height = self.text(x_adj, y+total_height, line, size=size,
+                                                    color=color, background=background,
+                                                    font=font, fast=True, center = False) #, center = center)
                 max_width = max(max_width, new_width)
                 total_height += new_height
+            del x_adj
             return max_width, total_height
+
 
         #calculate color bytes ahead of time
         color_high = (color & 0xff00) >> 8
@@ -354,33 +389,42 @@ class Display: #pylint: disable-msg=no-member
         buffer_width = 1 # in pixels (not scalled by size)
         buffer_height = 0#1 #
 
-        domain_lines = []
-        for line in lines:
-            domain_line = []
-            line_width = 1
-            domain_lines.append(domain_line)
-            for char in line:
+        if center:
+            domain_lines, buffer_width, buffer_height = self._last_calcualted_string_specs
+        else:
+            domain_lines = []
+            for line in lines:
+                domain_line = []
+                line_width = 1
+                domain_lines.append(domain_line)
+                for char in line:
 
-                #get the glyph from the cache or the font
-                glyph_domain = font_cache.get(char)
-                # if glyph is not cached cache it
-                if glyph_domain == None:
-                    #self._dbgout("caching new char:'"+char+"'")
-                    glyph = font.get_glyph(ord(char))
-                    glyph_domain = (glyph.tile_index, glyph.width, glyph.height)
-                    font_cache[char] = glyph_domain
+                    #get the glyph from the cache or the font
+                    glyph_domain = font_cache.get(char)
+                    # if glyph is not cached cache it
+                    if glyph_domain == None:
+                        #self._dbgout("caching new char:'"+char+"'")
+                        glyph = font.get_glyph(ord(char))
+                        glyph_domain = (glyph.tile_index, glyph.width, glyph.height)
+                        font_cache[char] = glyph_domain
 
-                #add the glyph to the current line
-                domain_line.append((char, glyph_domain, line_width, buffer_height))
-                line_width += glyph_domain[1] + 1
+                    #add the glyph to the current line
+                    domain_line.append((char, glyph_domain, line_width, buffer_height))
+                    line_width += glyph_domain[1] + 1
+                print('line_width', line_width)
+                domain_line.append(line_width)
+                print(domain_line[-1])
+                buffer_width = max(buffer_width, line_width)
+                buffer_height += fontmap.height
+            del line, lines, line_width
+            gc.collect()# incase low on ram
 
-            buffer_width = max(buffer_width, line_width)
-            buffer_height += fontmap.height
-        del line, lines, line_width
-        gc.collect()# incase low on ram
-
-        if estiamte:
+        if estimate:
+            self._last_calcualted_string_specs = (domain_lines, buffer_width, buffer_height)
             return buffer_width*size, buffer_height*size
+        else:
+            self._last_calcualted_string_specs = ([None], -1, -1)
+
         #buffer_width *= size
         #buffer_height *= size
         buffer_length = buffer_width * buffer_height * 2 #* size**2
@@ -389,9 +433,11 @@ class Display: #pylint: disable-msg=no-member
 
         #write the
         for domain_line in domain_lines:
-            for positioned_domain in domain_line:
+            for positioned_domain in domain_line[:-1]:
                 char, domain, char_x, char_y = positioned_domain
                 index, width, height = domain
+                if center and fast: # if slow handled below line by line
+                    char_x += (buffer_width - domain_line[-1])//2
 
                 for pixel_y in range(height):
                     #stripe the left sode of the char w/ background
@@ -400,6 +446,7 @@ class Display: #pylint: disable-msg=no-member
                     buffer[edge_pixel_index + 1] = background_low
 
                     for pixel_x in range(width):
+
                         #if size == 1: # yeah, it;s an optimization but  ¯\_(ツ)_/¯
                         pixel_index = (((char_y + pixel_y) * buffer_width) + char_x + pixel_x) * 2
                         if fontmap[index*width + pixel_x, pixel_y]:
@@ -417,8 +464,11 @@ class Display: #pylint: disable-msg=no-member
 
         #sendt he buffer to the display
         gc.collect() # incase low on ram before block goes out
+        #if center:
+            #x += buffer_width//2
+        #    y -= buffer_height//2
         self._block(x, y, buffer_width + x - 1, buffer_height + y - 1, data=buffer, scale=size) # scale=size
-        del buffer
+        del buffer, x, y
         gc.collect()
 
         return buffer_width*size, buffer_height*size
