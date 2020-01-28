@@ -22,7 +22,7 @@ spi = board.SPI()
 # pylint: disable=line-too-long
 # Create the display:
 #disp = st7789.ST7789(spi, rotation=90                             # 2.0" ST7789
-#disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=90    # 1.3", 1.54" ST7789
+#disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=90,   # 1.3", 1.54" ST7789
 #disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53, y_offset=40, # 1.14" ST7789
 #disp = hx8357.HX8357(spi, rotation=180,                           # 3.5" HX8357
 #disp = st7735.ST7735R(spi, rotation=90,                           # 1.8" ST7735R
