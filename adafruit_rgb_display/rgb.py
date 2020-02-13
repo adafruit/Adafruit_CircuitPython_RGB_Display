@@ -324,6 +324,8 @@ class DisplaySPI(Display):
     def rotation(self, angle):
         """auto re-congifures x/y offets and rotation"""
         # pylint: disable=too-many-branches
+        if angle is False:
+            return
 
         #subclasses need to implement: _writeout_rotation(angle) -> bool(can/can't rotate)
         if (not isinstance(angle, int)) or ((angle%90) != 0):
@@ -333,7 +335,7 @@ class DisplaySPI(Display):
         angle = angle % 360
 
         if not self._CAN_ROTATE:
-            raise Exception('rotation not currently supported for this display, see datasheet')
+            pass #raise Exception('rotation not currently supported for this display, see datasheet')
         else:
             self._writeout_rotation(angle)
             #configure offsets (provided 0,0 if top left)
