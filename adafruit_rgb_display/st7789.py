@@ -100,6 +100,7 @@ class ST7789(DisplaySPI):
     >>> display.fill(0x7521)
     >>> display.pixel(64, 64, 0)
     """
+
     _COLUMN_SET = _CASET
     _PAGE_SET = _RASET
     _RAM_WRITE = _RAMWR
@@ -107,28 +108,53 @@ class ST7789(DisplaySPI):
     _INIT = (
         (_SWRESET, None),
         (_SLPOUT, None),
-        (_COLMOD, b'\x55'),  # 16bit color
-        (_MADCTL, b'\x08'),
+        (_COLMOD, b"\x55"),  # 16bit color
+        (_MADCTL, b"\x08"),
     )
 
-    #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=240, height=320,
-                 baudrate=16000000, polarity=0, phase=0, *,
-                 x_offset=0, y_offset=0, rotation=0):
-        super().__init__(spi, dc, cs, rst, width, height,
-                         baudrate=baudrate, polarity=polarity, phase=phase,
-                         x_offset=x_offset, y_offset=y_offset, rotation=rotation)
+    # pylint: disable-msg=useless-super-delegation, too-many-arguments
+    def __init__(
+        self,
+        spi,
+        dc,
+        cs,
+        rst=None,
+        width=240,
+        height=320,
+        baudrate=16000000,
+        polarity=0,
+        phase=0,
+        *,
+        x_offset=0,
+        y_offset=0,
+        rotation=0
+    ):
+        super().__init__(
+            spi,
+            dc,
+            cs,
+            rst,
+            width,
+            height,
+            baudrate=baudrate,
+            polarity=polarity,
+            phase=phase,
+            x_offset=x_offset,
+            y_offset=y_offset,
+            rotation=rotation,
+        )
+
     def init(self):
 
         super().init()
-        cols = struct.pack('>HH', self._X_START, self.width + self._X_START)
-        rows = struct.pack('>HH', self._Y_START, self.height + self._Y_START)
+        cols = struct.pack(">HH", self._X_START, self.width + self._X_START)
+        rows = struct.pack(">HH", self._Y_START, self.height + self._Y_START)
         for command, data in (
-                (_CASET, cols),
-                (_RASET, rows),
-                (_INVON, None),
-                (_NORON, None),
-                (_DISPON, None),
-                (_MADCTL, b'\xc0'), #Set rotation to 0 and use RGB
+            (_CASET, cols),
+            (_RASET, rows),
+            (_INVON, None),
+            (_NORON, None),
+            (_DISPON, None),
+            (_MADCTL, b"\xc0"),  # Set rotation to 0 and use RGB
         ):
             self.write(command, data)

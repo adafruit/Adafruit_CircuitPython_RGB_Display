@@ -40,12 +40,13 @@ _INVOFF = const(0x20)
 _INVON = const(0x21)
 _DISPOFF = const(0x28)
 _DISPON = const(0x29)
-_CASET = const(0x2a)
-_PASET = const(0x2b)
-_RAMWR = const(0x2c)
-_RAMRD = const(0x2e)
+_CASET = const(0x2A)
+_PASET = const(0x2B)
+_RAMWR = const(0x2C)
+_RAMRD = const(0x2E)
 _MADCTL = const(0x36)
-_COLMOD = const(0x3a)
+_COLMOD = const(0x3A)
+
 
 class HX8353(DisplaySPI):
     """
@@ -62,6 +63,7 @@ class HX8353(DisplaySPI):
     >>> display.fill(0x7521)
     >>> display.pixel(64, 64, 0)
     """
+
     _COLUMN_SET = _CASET
     _PAGE_SET = _PASET
     _RAM_WRITE = _RAMWR
@@ -73,7 +75,6 @@ class HX8353(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
 
-    #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=128,
-                 rotation=0):
+    # pylint: disable-msg=useless-super-delegation, too-many-arguments
+    def __init__(self, spi, dc, cs, rst=None, width=128, height=128, rotation=0):
         super().__init__(spi, dc, cs, rst, width, height, rotation)

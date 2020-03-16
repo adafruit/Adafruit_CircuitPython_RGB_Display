@@ -29,6 +29,7 @@ Base class for all RGB Display devices
 """
 
 import time
+
 try:
     import numpy
 except ImportError:
@@ -48,10 +49,12 @@ __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
 _BUFFER_SIZE = 256
 try:
     import platform
+
     if "CPython" in platform.python_implementation():
-        _BUFFER_SIZE = 320 * 240 # blit the whole thing
+        _BUFFER_SIZE = 320 * 240  # blit the whole thing
 except ImportError:
     pass
+
 
 def color565(r, g=0, b=0):
     """Convert red, green and blue values (0-255) into a 16-bit 565 encoding.  As
@@ -61,34 +64,37 @@ def color565(r, g=0, b=0):
         r, g, b = r  # see if the first var is a tuple/list
     except TypeError:
         pass
-    return (r & 0xf8) << 8 | (g & 0xfc) << 3 | b >> 3
+    return (r & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
+
 
 def image_to_data(image):
     """Generator function to convert a PIL image to 16-bit 565 RGB bytes."""
-    #NumPy is much faster at doing this. NumPy code provided by:
-    #Keith (https://www.blogger.com/profile/02555547344016007163)
-    data = numpy.array(image.convert('RGB')).astype('uint16')
-    color = ((data[:, :, 0] & 0xF8) << 8) | ((data[:, :, 1] & 0xFC) << 3) | (data[:, :, 2] >> 3)
+    # NumPy is much faster at doing this. NumPy code provided by:
+    # Keith (https://www.blogger.com/profile/02555547344016007163)
+    data = numpy.array(image.convert("RGB")).astype("uint16")
+    color = (
+        ((data[:, :, 0] & 0xF8) << 8)
+        | ((data[:, :, 1] & 0xFC) << 3)
+        | (data[:, :, 2] >> 3)
+    )
     return numpy.dstack(((color >> 8) & 0xFF, color & 0xFF)).flatten().tolist()
+
 
 class DummyPin:
     """Can be used in place of a ``DigitalInOut()`` when you don't want to skip it."""
+
     def deinit(self):
         """Dummy DigitalInOut deinit"""
-        pass
 
     def switch_to_output(self, *args, **kwargs):
         """Dummy switch_to_output method"""
-        pass
 
     def switch_to_input(self, *args, **kwargs):
         """Dummy switch_to_input method"""
-        pass
 
     @property
     def value(self):
         """Dummy value DigitalInOut property"""
-        pass
 
     @value.setter
     def value(self, val):
@@ -97,7 +103,6 @@ class DummyPin:
     @property
     def direction(self):
         """Dummy direction DigitalInOut property"""
-        pass
 
     @direction.setter
     def direction(self, val):
@@ -106,23 +111,24 @@ class DummyPin:
     @property
     def pull(self):
         """Dummy pull DigitalInOut property"""
-        pass
 
     @pull.setter
     def pull(self, val):
         pass
 
-class Display: #pylint: disable-msg=no-member
+
+class Display:  # pylint: disable-msg=no-member
     """Base class for all RGB display devices
         :param width: number of pixels wide
         :param height: number of pixels high
     """
+
     _PAGE_SET = None
     _COLUMN_SET = None
     _RAM_WRITE = None
     _RAM_READ = None
-    _X_START = 0 # pylint: disable=invalid-name
-    _Y_START = 0 # pylint: disable=invalid-name
+    _X_START = 0  # pylint: disable=invalid-name
+    _Y_START = 0  # pylint: disable=invalid-name
     _INIT = ()
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
@@ -132,7 +138,7 @@ class Display: #pylint: disable-msg=no-member
         self.width = width
         self.height = height
         if rotation not in (0, 90, 180, 270):
-            raise ValueError('Rotation must be 0/90/180/270')
+            raise ValueError("Rotation must be 0/90/180/270")
         self._rotation = rotation
         self.init()
 
@@ -141,18 +147,22 @@ class Display: #pylint: disable-msg=no-member
         for command, data in self._INIT:
             self.write(command, data)
 
-    #pylint: disable-msg=invalid-name,too-many-arguments
+    # pylint: disable-msg=invalid-name,too-many-arguments
     def _block(self, x0, y0, x1, y1, data=None):
         """Read or write a block of data."""
-        self.write(self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START))
-        self.write(self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START))
+        self.write(
+            self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START)
+        )
+        self.write(
+            self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START)
+        )
         if data is None:
             size = struct.calcsize(self._DECODE_PIXEL)
-            return self.read(self._RAM_READ,
-                             (x1 - x0 + 1) * (y1 - y0 + 1) * size)
+            return self.read(self._RAM_READ, (x1 - x0 + 1) * (y1 - y0 + 1) * size)
         self.write(self._RAM_WRITE, data)
         return None
-    #pylint: enable-msg=invalid-name,too-many-arguments
+
+    # pylint: enable-msg=invalid-name,too-many-arguments
 
     def _encode_pos(self, x, y):
         """Encode a postion into bytes."""
@@ -181,16 +191,19 @@ class Display: #pylint: disable-msg=no-member
         the supplied origin."""
         if rotation is None:
             rotation = self.rotation
-        if not img.mode in ('RGB', 'RGBA'):
-            raise ValueError('Image must be in mode RGB or RGBA')
+        if not img.mode in ("RGB", "RGBA"):
+            raise ValueError("Image must be in mode RGB or RGBA")
         if rotation not in (0, 90, 180, 270):
-            raise ValueError('Rotation must be 0/90/180/270')
+            raise ValueError("Rotation must be 0/90/180/270")
         if rotation != 0:
             img = img.rotate(rotation, expand=True)
         imwidth, imheight = img.size
         if x + imwidth > self.width or y + imheight > self.height:
-            raise ValueError('Image must not exceed dimensions of display ({0}x{1}).' \
-                .format(self.width, self.height))
+            raise ValueError(
+                "Image must not exceed dimensions of display ({0}x{1}).".format(
+                    self.width, self.height
+                )
+            )
         if numpy:
             pixels = list(image_to_data(img))
         else:
@@ -199,11 +212,11 @@ class Display: #pylint: disable-msg=no-member
             for i in range(imwidth):
                 for j in range(imheight):
                     pix = color565(img.getpixel((i, j)))
-                    pixels[2*(j * imwidth + i)] = pix >> 8
-                    pixels[2*(j * imwidth + i) + 1] = pix & 0xFF
+                    pixels[2 * (j * imwidth + i)] = pix >> 8
+                    pixels[2 * (j * imwidth + i) + 1] = pix & 0xFF
         self._block(x, y, x + imwidth - 1, y + imheight - 1, pixels)
 
-    #pylint: disable-msg=too-many-arguments
+    # pylint: disable-msg=too-many-arguments
     def fill_rectangle(self, x, y, width, height, color):
         """Draw a rectangle at specified position with specified width and
         height, and fill it with the specified color."""
@@ -211,7 +224,7 @@ class Display: #pylint: disable-msg=no-member
         y = min(self.height - 1, max(0, y))
         width = min(self.width - x, max(1, width))
         height = min(self.height - y, max(1, height))
-        self._block(x, y, x + width - 1, y + height - 1, b'')
+        self._block(x, y, x + width - 1, y + height - 1, b"")
         chunks, rest = divmod(width * height, _BUFFER_SIZE)
         pixel = self._encode_pixel(color)
         if chunks:
@@ -219,7 +232,8 @@ class Display: #pylint: disable-msg=no-member
             for _ in range(chunks):
                 self.write(None, data)
         self.write(None, pixel * rest)
-    #pylint: enable-msg=too-many-arguments
+
+    # pylint: enable-msg=too-many-arguments
 
     def fill(self, color=0):
         """Fill the whole display with the specified color."""
@@ -241,27 +255,44 @@ class Display: #pylint: disable-msg=no-member
     @rotation.setter
     def rotation(self, val):
         if val not in (0, 90, 180, 270):
-            raise ValueError('Rotation must be 0/90/180/270')
+            raise ValueError("Rotation must be 0/90/180/270")
         self._rotation = val
+
 
 class DisplaySPI(Display):
     """Base class for SPI type devices"""
-    #pylint: disable-msg=too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=1, height=1,
-                 baudrate=12000000, polarity=0, phase=0, *,
-                 x_offset=0, y_offset=0, rotation=0):
-        self.spi_device = spi_device.SPIDevice(spi, cs, baudrate=baudrate,
-                                               polarity=polarity, phase=phase)
+
+    # pylint: disable-msg=too-many-arguments
+    def __init__(
+        self,
+        spi,
+        dc,
+        cs,
+        rst=None,
+        width=1,
+        height=1,
+        baudrate=12000000,
+        polarity=0,
+        phase=0,
+        *,
+        x_offset=0,
+        y_offset=0,
+        rotation=0
+    ):
+        self.spi_device = spi_device.SPIDevice(
+            spi, cs, baudrate=baudrate, polarity=polarity, phase=phase
+        )
         self.dc_pin = dc
         self.rst = rst
         self.dc_pin.switch_to_output(value=0)
         if self.rst:
             self.rst.switch_to_output(value=0)
             self.reset()
-        self._X_START = x_offset # pylint: disable=invalid-name
-        self._Y_START = y_offset # pylint: disable=invalid-name
+        self._X_START = x_offset  # pylint: disable=invalid-name
+        self._Y_START = y_offset  # pylint: disable=invalid-name
         super().__init__(width, height, rotation)
-    #pylint: enable-msg=too-many-arguments
+
+    # pylint: enable-msg=too-many-arguments
 
     def reset(self):
         """Reset the device"""

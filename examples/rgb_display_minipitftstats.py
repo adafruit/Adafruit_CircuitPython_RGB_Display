@@ -20,14 +20,23 @@ BAUDRATE = 64000000
 spi = board.SPI()
 
 # Create the ST7789 display:
-disp = st7789.ST7789(spi, cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE,
-                     width=135, height=240, x_offset=53, y_offset=40)
+disp = st7789.ST7789(
+    spi,
+    cs=cs_pin,
+    dc=dc_pin,
+    rst=reset_pin,
+    baudrate=BAUDRATE,
+    width=135,
+    height=240,
+    x_offset=53,
+    y_offset=40,
+)
 
 # Create blank image for drawing.
 # Make sure to create image with mode 'RGB' for full color.
-height = disp.width   # we swap height/width to rotate it to landscape!
+height = disp.width  # we swap height/width to rotate it to landscape!
 width = disp.height
-image = Image.new('RGB', (width, height))
+image = Image.new("RGB", (width, height))
 rotation = 90
 
 # Get drawing object to draw on image.
@@ -40,7 +49,7 @@ disp.image(image, rotation)
 # First define some constants to allow easy resizing of shapes.
 padding = -2
 top = padding
-bottom = height-padding
+bottom = height - padding
 # Move left to right keeping track of the current x position for drawing shapes.
 x = 0
 
@@ -48,7 +57,7 @@ x = 0
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the
 # same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
-font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 24)
+font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
 
 # Turn on the backlight
 backlight = digitalio.DigitalInOut(board.D22)
@@ -61,15 +70,15 @@ while True:
 
     # Shell scripts for system monitoring from here:
     # https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
-    cmd = "hostname -I | cut -d\' \' -f1"
-    IP = "IP: "+subprocess.check_output(cmd, shell=True).decode("utf-8")
+    cmd = "hostname -I | cut -d' ' -f1"
+    IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
     CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
     MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%d GB  %s\", $3,$2,$5}'"
+    cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
     Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk \'{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}\'" # pylint: disable=line-too-long
+    cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
     Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
     # Write four lines of text.
@@ -86,4 +95,4 @@ while True:
 
     # Display image.
     disp.image(image, rotation)
-    time.sleep(.1)
+    time.sleep(0.1)

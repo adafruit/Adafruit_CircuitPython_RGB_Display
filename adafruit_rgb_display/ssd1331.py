@@ -64,7 +64,7 @@ _PRECHARGEB = const(0x8B)
 _PRECHARGEC = const(0x8C)
 _PRECHARGELEVEL = const(0xBB)
 _VCOMH = const(0xBE)
-_LOCK = const(0xfd)
+_LOCK = const(0xFD)
 
 
 class SSD1331(DisplaySPI):
@@ -87,46 +87,67 @@ class SSD1331(DisplaySPI):
       display.pixel(32, 32, 0)
 
     """
+
     _COLUMN_SET = _SETCOLUMN
     _PAGE_SET = _SETROW
     _RAM_WRITE = None
     _RAM_READ = None
     _INIT = (
-        (_DISPLAYOFF, b''),
-        (_LOCK, b'\x0b'),
-        (_SETREMAP, b'\x72'),  # RGB Color
-        (_STARTLINE, b'\x00'),
-        (_DISPLAYOFFSET, b'\x00'),
-        (_NORMALDISPLAY, b''),
+        (_DISPLAYOFF, b""),
+        (_LOCK, b"\x0b"),
+        (_SETREMAP, b"\x72"),  # RGB Color
+        (_STARTLINE, b"\x00"),
+        (_DISPLAYOFFSET, b"\x00"),
+        (_NORMALDISPLAY, b""),
         # (_FILL, b'\x01'),
-
-        (_PHASEPERIOD, b'\x31'),
-        (_SETMULTIPLEX, b'\x3f'),
-        (_SETMASTER, b'\x8e'),
-        (_POWERMODE, b'\x0b'),
-        (_PRECHARGE, b'\x31'),  # ;//0x1F - 0x31
-        (_CLOCKDIV, b'\xf0'),
-        (_VCOMH, b'\x3e'),  # ;//0x3E - 0x3F
-        (_MASTERCURRENT, b'\x0c'),  # ;//0x06 - 0x0F
-        (_PRECHARGEA, b'\x64'),
-        (_PRECHARGEB, b'\x78'),
-        (_PRECHARGEC, b'\x64'),
-        (_PRECHARGELEVEL, b'\x3a'),  # 0x3A - 0x00
-        (_CONTRASTA, b'\x91'),  # //0xEF - 0x91
-        (_CONTRASTB, b'\x50'),  # ;//0x11 - 0x50
-        (_CONTRASTC, b'\x7d'),  # ;//0x48 - 0x7D
-        (_DISPLAYON, b''),
+        (_PHASEPERIOD, b"\x31"),
+        (_SETMULTIPLEX, b"\x3f"),
+        (_SETMASTER, b"\x8e"),
+        (_POWERMODE, b"\x0b"),
+        (_PRECHARGE, b"\x31"),  # ;//0x1F - 0x31
+        (_CLOCKDIV, b"\xf0"),
+        (_VCOMH, b"\x3e"),  # ;//0x3E - 0x3F
+        (_MASTERCURRENT, b"\x0c"),  # ;//0x06 - 0x0F
+        (_PRECHARGEA, b"\x64"),
+        (_PRECHARGEB, b"\x78"),
+        (_PRECHARGEC, b"\x64"),
+        (_PRECHARGELEVEL, b"\x3a"),  # 0x3A - 0x00
+        (_CONTRASTA, b"\x91"),  # //0xEF - 0x91
+        (_CONTRASTB, b"\x50"),  # ;//0x11 - 0x50
+        (_CONTRASTC, b"\x7d"),  # ;//0x48 - 0x7D
+        (_DISPLAYON, b""),
     )
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">BB"
 
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
     # super required to allow override of default values
-    def __init__(self, spi, dc, cs, rst=None, width=96, height=64,
-                 baudrate=16000000, polarity=0, phase=0, *, rotation=0):
-        super().__init__(spi, dc, cs, rst, width, height,
-                         baudrate=baudrate, polarity=polarity, phase=phase,
-                         rotation=rotation)
+    def __init__(
+        self,
+        spi,
+        dc,
+        cs,
+        rst=None,
+        width=96,
+        height=64,
+        baudrate=16000000,
+        polarity=0,
+        phase=0,
+        *,
+        rotation=0
+    ):
+        super().__init__(
+            spi,
+            dc,
+            cs,
+            rst,
+            width,
+            height,
+            baudrate=baudrate,
+            polarity=polarity,
+            phase=phase,
+            rotation=rotation,
+        )
 
     # pylint: disable=no-member
     def write(self, command=None, data=None):
