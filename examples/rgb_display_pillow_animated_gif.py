@@ -17,11 +17,11 @@ import digitalio
 import board
 from PIL import Image, ImageOps
 import adafruit_rgb_display.ili9341 as ili9341
-import adafruit_rgb_display.st7789 as st7789        # pylint: disable=unused-import
-import adafruit_rgb_display.hx8357 as hx8357        # pylint: disable=unused-import
-import adafruit_rgb_display.st7735 as st7735        # pylint: disable=unused-import
-import adafruit_rgb_display.ssd1351 as ssd1351      # pylint: disable=unused-import
-import adafruit_rgb_display.ssd1331 as ssd1331      # pylint: disable=unused-import
+import adafruit_rgb_display.st7789 as st7789  # pylint: disable=unused-import
+import adafruit_rgb_display.hx8357 as hx8357  # pylint: disable=unused-import
+import adafruit_rgb_display.st7735 as st7735  # pylint: disable=unused-import
+import adafruit_rgb_display.ssd1351 as ssd1351  # pylint: disable=unused-import
+import adafruit_rgb_display.ssd1331 as ssd1331  # pylint: disable=unused-import
 
 # Change to match your display
 BUTTON_NEXT = board.D17
@@ -34,18 +34,23 @@ dc_pin = digitalio.DigitalInOut(board.D25)
 # Set this to None on the Mini PiTFT
 reset_pin = digitalio.DigitalInOut(board.D24)
 
+
 def init_button(pin):
     button = digitalio.DigitalInOut(pin)
     button.switch_to_input()
     button.pull = digitalio.Pull.UP
     return button
 
+
 # pylint: disable=too-few-public-methods
 class Frame:
     def __init__(self, duration=0):
         self.duration = duration
         self.image = None
+
+
 # pylint: enable=too-few-public-methods
+
 
 class AnimatedGif:
     def __init__(self, display, width=None, height=None, folder=None):
@@ -75,10 +80,10 @@ class AnimatedGif:
         self._index = (self._index + 1) % len(self._gif_files)
 
     def back(self):
-        self._index = (self._index - 1 + len(self._gif_files))  % len(self._gif_files)
+        self._index = (self._index - 1 + len(self._gif_files)) % len(self._gif_files)
 
     def load_files(self, folder):
-        gif_files = [f for f in os.listdir(folder) if f.endswith('.gif')]
+        gif_files = [f for f in os.listdir(folder) if f.endswith(".gif")]
         for gif_file in gif_files:
             image = Image.open(gif_file)
             # Only add animated Gifs
@@ -88,17 +93,17 @@ class AnimatedGif:
         print("Found", self._gif_files)
         if not self._gif_files:
             print("No Gif files found in current folder")
-            exit()
+            exit()  # pylint: disable=consider-using-sys-exit
 
     def preload(self):
         image = Image.open(self._gif_files[self._index])
         print("Loading {}...".format(self._gif_files[self._index]))
         if "duration" in image.info:
-            self._duration = image.info['duration']
+            self._duration = image.info["duration"]
         else:
             self._duration = 0
         if "loop" in image.info:
-            self._loop = image.info['loop']
+            self._loop = image.info["loop"]
         else:
             self._loop = 1
         self._frame_count = image.n_frames
@@ -109,12 +114,14 @@ class AnimatedGif:
             # Make sure to create image with mode 'RGB' for full color.
             frame_object = Frame(duration=self._duration)
             if "duration" in image.info:
-                frame_object.duration = image.info['duration']
-            frame_object.image = ImageOps.pad(image.convert("RGB"),
-                                              (self._width, self._height),
-                                              method=Image.NEAREST,
-                                              color=(0, 0, 0),
-                                              centering=(0.5, 0.5))
+                frame_object.duration = image.info["duration"]
+            frame_object.image = ImageOps.pad(  # pylint: disable=no-member
+                image.convert("RGB"),
+                (self._width, self._height),
+                method=Image.NEAREST,
+                color=(0, 0, 0),
+                centering=(0.5, 0.5),
+            )
             self._frames.append(frame_object)
 
     def play(self):
@@ -148,6 +155,7 @@ class AnimatedGif:
             if auto_advance:
                 self.advance()
 
+
 # Config for display baudrate (default max is 64mhz):
 BAUDRATE = 64000000
 
@@ -156,22 +164,28 @@ spi = board.SPI()
 
 # pylint: disable=line-too-long
 # Create the display:
-#disp = st7789.ST7789(spi, rotation=90,                            # 2.0" ST7789
-#disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=180,  # 1.3", 1.54" ST7789
-#disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53, y_offset=40, # 1.14" ST7789
-#disp = hx8357.HX8357(spi, rotation=180,                           # 3.5" HX8357
-#disp = st7735.ST7735R(spi, rotation=90,                           # 1.8" ST7735R
-#disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
-#disp = st7735.ST7735R(spi, rotation=90, bgr=True,                 # 0.96" MiniTFT ST7735R
-#disp = ssd1351.SSD1351(spi, rotation=180,                         # 1.5" SSD1351
-#disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180, # 1.27" SSD1351
-#disp = ssd1331.SSD1331(spi, rotation=180,                         # 0.96" SSD1331
-disp = ili9341.ILI9341(spi, rotation=90,                           # 2.2", 2.4", 2.8", 3.2" ILI9341
-                       cs=cs_pin, dc=dc_pin, rst=reset_pin, baudrate=BAUDRATE)
+# disp = st7789.ST7789(spi, rotation=90,                            # 2.0" ST7789
+# disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=180,  # 1.3", 1.54" ST7789
+# disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53, y_offset=40, # 1.14" ST7789
+# disp = hx8357.HX8357(spi, rotation=180,                           # 3.5" HX8357
+# disp = st7735.ST7735R(spi, rotation=90,                           # 1.8" ST7735R
+# disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
+# disp = st7735.ST7735R(spi, rotation=90, bgr=True,                 # 0.96" MiniTFT ST7735R
+# disp = ssd1351.SSD1351(spi, rotation=180,                         # 1.5" SSD1351
+# disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180, # 1.27" SSD1351
+# disp = ssd1331.SSD1331(spi, rotation=180,                         # 0.96" SSD1331
+disp = ili9341.ILI9341(
+    spi,
+    rotation=90,  # 2.2", 2.4", 2.8", 3.2" ILI9341
+    cs=cs_pin,
+    dc=dc_pin,
+    rst=reset_pin,
+    baudrate=BAUDRATE,
+)
 # pylint: enable=line-too-long
 
 if disp.rotation % 180 == 90:
-    disp_height = disp.width   # we swap height/width to rotate it to landscape!
+    disp_height = disp.width  # we swap height/width to rotate it to landscape!
     disp_width = disp.height
 else:
     disp_width = disp.width

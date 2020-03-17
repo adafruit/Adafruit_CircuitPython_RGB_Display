@@ -87,38 +87,62 @@ class SSD1351(DisplaySPI):
     _RAM_WRITE = _WRITERAM
     _RAM_READ = _READRAM
     _INIT = (
-        (_COMMANDLOCK, b'\x12'),
-        (_COMMANDLOCK, b'\xb1'),
-        (_DISPLAYOFF, b''),
-        (_DISPLAYENHANCE, b'\xa4\x00\x00'),
+        (_COMMANDLOCK, b"\x12"),
+        (_COMMANDLOCK, b"\xb1"),
+        (_DISPLAYOFF, b""),
+        (_DISPLAYENHANCE, b"\xa4\x00\x00"),
         # 7:4 = Oscillator Frequency,
         # 3:0 = CLK Div Ratio (A[3:0]+1 = 1..16)
-        (_CLOCKDIV, b'\xf0'),
-        (_MUXRATIO, b'\x7f'), # 127
-        (_SETREMAP, b'\x74'),
-        (_STARTLINE, b'\x00'),
-        (_DISPLAYOFFSET, b'\x00'),
-        (_SETGPIO, b'\x00'),
-        (_FUNCTIONSELECT, b'\x01'),
-        (_PRECHARGE, b'\x32'),
-        (_PRECHARGELEVEL, b'\x1f'),
-        (_VCOMH, b'\x05'),
-        (_NORMALDISPLAY, b''),
-        (_CONTRASTABC, b'\xc8\x80\xc8'),
-        (_CONTRASTMASTER, b'\x0a'),
-        (_SETVSL, b'\xa0\xb5\x55'),
-        (_PRECHARGE2, b'\x01'),
-        (_DISPLAYON, b''),
+        (_CLOCKDIV, b"\xf0"),
+        (_MUXRATIO, b"\x7f"),  # 127
+        (_SETREMAP, b"\x74"),
+        (_STARTLINE, b"\x00"),
+        (_DISPLAYOFFSET, b"\x00"),
+        (_SETGPIO, b"\x00"),
+        (_FUNCTIONSELECT, b"\x01"),
+        (_PRECHARGE, b"\x32"),
+        (_PRECHARGELEVEL, b"\x1f"),
+        (_VCOMH, b"\x05"),
+        (_NORMALDISPLAY, b""),
+        (_CONTRASTABC, b"\xc8\x80\xc8"),
+        (_CONTRASTMASTER, b"\x0a"),
+        (_SETVSL, b"\xa0\xb5\x55"),
+        (_PRECHARGE2, b"\x01"),
+        (_DISPLAYON, b""),
     )
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">BB"
 
-    #pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=128,
-                 baudrate=16000000, polarity=0, phase=0, *,
-                 x_offset=0, y_offset=0, rotation=0):
-        if baudrate > 16000000: # Limit to Display Max Baudrate
+    # pylint: disable-msg=useless-super-delegation, too-many-arguments
+    def __init__(
+        self,
+        spi,
+        dc,
+        cs,
+        rst=None,
+        width=128,
+        height=128,
+        baudrate=16000000,
+        polarity=0,
+        phase=0,
+        *,
+        x_offset=0,
+        y_offset=0,
+        rotation=0
+    ):
+        if baudrate > 16000000:  # Limit to Display Max Baudrate
             baudrate = 16000000
-        super().__init__(spi, dc, cs, rst, width, height,
-                         baudrate=baudrate, polarity=polarity, phase=phase,
-                         x_offset=x_offset, y_offset=y_offset, rotation=rotation)
+        super().__init__(
+            spi,
+            dc,
+            cs,
+            rst,
+            width,
+            height,
+            baudrate=baudrate,
+            polarity=polarity,
+            phase=phase,
+            x_offset=x_offset,
+            y_offset=y_offset,
+            rotation=rotation,
+        )
