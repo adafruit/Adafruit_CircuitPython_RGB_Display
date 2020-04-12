@@ -124,12 +124,14 @@ With 1.14" `wiring <https://learn.adafruit.com/adafruit-1-44-color-tft-with-micr
   # Setup SPI bus using hardware SPI:
   spi = busio.SPI(clock=SCK, MOSI=MOSI, MISO=MISO)
 
-  # Create the ILI9341 display:
+  # Create the ST7789 display:
   display = ST7789(
       spi,
       rotation=90,
       width=135,
       height=240,
+      x_offset=53,
+      y_offset=40,
       baudrate=BAUDRATE,
       cs=digitalio.DigitalInOut(CS_PIN),
       dc=digitalio.DigitalInOut(DC_PIN),
