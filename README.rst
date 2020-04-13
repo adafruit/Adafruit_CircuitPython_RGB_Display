@@ -102,7 +102,7 @@ Usage Example
 1.14" TFT with Raspbery Pi 4
 -----------------------------
 
-With 1.14" `wiring <https://learn.adafruit.com/adafruit-1-44-color-tft-with-micro-sd-socket/python-wiring-and-setup>`_, here is the working code:
+With 1.14" `wiring <https://learn.adafruit.com/adafruit-1-14-240x135-color-tft-breakout/python-wiring-and-setup>`_, here is the working code:
 
 .. code-block:: python
 
