@@ -60,6 +60,9 @@ To install in a virtual environment in your current project:
 Usage Example
 =============
 
+2.2", 2.4", 2.8", 3.2" TFT
+---------------------------
+
 .. code-block:: python
 
   import time
@@ -94,6 +97,59 @@ Usage Example
       display.fill(color565(0, 0, 255))
       # Pause 2 seconds.
       time.sleep(2)
+
+
+1.14" TFT with Raspbery Pi 4
+-----------------------------
+
+With 1.14" `wiring <https://learn.adafruit.com/adafruit-1-14-240x135-color-tft-breakout/python-wiring-and-setup>`_, here is the working code:
+
+.. code-block:: python
+
+  import time
+  import busio
+  import digitalio
+  from board import SCK, MOSI, MISO, CE0, D24, D25
+
+  from adafruit_rgb_display import color565
+  from adafruit_rgb_display.st7789 import ST7789
+
+
+  # Configuration for CS and DC pins:
+  CS_PIN = CE0
+  DC_PIN = D25
+  RESET_PIN = D24
+  BAUDRATE = 24000000
+
+  # Setup SPI bus using hardware SPI:
+  spi = busio.SPI(clock=SCK, MOSI=MOSI, MISO=MISO)
+
+  # Create the ST7789 display:
+  display = ST7789(
+      spi,
+      rotation=90,
+      width=135,
+      height=240,
+      x_offset=53,
+      y_offset=40,
+      baudrate=BAUDRATE,
+      cs=digitalio.DigitalInOut(CS_PIN),
+      dc=digitalio.DigitalInOut(DC_PIN),
+      rst=digitalio.DigitalInOut(RESET_PIN))
+
+  # Main loop: same as above
+  while True:
+      # Clear the display
+      display.fill(0)
+      # Draw a red pixel in the center.
+      display.pixel(120, 160, color565(255, 0, 0))
+      # Pause 2 seconds.
+      time.sleep(2)
+      # Clear the screen blue.
+      display.fill(color565(0, 0, 255))
+      # Pause 2 seconds.
+      time.sleep(2)
+      
 
 Contributing
 ============
