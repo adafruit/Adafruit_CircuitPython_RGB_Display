@@ -30,7 +30,11 @@ Please ensure all dependencies are available on the CircuitPython filesystem.
 This is easily achieved by downloading
 `the Adafruit library and driver bundle <https://github.com/adafruit/Adafruit_CircuitPython_Bundle>`_.
 
-For improved performance consider installing numpy.
+For the Pillow Examples, you will need to be running CPython. This means using a Single Board Computer
+such as a Raspberry Pi or using a chip such as an FT232H on Linux, Window, or Mac. CircuitPython does
+not support PIL/pillow (python imaging library)!
+
+For improved performance consider installing NumPy.
 
 Installing from PyPI
 ====================
@@ -149,7 +153,7 @@ With 1.14" `wiring <https://learn.adafruit.com/adafruit-1-14-240x135-color-tft-b
       display.fill(color565(0, 0, 255))
       # Pause 2 seconds.
       time.sleep(2)
-      
+
 
 Contributing
 ============

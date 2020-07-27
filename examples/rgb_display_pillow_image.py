@@ -1,3 +1,13 @@
+"""
+Be sure to check the learn guides for more usage information.
+
+This example is for use on (Linux) computers that are using CPython with
+Adafruit Blinka to support CircuitPython libraries. CircuitPython does
+not support PIL/pillow (python imaging library)!
+
+Author(s): Melissa LeBlanc-Williams for Adafruit Industries
+"""
+
 import digitalio
 import board
 from PIL import Image, ImageDraw
