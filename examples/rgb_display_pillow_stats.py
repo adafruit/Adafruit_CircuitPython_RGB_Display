@@ -1,3 +1,13 @@
+"""
+This will show some Linux Statistics on the attached display. Be sure to adjust
+to the display you have connected. Be sure to check the learn guides for more
+usage information.
+
+This example is for use on (Linux) computers that are using CPython with
+Adafruit Blinka to support CircuitPython libraries. CircuitPython does
+not support PIL/pillow (python imaging library)!
+"""
+
 import time
 import subprocess
 import digitalio
