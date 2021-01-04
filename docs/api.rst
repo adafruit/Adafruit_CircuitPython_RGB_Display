@@ -21,3 +21,6 @@
 
 .. automodule:: adafruit_rgb_display.st7735
   :members:
+
+.. automodule:: adafruit_rgb_display.st7789
+  :members:
