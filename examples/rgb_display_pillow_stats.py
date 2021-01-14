@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 """
 This will show some Linux Statistics on the attached display. Be sure to adjust
 to the display you have connected. Be sure to check the learn guides for more

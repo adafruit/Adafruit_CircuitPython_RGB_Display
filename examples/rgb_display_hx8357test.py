@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 # Quick test of 3.5" TFT FeatherWing (HX8357) with Feather M0 or M4
 # Will fill the TFT black and put a red pixel in the center, wait 2 seconds,
 # then fill the screen blue (with no pixel), wait 2 seconds, and repeat.
