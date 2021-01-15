@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 # Quick test of TFT FeatherWing (ST7789) with Feather M0 or M4
 # This will work even on a device running displayio
 # Will fill the TFT black and put a red pixel in the center, wait 2 seconds,
