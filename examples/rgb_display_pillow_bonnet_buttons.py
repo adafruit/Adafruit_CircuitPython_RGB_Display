@@ -156,6 +156,7 @@ while True:
     draw.ellipse((190, 40, 230, 80), outline=button_outline, fill=B_fill)  # B button
 
     # make a random color and print text
+    # pylint: disable=consider-using-generator
     rcolor = tuple([int(x * 255) for x in hsv_to_rgb(random.random(), 1, 1)])
     draw.text((20, 150), "Hello World", font=fnt, fill=rcolor)
     rcolor = tuple([int(x * 255) for x in hsv_to_rgb(random.random(), 1, 1)])
