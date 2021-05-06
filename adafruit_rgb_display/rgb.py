@@ -188,7 +188,7 @@ class Display:  # pylint: disable-msg=no-member
                 )
             )
         if numpy:
-            pixels = list(image_to_data(img))
+            pixels = bytes(image_to_data(img))
         else:
             # Slower but doesn't require numpy
             pixels = bytearray(imwidth * imheight * 2)
