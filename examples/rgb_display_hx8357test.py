@@ -10,7 +10,7 @@ import digitalio
 import board
 
 from adafruit_rgb_display.rgb import color565
-import adafruit_rgb_display.hx8357 as hx8357
+from adafruit_rgb_display import hx8357
 
 # Configuration for CS and DC pins (these are TFT FeatherWing defaults):
 cs_pin = digitalio.DigitalInOut(board.D9)
