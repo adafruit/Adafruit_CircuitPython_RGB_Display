@@ -155,6 +155,11 @@ With 1.14" `wiring <https://learn.adafruit.com/adafruit-1-14-240x135-color-tft-b
       time.sleep(2)
 
 
+Documentation
+=============
+
+API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/rgb_display/en/latest/>`_.
+
 Contributing
 ============
 
