@@ -14,12 +14,12 @@ Author(s): Melissa LeBlanc-Williams for Adafruit Industries
 import digitalio
 import board
 from PIL import Image, ImageDraw
-import adafruit_rgb_display.ili9341 as ili9341
-import adafruit_rgb_display.st7789 as st7789  # pylint: disable=unused-import
-import adafruit_rgb_display.hx8357 as hx8357  # pylint: disable=unused-import
-import adafruit_rgb_display.st7735 as st7735  # pylint: disable=unused-import
-import adafruit_rgb_display.ssd1351 as ssd1351  # pylint: disable=unused-import
-import adafruit_rgb_display.ssd1331 as ssd1331  # pylint: disable=unused-import
+from adafruit_rgb_display import ili9341
+from adafruit_rgb_display import st7789  # pylint: disable=unused-import
+from adafruit_rgb_display import hx8357  # pylint: disable=unused-import
+from adafruit_rgb_display import st7735  # pylint: disable=unused-import
+from adafruit_rgb_display import ssd1351  # pylint: disable=unused-import
+from adafruit_rgb_display import ssd1331  # pylint: disable=unused-import
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)
