@@ -113,8 +113,8 @@ class SSD1351(DisplaySPI):
         y_offset=0,
         rotation=0
     ):
-        if baudrate > 16000000:  # Limit to Display Max Baudrate
-            baudrate = 16000000
+        baudrate = min(baudrate, 16000000)  # Limit to Display Max Baudrate
+
         super().__init__(
             spi,
             dc,

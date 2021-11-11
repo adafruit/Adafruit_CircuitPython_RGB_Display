@@ -9,7 +9,7 @@ import struct
 import digitalio
 import board
 from PIL import Image, ImageDraw
-import adafruit_rgb_display.st7789 as st7789
+from adafruit_rgb_display import st7789
 
 # definitions from linux/fb.h
 FBIOGET_VSCREENINFO = 0x4600
