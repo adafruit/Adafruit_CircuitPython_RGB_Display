@@ -10,11 +10,7 @@ A simple driver for the ILI9341/ILI9340-based displays.
 
 * Author(s): Radomir Dopieralski, Michael McWethy
 """
-
-try:
-    import struct
-except ImportError:
-    import ustruct as struct
+import struct
 
 from adafruit_rgb_display.rgb import DisplaySPI
 
