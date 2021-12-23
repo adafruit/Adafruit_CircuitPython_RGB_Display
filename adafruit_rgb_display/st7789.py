@@ -11,10 +11,8 @@ A simple driver for the ST7789-based displays.
 * Author(s): Melissa LeBlanc-Williams
 """
 
-try:
-    import struct
-except ImportError:
-    import ustruct as struct
+import struct
+
 from micropython import const
 from adafruit_rgb_display.rgb import DisplaySPI
 

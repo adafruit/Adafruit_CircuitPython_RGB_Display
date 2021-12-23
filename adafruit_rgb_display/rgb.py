@@ -11,16 +11,13 @@ Base class for all RGB Display devices
 * Author(s): Radomir Dopieralski, Michael McWethy
 """
 
+import struct
 import time
 
 try:
     import numpy
 except ImportError:
     numpy = None
-try:
-    import struct
-except ImportError:
-    import ustruct as struct
 
 from adafruit_bus_device import spi_device
 
