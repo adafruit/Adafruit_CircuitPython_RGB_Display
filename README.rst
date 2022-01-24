@@ -2,7 +2,7 @@ Introduction
 ============
 
 .. image:: https://readthedocs.org/projects/adafruit-circuitpython-rgb_display/badge/?version=latest
-    :target: https://circuitpython.readthedocs.io/projects/rgb_display/en/latest/
+    :target: https://docs.circuitpython.org/projects/rgb_display/en/latest/
     :alt: Documentation Status
 
 .. image :: https://img.shields.io/discord/327254708534116352.svg
@@ -158,7 +158,7 @@ With 1.14" `wiring <https://learn.adafruit.com/adafruit-1-14-240x135-color-tft-b
 Documentation
 =============
 
-API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/rgb_display/en/latest/>`_.
+API documentation for this library can be found on `Read the Docs <https://docs.circuitpython.org/projects/rgb_display/en/latest/>`_.
 
 Contributing
 ============
