@@ -13,6 +13,7 @@ Adafruit Blinka to support CircuitPython libraries. CircuitPython does
 not support PIL/pillow (python imaging library)!
 
 Author(s): Melissa LeBlanc-Williams for Adafruit Industries
+           Mike Mallett <mike@nerdcore.net>
 """
 import os
 import time
@@ -122,7 +123,7 @@ class AnimatedGif:
             frame_object.image = ImageOps.pad(  # pylint: disable=no-member
                 image.convert("RGB"),
                 (self._width, self._height),
-                method=Image.NEAREST,
+                method=Image.Resampling.NEAREST,
                 color=(0, 0, 0),
                 centering=(0.5, 0.5),
             )
