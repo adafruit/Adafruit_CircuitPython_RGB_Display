@@ -139,11 +139,14 @@ class AnimatedGif:
             for frame_object in self._frames:
                 start_time = time.monotonic()
                 self.display.image(frame_object.image)
+                # If the user pressed a button, give them time (0.5s) to release it
                 if not self.advance_button.value:
                     self.advance()
+                    time.sleep(0.5)
                     return False
                 if not self.back_button.value:
                     self.back()
+                    time.sleep(0.5)
                     return False
                 while time.monotonic() < (start_time + frame_object.duration / 1000):
                     pass
