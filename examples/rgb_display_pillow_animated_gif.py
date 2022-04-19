@@ -89,6 +89,7 @@ class AnimatedGif:
     def load_files(self, folder):
         gif_files = [f for f in os.listdir(folder) if f.endswith(".gif")]
         for gif_file in gif_files:
+            gif_file = os.path.join(folder, gif_file)
             image = Image.open(gif_file)
             # Only add animated Gifs
             if image.is_animated:
