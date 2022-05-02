@@ -133,6 +133,8 @@ class AnimatedGif:
     def play(self):
         self.preload()
 
+        _prev_advance_btn_val = self.advance_button.value
+        _prev_back_btn_val = self.back_button.value
         # Check if we have loaded any files first
         if not self._gif_files:
             print("There are no Gif Images loaded to Play")
@@ -141,12 +143,17 @@ class AnimatedGif:
             for frame_object in self._frames:
                 start_time = time.monotonic()
                 self.display.image(frame_object.image)
-                if not self.advance_button.value:
+                _cur_advance_btn_val = self.advance_button.value
+                _cur_back_btn_val = self.back_button.value
+                if not _cur_advance_btn_val and _prev_advance_btn_val:
                     self.advance()
                     return False
-                if not self.back_button.value:
+                if not _cur_back_btn_val and _prev_back_btn_val:
                     self.back()
                     return False
+
+                _prev_back_btn_val = _cur_back_btn_val
+                _prev_advance_btn_val = _cur_advance_btn_val
                 while time.monotonic() < (start_time + frame_object.duration / 1000):
                     pass
 
