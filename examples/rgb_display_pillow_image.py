@@ -42,7 +42,9 @@ spi = board.SPI()
 # disp = hx8357.HX8357(spi, rotation=180,                           # 3.5" HX8357
 # disp = st7735.ST7735R(spi, rotation=90,                           # 1.8" ST7735R
 # disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
-# disp = st7735.ST7735R(spi, rotation=90, bgr=True,                 # 0.96" MiniTFT ST7735R
+# disp = st7735.ST7735R(spi, rotation=90, bgr=True, width=80,       # 0.96" MiniTFT Rev A ST7735R
+# disp = st7735.ST7735R(spi, rotation=90, invert=True, width=80,    # 0.96" MiniTFT Rev B ST7735R
+# x_offset=26, y_offset=1,
 # disp = ssd1351.SSD1351(spi, rotation=180,                         # 1.5" SSD1351
 # disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180, # 1.27" SSD1351
 # disp = ssd1331.SSD1331(spi, rotation=180,                         # 0.96" SSD1331

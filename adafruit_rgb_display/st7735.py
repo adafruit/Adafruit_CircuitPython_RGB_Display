@@ -195,9 +195,11 @@ class ST7735R(ST7735):
         x_offset=0,
         y_offset=0,
         rotation=0,
-        bgr=False
+        bgr=False,
+        invert=False,
     ):
         self._bgr = bgr
+        self._invert = invert
         super().__init__(
             spi,
             dc,
@@ -227,7 +229,8 @@ class ST7735R(ST7735):
             self.write(command, data)
         if self._bgr:
             self.write(_MADCTL, b"\xc0")
-
+        if self._invert:
+            self.write(_INVON, None)
 
 class ST7735S(ST7735):
     """A simple driver for the ST7735S-based displays."""
