@@ -132,7 +132,7 @@ class ST7735(DisplaySPI):
         *,
         x_offset=0,
         y_offset=0,
-        rotation=0
+        rotation=0,
     ):
         super().__init__(
             spi,
@@ -232,6 +232,7 @@ class ST7735R(ST7735):
         if self._invert:
             self.write(_INVON, None)
 
+
 class ST7735S(ST7735):
     """A simple driver for the ST7735S-based displays."""
 
@@ -283,7 +284,7 @@ class ST7735S(ST7735):
         *,
         x_offset=2,
         y_offset=1,
-        rotation=0
+        rotation=0,
     ):
         self._bl = bl
         # Turn on backlight
