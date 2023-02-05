@@ -34,6 +34,7 @@ _build
 
 # This file results from running `pip -e install .` in a local repository
 *.egg-info
+.eggs
 
 # Virtual environment-specific files
 .env
