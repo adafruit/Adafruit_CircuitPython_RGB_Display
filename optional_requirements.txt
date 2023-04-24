@@ -1,3 +1,8 @@
 # SPDX-FileCopyrightText: 2022 Alec Delaney, for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: Unlicense
+
+#adafruit_bus_device
+#numpy
+#PIL

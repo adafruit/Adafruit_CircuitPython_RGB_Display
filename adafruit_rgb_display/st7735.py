@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2017 Radomir Dopieralski for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: MIT
 
@@ -8,12 +9,19 @@
 
 A simple driver for the ST7735-based displays.
 
-* Author(s): Radomir Dopieralski, Michael McWethy
+* Author(s): Radomir Dopieralski, Michael McWethy, Matt Land
 """
 import struct
 
 from micropython import const
 from adafruit_rgb_display.rgb import DisplaySPI
+
+try:
+    from typing import Optional, Tuple, ByteString, Union
+    import digitalio
+    import busio
+except ImportError:
+    pass
 
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
@@ -113,27 +121,27 @@ class ST7735(DisplaySPI):
         (_RASET, b"\x00\x02\x00\x81"),  # XSTART = 2, XEND = 129
         (_NORON, None),
         (_DISPON, None),
-    )
+    )  # type: Tuple[Tuple[int, Union[ByteString, None]], ...]
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
 
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
-        spi,
-        dc,
-        cs,
-        rst=None,
-        width=128,
-        height=128,
-        baudrate=16000000,
-        polarity=0,
-        phase=0,
+        spi: busio.SPI,
+        dc: digitalio.DigitalInOut,
+        cs: digitalio.DigitalInOut,
+        rst: Optional[digitalio.DigitalInOut] = None,
+        width: int = 128,
+        height: int = 128,
+        baudrate: int = 16000000,
+        polarity: int = 0,
+        phase: int = 0,
         *,
-        x_offset=0,
-        y_offset=0,
-        rotation=0,
-    ):
+        x_offset: int = 0,
+        y_offset: int = 0,
+        rotation: int = 0,
+    ) -> None:
         super().__init__(
             spi,
             dc,
@@ -182,22 +190,22 @@ class ST7735R(ST7735):
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
-        spi,
-        dc,
-        cs,
-        rst=None,
-        width=128,
-        height=160,
-        baudrate=16000000,
-        polarity=0,
-        phase=0,
+        spi: busio.SPI,
+        dc: digitalio.DigitalInOut,
+        cs: digitalio.DigitalInOut,
+        rst: Optional[digitalio] = None,
+        width: int = 128,
+        height: int = 160,
+        baudrate: int = 16000000,
+        polarity: int = 0,
+        phase: int = 0,
         *,
-        x_offset=0,
-        y_offset=0,
-        rotation=0,
-        bgr=False,
-        invert=False,
-    ):
+        x_offset: int = 0,
+        y_offset: int = 0,
+        rotation: int = 0,
+        bgr: bool = False,
+        invert: bool = False,
+    ) -> None:
         self._bgr = bgr
         self._invert = invert
         super().__init__(
@@ -215,7 +223,7 @@ class ST7735R(ST7735):
             rotation=rotation,
         )
 
-    def init(self):
+    def init(self) -> None:
         super().init()
         cols = struct.pack(">HH", 0, self.width - 1)
         rows = struct.pack(">HH", 0, self.height - 1)
@@ -271,21 +279,21 @@ class ST7735S(ST7735):
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
-        spi,
-        dc,
-        cs,
-        bl,
-        rst=None,
-        width=128,
-        height=160,
-        baudrate=16000000,
-        polarity=0,
-        phase=0,
+        spi: busio.SPI,
+        dc: digitalio.DigitalInOut,
+        cs: digitalio.DigitalInOut,
+        bl: digitalio.DigitalInOut,  # Backlight
+        rst: Optional[digitalio.DigitalInOut] = None,
+        width: int = 128,
+        height: int = 160,
+        baudrate: int = 16000000,
+        polarity: int = 0,
+        phase: int = 0,
         *,
-        x_offset=2,
-        y_offset=1,
-        rotation=0,
-    ):
+        x_offset: int = 2,
+        y_offset: int = 1,
+        rotation: int = 0,
+    ) -> None:
         self._bl = bl
         # Turn on backlight
         self._bl.switch_to_output(value=1)

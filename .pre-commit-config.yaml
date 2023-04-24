@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2020 Diego Elio Pettenò
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: Unlicense
 
@@ -40,3 +41,16 @@ repos:
         files: "^tests/"
         args:
           - --disable=missing-docstring,consider-using-f-string,duplicate-code
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (library code)
+        entry: "mypy adafruit_rgb_display"
+        language: python
+        additional_dependencies: ["mypy==1.2.0"]
+        types: [python]
+        exclude: "^(docs/|examples/|tests/|setup.py$)"
+        # use require_serial so that script
+        # is only called once per commit
+        require_serial: true
+        pass_filenames: false

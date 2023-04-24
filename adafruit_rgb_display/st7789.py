@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2019 Melissa LeBlanc-Williams for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: MIT
 
@@ -8,13 +9,20 @@
 
 A simple driver for the ST7789-based displays.
 
-* Author(s): Melissa LeBlanc-Williams
+* Author(s): Melissa LeBlanc-Williams, Matt Land
 """
 
 import struct
 
+import busio
+import digitalio
 from micropython import const
 from adafruit_rgb_display.rgb import DisplaySPI
+
+try:
+    from typing import Optional
+except ImportError:
+    pass
 
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
@@ -96,20 +104,20 @@ class ST7789(DisplaySPI):
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
-        spi,
-        dc,
-        cs,
-        rst=None,
-        width=240,
-        height=320,
-        baudrate=16000000,
-        polarity=0,
-        phase=0,
+        spi: busio.SPI,
+        dc: digitalio.DigitalInOut,
+        cs: digitalio.DigitalInOut,
+        rst: Optional[digitalio.DigitalInOut] = None,
+        width: int = 240,
+        height: int = 320,
+        baudrate: int = 16000000,
+        polarity: int = 0,
+        phase: int = 0,
         *,
-        x_offset=0,
-        y_offset=0,
-        rotation=0
-    ):
+        x_offset: int = 0,
+        y_offset: int = 0,
+        rotation: int = 0
+    ) -> None:
         super().__init__(
             spi,
             dc,
@@ -125,8 +133,7 @@ class ST7789(DisplaySPI):
             rotation=rotation,
         )
 
-    def init(self):
-
+    def init(self) -> None:
         super().init()
         cols = struct.pack(">HH", self._X_START, self.width + self._X_START)
         rows = struct.pack(">HH", self._Y_START, self.height + self._Y_START)

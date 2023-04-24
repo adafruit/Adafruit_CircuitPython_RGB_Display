@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2017 Radomir Dopieralski for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: MIT
 
@@ -8,11 +9,18 @@
 
 A simple driver for the SSD1331-based displays.
 
-* Author(s): Radomir Dopieralski, Michael McWethy
+* Author(s): Radomir Dopieralski, Michael McWethy, Matt Land
 """
 
 from micropython import const
 from adafruit_rgb_display.rgb import DisplaySPI
+
+try:
+    from typing import Optional, ByteString
+    import digitalio
+    import busio
+except ImportError:
+    pass
 
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
@@ -107,18 +115,18 @@ class SSD1331(DisplaySPI):
     # super required to allow override of default values
     def __init__(
         self,
-        spi,
-        dc,
-        cs,
-        rst=None,
-        width=96,
-        height=64,
-        baudrate=16000000,
-        polarity=0,
-        phase=0,
+        spi: busio.SPI,
+        dc: digitalio.DigitalInOut,
+        cs: digitalio.DigitalInOut,
+        rst: Optional[digitalio.DigitalInOut] = None,
+        width: int = 96,
+        height: int = 64,
+        baudrate: int = 16000000,
+        polarity: int = 0,
+        phase: int = 0,
         *,
-        rotation=0
-    ):
+        rotation: int = 0
+    ) -> None:
         super().__init__(
             spi,
             dc,
@@ -133,7 +141,9 @@ class SSD1331(DisplaySPI):
         )
 
     # pylint: disable=no-member
-    def write(self, command=None, data=None):
+    def write(
+        self, command: Optional[int] = None, data: Optional[ByteString] = None
+    ) -> None:
         """write procedure specific to SSD1331"""
         self.dc_pin.value = command is None
         with self.spi_device as spi:

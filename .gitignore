@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2022 Kattni Rembor, written for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: MIT
 
@@ -47,3 +48,5 @@ _build
 .idea
 .vscode
 *~
+
+.mypy_cache/

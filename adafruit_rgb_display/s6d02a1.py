@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2017 Radomir Dopieralski for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: MIT
 
@@ -8,11 +9,18 @@
 
 A simple driver for the S6D02A1-based displays.
 
-* Author(s): Radomir Dopieralski, Michael McWethy
+* Author(s): Radomir Dopieralski, Michael McWethy, Matt Land
 """
 
 from micropython import const
 from adafruit_rgb_display.rgb import DisplaySPI
+
+try:
+    from typing import Optional
+    import digitalio
+    import busio
+except ImportError:
+    pass
 
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
@@ -59,5 +67,22 @@ class S6D02A1(DisplaySPI):
     _ENCODE_POS = ">HH"
 
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
-    def __init__(self, spi, dc, cs, rst=None, width=128, height=160, rotation=0):
-        super().__init__(spi, dc, cs, rst, width, height, rotation)
+    def __init__(
+        self,
+        spi: busio.SPI,
+        dc: digitalio.DigitalInOut,
+        cs: digitalio.DigitalInOut,
+        rst: Optional[digitalio.DigitalInOut] = None,
+        width: int = 128,
+        height: int = 160,
+        rotation: int = 0,
+    ):
+        super().__init__(
+            spi=spi,
+            dc=dc,
+            cs=cs,
+            rst=rst,
+            width=width,
+            height=height,
+            rotation=rotation,
+        )
