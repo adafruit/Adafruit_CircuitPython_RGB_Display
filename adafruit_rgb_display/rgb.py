@@ -20,7 +20,7 @@ try:
     import digitalio
     import busio
 
-    Image = Any  # from PIL import Image
+    from circuitpython_typing.pil import Image
 except ImportError:
     pass
 
@@ -176,7 +176,7 @@ class Display:  # pylint: disable-msg=no-member
         """Encode a position into bytes."""
         return struct.pack(self._ENCODE_POS, x, y)
 
-    def _encode_pixel(self, color: Any) -> bytes:
+    def _encode_pixel(self, color: Union[int, Tuple]) -> bytes:
         """Encode a pixel color into bytes."""
         return struct.pack(self._ENCODE_PIXEL, color)
 
@@ -184,7 +184,9 @@ class Display:  # pylint: disable-msg=no-member
         """Decode bytes into a pixel color."""
         return color565(*struct.unpack(self._DECODE_PIXEL, data))
 
-    def pixel(self, x: int, y: int, color: Optional[Any] = None) -> Optional[int]:
+    def pixel(
+        self, x: int, y: int, color: Optional[Union[int, Tuple]] = None
+    ) -> Optional[int]:
         """Read or write a pixel at a given position."""
         if color is None:
             return self._decode_pixel(self._block(x, y, x, y))  # type: ignore[arg-type]
@@ -232,7 +234,7 @@ class Display:  # pylint: disable-msg=no-member
 
     # pylint: disable-msg=too-many-arguments
     def fill_rectangle(
-        self, x: int, y: int, width: int, height: int, color: Any
+        self, x: int, y: int, width: int, height: int, color: Union[int, Tuple]
     ) -> None:
         """Draw a rectangle at specified position with specified width and
         height, and fill it with the specified color."""
@@ -251,15 +253,15 @@ class Display:  # pylint: disable-msg=no-member
 
     # pylint: enable-msg=too-many-arguments
 
-    def fill(self, color: Any = 0) -> None:
+    def fill(self, color: Union[int, Tuple] = 0) -> None:
         """Fill the whole display with the specified color."""
         self.fill_rectangle(0, 0, self.width, self.height, color)
 
-    def hline(self, x: int, y: int, width: int, color: Any) -> None:
+    def hline(self, x: int, y: int, width: int, color: Union[int, Tuple]) -> None:
         """Draw a horizontal line."""
         self.fill_rectangle(x, y, width, 1, color)
 
-    def vline(self, x: int, y: int, height: int, color: Any) -> None:
+    def vline(self, x: int, y: int, height: int, color: Union[int, Tuple]) -> None:
         """Draw a vertical line."""
         self.fill_rectangle(x, y, 1, height, color)
 
@@ -339,7 +341,7 @@ class DisplaySPI(Display):
         self.dc_pin.value = 0
         with self.spi_device as spi:
             if command is not None:
-                spi.write(bytearray([command]))  # change to self.write()
+                spi.write(bytearray([command]))
             if count:
                 spi.readinto(data)
         return data
