@@ -89,7 +89,7 @@ class DummyPin:
         """Dummy switch_to_input method"""
 
     @property
-    def value(self) -> digitalio.DigitalInOut:
+    def value(self) -> bool:
         """Dummy value DigitalInOut property"""
 
     @value.setter
