@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2017 Radomir Dopieralski for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: MIT
 
@@ -8,11 +9,18 @@
 
 A simple driver for the ILI9341/ILI9340-based displays.
 
-* Author(s): Radomir Dopieralski, Michael McWethy
+* Author(s): Radomir Dopieralski, Michael McWethy, Matt Land
 """
 import struct
 
 from adafruit_rgb_display.rgb import DisplaySPI
+
+try:
+    from typing import Optional
+    import digitalio
+    import busio
+except ImportError:
+    pass
 
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
@@ -74,16 +82,16 @@ class ILI9341(DisplaySPI):
     # pylint: disable-msg=too-many-arguments
     def __init__(
         self,
-        spi,
-        dc,
-        cs,
-        rst=None,
-        width=240,
-        height=320,
-        baudrate=16000000,
-        polarity=0,
-        phase=0,
-        rotation=0,
+        spi: busio.SPI,
+        dc: digitalio.DigitalInOut,
+        cs: digitalio.DigitalInOut,
+        rst: Optional[digitalio.DigitalInOut] = None,
+        width: int = 240,
+        height: int = 320,
+        baudrate: int = 16000000,
+        polarity: int = 0,
+        phase: int = 0,
+        rotation: int = 0,
     ):
         super().__init__(
             spi,
@@ -101,7 +109,9 @@ class ILI9341(DisplaySPI):
 
     # pylint: enable-msg=too-many-arguments
 
-    def scroll(self, dy=None):  # pylint: disable-msg=invalid-name
+    def scroll(
+        self, dy: Optional[int] = None  # pylint: disable-msg=invalid-name
+    ) -> Optional[int]:
         """Scroll the display by delta y"""
         if dy is None:
             return self._scroll

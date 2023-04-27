@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2019 Melissa LeBlanc-Williams for Adafruit Industries
+# SPDX-FileCopyrightText: 2023 Matt Land
 #
 # SPDX-License-Identifier: MIT
 
@@ -8,10 +9,17 @@
 
 A simple driver for the HX8357-based displays.
 
-* Author(s): Melissa LeBlanc-Williams
+* Author(s): Melissa LeBlanc-Williams, Matt Land
 """
 from micropython import const
 from adafruit_rgb_display.rgb import DisplaySPI
+
+try:
+    from typing import Optional
+    import digitalio
+    import busio
+except ImportError:
+    pass
 
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
@@ -94,16 +102,16 @@ class HX8357(DisplaySPI):
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
-        spi,
-        dc,
-        cs,
-        rst=None,
-        width=480,
-        height=320,
-        baudrate=16000000,
-        polarity=0,
-        phase=0,
-        rotation=0,
+        spi: busio.SPI,
+        dc: digitalio.DigitalInOut,
+        cs: digitalio.DigitalInOut,
+        rst: Optional[digitalio.DigitalInOut] = None,
+        width: int = 480,
+        height: int = 320,
+        baudrate: int = 16000000,
+        polarity: int = 0,
+        phase: int = 0,
+        rotation: int = 0,
     ):
         super().__init__(
             spi,
