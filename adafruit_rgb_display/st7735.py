@@ -193,7 +193,7 @@ class ST7735R(ST7735):
         spi: busio.SPI,
         dc: digitalio.DigitalInOut,
         cs: digitalio.DigitalInOut,
-        rst: Optional[digitalio] = None,
+        rst: Optional[digitalio.DigitalInOut] = None,
         width: int = 128,
         height: int = 160,
         baudrate: int = 16000000,
