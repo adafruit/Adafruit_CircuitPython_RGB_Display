@@ -124,7 +124,7 @@ class AnimatedGif:
             frame_object.image = ImageOps.pad(  # pylint: disable=no-member
                 image.convert("RGB"),
                 (self._width, self._height),
-                method=Image.Resampling.NEAREST,
+                method=Image.NEAREST,
                 color=(0, 0, 0),
                 centering=(0.5, 0.5),
             )
