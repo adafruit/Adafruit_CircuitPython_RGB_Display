@@ -86,7 +86,7 @@ if screen_ratio < image_ratio:
 else:
     scaled_width = width
     scaled_height = image.height * width // image.width
-image = image.resize((scaled_width, scaled_height), Image.Resampling.BICUBIC)
+image = image.resize((scaled_width, scaled_height), Image.BICUBIC)
 
 # Crop and center the image
 x = scaled_width // 2 - width // 2
