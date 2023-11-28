@@ -48,14 +48,19 @@ except ImportError:
 
 def color565(
     r: Union[int, Tuple[int, int, int], List[int]],
-    g: int = 0,
-    b: int = 0,
+    g: Optional[int] = 0,
+    b: Optional[int] = 0,
 ) -> int:
     """Convert red, green and blue values (0-255) into a 16-bit 565 encoding.  As
     a convenience this is also available in the parent adafruit_rgb_display
     package namespace."""
-    if not isinstance(r, int):  # see if the first var is a tuple/list
-        red, g, b = r
+    if isinstance(r, (tuple, list)):  # see if the first var is a tuple/list
+        if len(r) >= 3:
+            red, g, b = r
+        else:
+            raise ValueError(
+                "Not enough values to unpack (expected 3, got %d)" % len(r)
+            )
     else:
         red = r
     return (red & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
