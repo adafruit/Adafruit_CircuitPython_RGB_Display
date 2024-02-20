@@ -56,7 +56,7 @@ def color565(
     package namespace."""
     if isinstance(r, (tuple, list)):  # see if the first var is a tuple/list
         if len(r) >= 3:
-            red, g, b = r
+            red, g, b = r[0:3]
         else:
             raise ValueError(
                 "Not enough values to unpack (expected 3, got %d)" % len(r)
