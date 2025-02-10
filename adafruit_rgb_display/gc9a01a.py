@@ -77,28 +77,26 @@ class GC9A01A(DisplaySPI):
     RAM_READ = _RAMRD
 
     _INIT = (
-        (_SWRESET, None),
-        (0xFE, None),  # Inter Register Enable1
-        (0xEF, None),  # Inter Register Enable2
-        (0xB6, b"\x00\x00"),  # Display Function Control
-        (_MADCTL, b"\x48"),  # Memory Access Control
-        (_COLMOD, b"\x05"),  # Interface Pixel Format (16 bits/pixel)
-        (_PWCTR1, b"\x13"),  # Power Control 2
-        (_PWCTR2, b"\x13"),  # Power Control 3
+        (0xFE, b"\x00"),  # Inter Register Enable1
+        (0xEF, b"\x00"),  # Inter Register Enable2
+        (0xB6, b"\x00\x00"),  # Display Function Control [S1→S360 source, G1→G32 gate]
+        (_MADCTL, b"\x48"),  # Memory Access Control [Invert Row order, invert vertical scan order]
+        (_COLMOD, b"\x05"),  # COLMOD: Pixel Format Set [16 bits/pixel]
+        (_PWCTR1, b"\x13"),  # Power Control 2 [VREG1A = 5.06, VREG1B = 0.68]
+        (_PWCTR2, b"\x13"),  # Power Control 3 [VREG2A = -3.7, VREG2B = 0.68]
         (_PWCTR3, b"\x22"),  # Power Control 4
-        (_GMCTRP1, b"\x45\x09\x08\x08\x26\x2a"),  # Set Gamma 1
-        (_GMCTRN1, b"\x43\x70\x72\x36\x37\x6f"),  # Set Gamma 2
-        (_GMCTRP2, b"\x45\x09\x08\x08\x26\x2a"),  # Set Gamma 3
-        (_GMCTRN2, b"\x43\x70\x72\x36\x37\x6f"),  # Set Gamma 4
+        (_GMCTRP1, b"\x45\x09\x08\x08\x26\x2a"),  # SET_GAMMA1
+        (_GMCTRN1, b"\x43\x70\x72\x36\x37\x6f"),  # SET_GAMMA2
+        (_GMCTRP2, b"\x45\x09\x08\x08\x26\x2a"),  # SET_GAMMA3
+        (_GMCTRN2, b"\x43\x70\x72\x36\x37\x6f"),  # SET_GAMMA4
         (0x66, b"\x3c\x00\xcd\x67\x45\x45\x10\x00\x00\x00"),
         (0x67, b"\x00\x3c\x00\x00\x00\x01\x54\x10\x32\x98"),
         (0x74, b"\x10\x85\x80\x00\x00\x4e\x00"),
         (0x98, b"\x3e\x07"),
-        (_TEON, None),  # Tearing Effect Line ON
-        (_INVON, None),  # Display Inversion ON
-        (_SLPOUT, None),  # Exit Sleep Mode
-        (_NORON, None),  # Normal Display Mode ON
-        (_DISPON, None),  # Display ON
+        (_TEON, b"\x00"),  # Tearing Effect Line ON [both V-blanking and H-blanking]
+        (_INVON, b"\x00"),  # Display Inversion ON
+        (_SLPOUT, None),  # Sleep Out Mode (with 120ms delay)
+        (_DISPON, None),  # Display ON (with 20ms delay)
     )
 
     def __init__(
@@ -134,12 +132,13 @@ class GC9A01A(DisplaySPI):
 
     def init(self) -> None:
         super().init()
-        cols = struct.pack(">HH", 0, self.width - 1)
-        rows = struct.pack(">HH", 0, self.height - 1)
+        # Account for offsets in the column and row addressing
+        cols = struct.pack(">HH", self._X_START, self.width + self._X_START - 1)
+        rows = struct.pack(">HH", self._Y_START, self.height + self._Y_START - 1)
         
         for command, data in (
-            (_CASET, cols),
-            (_RASET, rows),
             (_MADCTL, b"\xc0"),  # Set rotation to 0 and use RGB
+            (_CASET, b"\x00\x00\x00\xef"),  # Column Address Set [Start col = 0, end col = 239]
+            (_RASET, b"\x00\x00\x00\xef"),  # Row Address Set [Start row = 0, end row = 239]
         ):
             self.write(command, data)
