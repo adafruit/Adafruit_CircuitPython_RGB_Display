@@ -124,5 +124,3 @@ class GC9A01A(DisplaySPI):
             time.sleep(0.05)
 
         super().init()
-
-        self._block(0, 0, self.width - 1, self.height - 1)
