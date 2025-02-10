@@ -26,11 +26,14 @@ except ImportError:
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_RGB_Display.git"
 
-# Command constants
-_NOP = const(0x00)
-_SWRESET = const(0x01)
-_SLPIN = const(0x10)
-_SLPOUT = const(0x11)
+# Constants for MADCTL
+_MADCTL_MY = const(0x80)  # Bottom to top
+_MADCTL_MX = const(0x40)  # Right to left
+_MADCTL_MV = const(0x20)  # Reverse Mode
+_MADCTL_ML = const(0x10)  # LCD refresh Bottom to top
+_MADCTL_RGB = const(0x00) # Red-Green-Blue pixel order
+_MADCTL_BGR = const(0x08) # Blue-Green-Red pixel order
+_MADCTL_MH = const(0x04)  # LCD refresh right to left
 _PTLON = const(0x12)
 _NORON = const(0x13)
 _INVOFF = const(0x20)
@@ -136,9 +139,19 @@ class GC9A01A(DisplaySPI):
         cols = struct.pack(">HH", self._X_START, self.width + self._X_START - 1)
         rows = struct.pack(">HH", self._Y_START, self.height + self._Y_START - 1)
         
-        for command, data in (
-            (_MADCTL, b"\xc0"),  # Set rotation to 0 and use RGB
-            (_CASET, b"\x00\x00\x00\xef"),  # Column Address Set [Start col = 0, end col = 239]
-            (_RASET, b"\x00\x00\x00\xef"),  # Row Address Set [Start row = 0, end row = 239]
-        ):
-            self.write(command, data)
+    def init(self) -> None:
+        """Initialize the display"""
+        super().init()
+        
+        # Initialize display
+        self.write(_SWRESET)
+        time.sleep(0.150)  # 150ms delay after reset
+        
+        # Set addressing mode and color format
+        self.write(_MADCTL, bytes([_MADCTL_MX | _MADCTL_BGR]))
+        
+        # Set addressing windows
+        self.write(_CASET, b"\x00\x00\x00\xef")  # Column Address Set [0-239]
+        self.write(_RASET, b"\x00\x00\x00\xef")  # Row Address Set [0-239]
+        
+        time.sleep(0.150)  # 150ms delay before turning on display
