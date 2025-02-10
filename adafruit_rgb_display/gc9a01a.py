@@ -82,6 +82,7 @@ class GC9A01A(DisplaySPI):
         (_NORON, None),  # Normal Display Mode ON
         (_DISPON, None),  # Display ON
     )
+
     # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
