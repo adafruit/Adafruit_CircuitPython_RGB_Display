@@ -10,7 +10,6 @@ A simple driver for the GC9A01A-based displays.
 
 """
 
-import struct
 import time
 import busio
 import digitalio
@@ -83,7 +82,7 @@ class GC9A01A(DisplaySPI):
         (_NORON, None),  # Normal Display Mode ON
         (_DISPON, None),  # Display ON
     )
-
+    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,
