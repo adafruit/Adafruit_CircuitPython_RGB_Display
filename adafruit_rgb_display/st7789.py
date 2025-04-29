@@ -17,6 +17,7 @@ import struct
 import busio
 import digitalio
 from micropython import const
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
@@ -116,7 +117,7 @@ class ST7789(DisplaySPI):
         *,
         x_offset: int = 0,
         y_offset: int = 0,
-        rotation: int = 0
+        rotation: int = 0,
     ) -> None:
         super().__init__(
             spi,

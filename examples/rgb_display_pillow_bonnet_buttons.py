@@ -32,12 +32,14 @@ Adafruit Blinka to support CircuitPython libraries. CircuitPython does
 not support PIL/pillow (python imaging library)!
 """
 
-import time
 import random
+import time
 from colorsys import hsv_to_rgb
+
 import board
 from digitalio import DigitalInOut, Direction
 from PIL import Image, ImageDraw, ImageFont
+
 from adafruit_rgb_display import st7789
 
 # Create the display
@@ -115,30 +117,22 @@ while True:
     up_fill = 0
     if not button_U.value:  # up pressed
         up_fill = udlr_fill
-    draw.polygon(
-        [(40, 40), (60, 4), (80, 40)], outline=udlr_outline, fill=up_fill
-    )  # Up
+    draw.polygon([(40, 40), (60, 4), (80, 40)], outline=udlr_outline, fill=up_fill)  # Up
 
     down_fill = 0
     if not button_D.value:  # down pressed
         down_fill = udlr_fill
-    draw.polygon(
-        [(60, 120), (80, 84), (40, 84)], outline=udlr_outline, fill=down_fill
-    )  # down
+    draw.polygon([(60, 120), (80, 84), (40, 84)], outline=udlr_outline, fill=down_fill)  # down
 
     left_fill = 0
     if not button_L.value:  # left pressed
         left_fill = udlr_fill
-    draw.polygon(
-        [(0, 60), (36, 42), (36, 81)], outline=udlr_outline, fill=left_fill
-    )  # left
+    draw.polygon([(0, 60), (36, 42), (36, 81)], outline=udlr_outline, fill=left_fill)  # left
 
     right_fill = 0
     if not button_R.value:  # right pressed
         right_fill = udlr_fill
-    draw.polygon(
-        [(120, 60), (84, 42), (84, 82)], outline=udlr_outline, fill=right_fill
-    )  # right
+    draw.polygon([(120, 60), (84, 42), (84, 82)], outline=udlr_outline, fill=right_fill)  # right
 
     center_fill = 0
     if not button_C.value:  # center pressed

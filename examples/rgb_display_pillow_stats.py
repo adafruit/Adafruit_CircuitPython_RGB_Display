@@ -11,17 +11,21 @@ Adafruit Blinka to support CircuitPython libraries. CircuitPython does
 not support PIL/pillow (python imaging library)!
 """
 
-import time
 import subprocess
-import digitalio
+import time
+
 import board
+import digitalio
 from PIL import Image, ImageDraw, ImageFont
-from adafruit_rgb_display import ili9341
-from adafruit_rgb_display import st7789  # pylint: disable=unused-import
-from adafruit_rgb_display import hx8357  # pylint: disable=unused-import
-from adafruit_rgb_display import st7735  # pylint: disable=unused-import
-from adafruit_rgb_display import ssd1351  # pylint: disable=unused-import
-from adafruit_rgb_display import ssd1331  # pylint: disable=unused-import
+
+from adafruit_rgb_display import (
+    hx8357,  # pylint: disable=unused-import
+    ili9341,
+    ssd1331,  # pylint: disable=unused-import
+    ssd1351,  # pylint: disable=unused-import
+    st7735,  # pylint: disable=unused-import
+    st7789,  # pylint: disable=unused-import
+)
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
 cs_pin = digitalio.DigitalInOut(board.CE0)

@@ -13,12 +13,14 @@ A simple driver for the SSD1331-based displays.
 """
 
 from micropython import const
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
-    from typing import Optional, ByteString
-    import digitalio
+    from typing import ByteString, Optional
+
     import busio
+    import digitalio
 except ImportError:
     pass
 
@@ -125,7 +127,7 @@ class SSD1331(DisplaySPI):
         polarity: int = 0,
         phase: int = 0,
         *,
-        rotation: int = 0
+        rotation: int = 0,
     ) -> None:
         super().__init__(
             spi,
@@ -141,9 +143,7 @@ class SSD1331(DisplaySPI):
         )
 
     # pylint: disable=no-member
-    def write(
-        self, command: Optional[int] = None, data: Optional[ByteString] = None
-    ) -> None:
+    def write(self, command: Optional[int] = None, data: Optional[ByteString] = None) -> None:
         """write procedure specific to SSD1331"""
         self.dc_pin.value = command is None
         with self.spi_device as spi:

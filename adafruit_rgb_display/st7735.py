@@ -11,15 +11,18 @@ A simple driver for the ST7735-based displays.
 
 * Author(s): Radomir Dopieralski, Michael McWethy, Matt Land
 """
+
 import struct
 
 from micropython import const
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
-    from typing import Optional, Tuple, ByteString, Union
-    import digitalio
+    from typing import ByteString, Optional, Tuple, Union
+
     import busio
+    import digitalio
 except ImportError:
     pass
 
@@ -179,11 +182,11 @@ class ST7735R(ST7735):
         (_INVOFF, None),
         (
             _GMCTRP1,
-            b"\x02\x1c\x07\x12\x37\x32\x29\x2d" b"\x29\x25\x2B\x39\x00\x01\x03\x10",
+            b"\x02\x1c\x07\x12\x37\x32\x29\x2d" b"\x29\x25\x2b\x39\x00\x01\x03\x10",
         ),  # Gamma
         (
             _GMCTRN1,
-            b"\x03\x1d\x07\x06\x2E\x2C\x29\x2D" b"\x2E\x2E\x37\x3F\x00\x00\x02\x10",
+            b"\x03\x1d\x07\x06\x2e\x2c\x29\x2d" b"\x2e\x2e\x37\x3f\x00\x00\x02\x10",
         ),
     )
 

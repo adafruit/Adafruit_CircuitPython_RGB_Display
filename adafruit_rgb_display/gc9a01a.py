@@ -11,9 +11,11 @@ A simple driver for the GC9A01A-based displays.
 """
 
 import time
+
 import busio
 import digitalio
 from micropython import const
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
@@ -98,7 +100,7 @@ class GC9A01A(DisplaySPI):
         *,
         x_offset: int = 0,
         y_offset: int = 0,
-        rotation: int = 0
+        rotation: int = 0,
     ) -> None:
         super().__init__(
             spi,

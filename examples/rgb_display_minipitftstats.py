@@ -3,13 +3,14 @@
 
 # -*- coding: utf-8 -*-
 
-import time
 import subprocess
-import digitalio
-import board
-from PIL import Image, ImageDraw, ImageFont
-from adafruit_rgb_display import st7789
+import time
 
+import board
+import digitalio
+from PIL import Image, ImageDraw, ImageFont
+
+from adafruit_rgb_display import st7789
 
 # Configuration for CS and DC pins (these are FeatherWing defaults on M0/M4):
 cs_pin = digitalio.DigitalInOut(board.CE0)

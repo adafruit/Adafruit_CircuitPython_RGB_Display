@@ -19,18 +19,23 @@ not support PIL/pillow (python imaging library)!
 Author(s): Melissa LeBlanc-Williams for Adafruit Industries
            Mike Mallett <mike@nerdcore.net>
 """
+
 import os
 import time
-import digitalio
+
 import board
-from PIL import Image, ImageOps
+import digitalio
 import numpy  # pylint: disable=unused-import
-from adafruit_rgb_display import ili9341
-from adafruit_rgb_display import st7789  # pylint: disable=unused-import
-from adafruit_rgb_display import hx8357  # pylint: disable=unused-import
-from adafruit_rgb_display import st7735  # pylint: disable=unused-import
-from adafruit_rgb_display import ssd1351  # pylint: disable=unused-import
-from adafruit_rgb_display import ssd1331  # pylint: disable=unused-import
+from PIL import Image, ImageOps
+
+from adafruit_rgb_display import (
+    hx8357,  # pylint: disable=unused-import
+    ili9341,
+    ssd1331,  # pylint: disable=unused-import
+    ssd1351,  # pylint: disable=unused-import
+    st7735,  # pylint: disable=unused-import
+    st7789,  # pylint: disable=unused-import
+)
 
 # Button pins for EYESPI Pi Beret
 BUTTON_NEXT = board.D5
@@ -67,7 +72,7 @@ disp = ili9341.ILI9341(spi, rotation=90,                            # 2.2", 2.4"
 # disp = st7735.ST7735R(spi, rotation=90,                           # 1.8" ST7735R
 # disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
 # disp = st7735.ST7735R(spi, rotation=90, bgr=True, width=80,       # 0.96" MiniTFT Rev A ST7735R
-# disp = st7735.ST7735R(spi, rotation=90, invert=True, width=80, x_offset=26, y_offset=1,  # 0.96" MiniTFT Rev B ST7735R
+# disp = st7735.ST7735R(spi, rotation=90, invert=True, width=80, x_offset=26, y_offset=1,  # 0.96" MiniTFT Rev B ST7735R  # noqa: E501
 # disp = ssd1351.SSD1351(spi, rotation=180,                         # 1.5" SSD1351
 # disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180, # 1.27" SSD1351
 # disp = ssd1331.SSD1331(spi, rotation=180,                         # 0.96" SSD1331
@@ -126,7 +131,7 @@ class AnimatedGif:
     def load_files(self, folder):
         gif_files = [f for f in os.listdir(folder) if f.endswith(".gif")]
         for gif_file in gif_files:
-            gif_file = os.path.join(folder, gif_file)
+            gif_file = os.path.join(folder, gif_file)  # noqa: PLW2901, loop var overwrite
             image = Image.open(gif_file)
             # Only add animated Gifs
             if image.is_animated:
@@ -135,11 +140,11 @@ class AnimatedGif:
         print("Found", self._gif_files)
         if not self._gif_files:
             print("No Gif files found in current folder")
-            exit()  # pylint: disable=consider-using-sys-exit
+            exit()  # noqa: PLR1722, use sys.exit
 
     def preload(self):
         image = Image.open(self._gif_files[self._index])
-        print("Loading {}...".format(self._gif_files[self._index]))
+        print(f"Loading {self._gif_files[self._index]}...")
         if "duration" in image.info:
             self._duration = image.info["duration"]
         else:

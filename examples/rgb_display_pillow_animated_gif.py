@@ -15,18 +15,23 @@ not support PIL/pillow (python imaging library)!
 Author(s): Melissa LeBlanc-Williams for Adafruit Industries
            Mike Mallett <mike@nerdcore.net>
 """
+
 import os
 import time
-import digitalio
+
 import board
-from PIL import Image, ImageOps
+import digitalio
 import numpy  # pylint: disable=unused-import
-from adafruit_rgb_display import ili9341
-from adafruit_rgb_display import st7789  # pylint: disable=unused-import
-from adafruit_rgb_display import hx8357  # pylint: disable=unused-import
-from adafruit_rgb_display import st7735  # pylint: disable=unused-import
-from adafruit_rgb_display import ssd1351  # pylint: disable=unused-import
-from adafruit_rgb_display import ssd1331  # pylint: disable=unused-import
+from PIL import Image, ImageOps
+
+from adafruit_rgb_display import (
+    hx8357,  # pylint: disable=unused-import
+    ili9341,
+    ssd1331,  # pylint: disable=unused-import
+    ssd1351,  # pylint: disable=unused-import
+    st7735,  # pylint: disable=unused-import
+    st7789,  # pylint: disable=unused-import
+)
 
 # Change to match your display
 BUTTON_NEXT = board.D17
@@ -90,7 +95,7 @@ class AnimatedGif:
     def load_files(self, folder):
         gif_files = [f for f in os.listdir(folder) if f.endswith(".gif")]
         for gif_file in gif_files:
-            gif_file = os.path.join(folder, gif_file)
+            gif_file = os.path.join(folder, gif_file)  # noqa: PLW2901, loop var overwrite
             image = Image.open(gif_file)
             # Only add animated Gifs
             if image.is_animated:
@@ -99,11 +104,11 @@ class AnimatedGif:
         print("Found", self._gif_files)
         if not self._gif_files:
             print("No Gif files found in current folder")
-            exit()  # pylint: disable=consider-using-sys-exit
+            exit()  # noqa: PLR1722, sys.exit
 
     def preload(self):
         image = Image.open(self._gif_files[self._index])
-        print("Loading {}...".format(self._gif_files[self._index]))
+        print(f"Loading {self._gif_files[self._index]}...")
         if "duration" in image.info:
             self._duration = image.info["duration"]
         else:

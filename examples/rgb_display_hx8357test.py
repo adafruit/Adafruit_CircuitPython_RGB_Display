@@ -4,13 +4,14 @@
 # Quick test of 3.5" TFT FeatherWing (HX8357) with Feather M0 or M4
 # Will fill the TFT black and put a red pixel in the center, wait 2 seconds,
 # then fill the screen blue (with no pixel), wait 2 seconds, and repeat.
-import time
 import random
-import digitalio
-import board
+import time
 
-from adafruit_rgb_display.rgb import color565
+import board
+import digitalio
+
 from adafruit_rgb_display import hx8357
+from adafruit_rgb_display.rgb import color565
 
 # Configuration for CS and DC pins (these are TFT FeatherWing defaults):
 cs_pin = digitalio.DigitalInOut(board.D9)
@@ -37,8 +38,6 @@ while True:
     # Pause 2 seconds.
     time.sleep(2)
     # Clear the screen a random color
-    display.fill(
-        color565(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    )
+    display.fill(color565(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
     # Pause 2 seconds.
     time.sleep(2)

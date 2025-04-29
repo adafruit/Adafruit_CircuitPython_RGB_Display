@@ -12,15 +12,18 @@ not support PIL/pillow (python imaging library)!
 Author(s): Melissa LeBlanc-Williams for Adafruit Industries
 """
 
-import digitalio
 import board
+import digitalio
 from PIL import Image, ImageDraw, ImageFont
-from adafruit_rgb_display import ili9341
-from adafruit_rgb_display import st7789  # pylint: disable=unused-import
-from adafruit_rgb_display import hx8357  # pylint: disable=unused-import
-from adafruit_rgb_display import st7735  # pylint: disable=unused-import
-from adafruit_rgb_display import ssd1351  # pylint: disable=unused-import
-from adafruit_rgb_display import ssd1331  # pylint: disable=unused-import
+
+from adafruit_rgb_display import (
+    hx8357,  # pylint: disable=unused-import
+    ili9341,
+    ssd1331,  # pylint: disable=unused-import
+    ssd1351,  # pylint: disable=unused-import
+    st7735,  # pylint: disable=unused-import
+    st7789,  # pylint: disable=unused-import
+)
 
 # First define some constants to allow easy resizing of shapes.
 BORDER = 20
@@ -82,9 +85,7 @@ draw.rectangle((0, 0, width, height), fill=(0, 255, 0))
 disp.image(image)
 
 # Draw a smaller inner purple rectangle
-draw.rectangle(
-    (BORDER, BORDER, width - BORDER - 1, height - BORDER - 1), fill=(170, 0, 136)
-)
+draw.rectangle((BORDER, BORDER, width - BORDER - 1, height - BORDER - 1), fill=(170, 0, 136))
 
 # Load a TTF Font
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", FONTSIZE)

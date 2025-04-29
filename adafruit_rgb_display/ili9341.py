@@ -11,14 +11,16 @@ A simple driver for the ILI9341/ILI9340-based displays.
 
 * Author(s): Radomir Dopieralski, Michael McWethy, Matt Land
 """
+
 import struct
 
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
     from typing import Optional
-    import digitalio
+
     import busio
+    import digitalio
 except ImportError:
     pass
 
@@ -110,7 +112,8 @@ class ILI9341(DisplaySPI):
     # pylint: enable-msg=too-many-arguments
 
     def scroll(
-        self, dy: Optional[int] = None  # pylint: disable-msg=invalid-name
+        self,
+        dy: Optional[int] = None,  # pylint: disable-msg=invalid-name
     ) -> Optional[int]:
         """Scroll the display by delta y"""
         if dy is None:

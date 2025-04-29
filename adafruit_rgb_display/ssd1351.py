@@ -11,13 +11,16 @@ A simple driver for the SSD1351-based displays.
 
 * Author(s): Radomir Dopieralski, Michael McWethy, Matt Land
 """
+
 from micropython import const
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
     from typing import Optional
-    import digitalio
+
     import busio
+    import digitalio
 except ImportError:
     pass
 
@@ -119,7 +122,7 @@ class SSD1351(DisplaySPI):
         *,
         x_offset: int = 0,
         y_offset: int = 0,
-        rotation: int = 0
+        rotation: int = 0,
     ):
         super().__init__(
             spi,
