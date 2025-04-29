@@ -85,7 +85,6 @@ class GC9A01A(DisplaySPI):
         (_DISPON, None),  # Display ON
     )
 
-    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,

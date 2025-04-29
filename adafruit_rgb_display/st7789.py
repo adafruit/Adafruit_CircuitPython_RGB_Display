@@ -102,7 +102,6 @@ class ST7789(DisplaySPI):
         (_MADCTL, b"\x08"),
     )
 
-    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,

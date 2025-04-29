@@ -37,7 +37,7 @@ FB_BLANK_UNBLANK = 0
 FB_BLANK_POWERDOWN = 4
 
 
-class Bitfield:  # pylint: disable=too-few-public-methods
+class Bitfield:
     def __init__(self, offset, length, msb_right):
         self.offset = offset
         self.length = length
@@ -46,7 +46,7 @@ class Bitfield:  # pylint: disable=too-few-public-methods
 
 # Kind of like a pygame Surface object, or not!
 # http://www.pygame.org/docs/ref/surface.html
-class Framebuffer:  # pylint: disable=too-many-instance-attributes
+class Framebuffer:
     def __init__(self, dev):
         self.dev = dev
         self.fbfd = os.open(dev, os.O_RDWR)

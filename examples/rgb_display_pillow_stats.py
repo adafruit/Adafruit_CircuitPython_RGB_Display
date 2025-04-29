@@ -19,12 +19,12 @@ import digitalio
 from PIL import Image, ImageDraw, ImageFont
 
 from adafruit_rgb_display import (
-    hx8357,  # pylint: disable=unused-import
+    hx8357,
     ili9341,
-    ssd1331,  # pylint: disable=unused-import
-    ssd1351,  # pylint: disable=unused-import
-    st7735,  # pylint: disable=unused-import
-    st7789,  # pylint: disable=unused-import
+    ssd1331,
+    ssd1351,
+    st7735,
+    st7789,
 )
 
 # Configuration for CS and DC pins (these are PiTFT defaults):
@@ -38,7 +38,6 @@ BAUDRATE = 24000000
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
 
-# pylint: disable=line-too-long
 # Create the display:
 # disp = st7789.ST7789(spi, rotation=90,                            # 2.0" ST7789
 # disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=180,  # 1.3", 1.54" ST7789
@@ -62,7 +61,6 @@ disp = ili9341.ILI9341(
     rst=reset_pin,
     baudrate=BAUDRATE,
 )
-# pylint: enable=line-too-long
 
 # Create blank image for drawing.
 # Make sure to create image with mode 'RGB' for full color.
@@ -105,7 +103,7 @@ while True:
     MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
     Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
+    cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"
     Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
     # Write four lines of text.

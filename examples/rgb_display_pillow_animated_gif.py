@@ -21,16 +21,16 @@ import time
 
 import board
 import digitalio
-import numpy  # pylint: disable=unused-import
+import numpy
 from PIL import Image, ImageOps
 
 from adafruit_rgb_display import (
-    hx8357,  # pylint: disable=unused-import
+    hx8357,
     ili9341,
-    ssd1331,  # pylint: disable=unused-import
-    ssd1351,  # pylint: disable=unused-import
-    st7735,  # pylint: disable=unused-import
-    st7789,  # pylint: disable=unused-import
+    ssd1331,
+    ssd1351,
+    st7735,
+    st7789,
 )
 
 # Change to match your display
@@ -52,14 +52,10 @@ def init_button(pin):
     return button
 
 
-# pylint: disable=too-few-public-methods
 class Frame:
     def __init__(self, duration=0):
         self.duration = duration
         self.image = None
-
-
-# pylint: enable=too-few-public-methods
 
 
 class AnimatedGif:
@@ -126,7 +122,7 @@ class AnimatedGif:
             frame_object = Frame(duration=self._duration)
             if "duration" in image.info:
                 frame_object.duration = image.info["duration"]
-            frame_object.image = ImageOps.pad(  # pylint: disable=no-member
+            frame_object.image = ImageOps.pad(
                 image.convert("RGB"),
                 (self._width, self._height),
                 method=Image.NEAREST,
@@ -180,7 +176,6 @@ BAUDRATE = 64000000
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
 
-# pylint: disable=line-too-long
 # Create the display:
 # disp = st7789.ST7789(spi, rotation=90,                            # 2.0" ST7789
 # disp = st7789.ST7789(spi, height=240, y_offset=80, rotation=180,  # 1.3", 1.54" ST7789
@@ -204,7 +199,6 @@ disp = ili9341.ILI9341(
     rst=reset_pin,
     baudrate=BAUDRATE,
 )
-# pylint: enable=line-too-long
 
 if disp.rotation % 180 == 90:
     disp_height = disp.width  # we swap height/width to rotate it to landscape!

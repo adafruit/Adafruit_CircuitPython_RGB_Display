@@ -25,16 +25,16 @@ import time
 
 import board
 import digitalio
-import numpy  # pylint: disable=unused-import
+import numpy
 from PIL import Image, ImageOps
 
 from adafruit_rgb_display import (
-    hx8357,  # pylint: disable=unused-import
+    hx8357,
     ili9341,
-    ssd1331,  # pylint: disable=unused-import
-    ssd1351,  # pylint: disable=unused-import
-    st7735,  # pylint: disable=unused-import
-    st7789,  # pylint: disable=unused-import
+    ssd1331,
+    ssd1351,
+    st7735,
+    st7789,
 )
 
 # Button pins for EYESPI Pi Beret
@@ -59,7 +59,6 @@ BAUDRATE = 64000000
 # Setup SPI bus using hardware SPI:
 spi = board.SPI()
 
-# pylint: disable=line-too-long
 # fmt: off
 # Create the display.
 disp = ili9341.ILI9341(spi, rotation=90,                            # 2.2", 2.4", 2.8", 3.2" ILI9341
@@ -82,7 +81,6 @@ disp = ili9341.ILI9341(spi, rotation=90,                            # 2.2", 2.4"
                        baudrate=BAUDRATE,
                        )
 # fmt: on
-# pylint: enable=line-too-long
 
 
 def init_button(pin):
@@ -92,7 +90,7 @@ def init_button(pin):
     return button
 
 
-class Frame:  # pylint: disable=too-few-public-methods
+class Frame:
     def __init__(self, duration=0):
         self.duration = duration
         self.image = None
@@ -162,7 +160,7 @@ class AnimatedGif:
             frame_object = Frame(duration=self._duration)
             if "duration" in image.info:
                 frame_object.duration = image.info["duration"]
-            frame_object.image = ImageOps.pad(  # pylint: disable=no-member
+            frame_object.image = ImageOps.pad(
                 image.convert("RGB"),
                 (self._width, self._height),
                 method=Image.NEAREST,

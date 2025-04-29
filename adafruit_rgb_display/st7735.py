@@ -128,7 +128,6 @@ class ST7735(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
 
-    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,
@@ -190,7 +189,6 @@ class ST7735R(ST7735):
         ),
     )
 
-    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,
@@ -279,7 +277,6 @@ class ST7735S(ST7735):
         (_DISPON, None),
     )
 
-    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,

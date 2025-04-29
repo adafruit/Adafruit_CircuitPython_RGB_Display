@@ -112,7 +112,7 @@ class DummyPin:
         pass
 
 
-class Display:  # pylint: disable-msg=no-member
+class Display:
     """Base class for all RGB display devices
     :param width: number of pixels wide
     :param height: number of pixels high
@@ -122,8 +122,8 @@ class Display:  # pylint: disable-msg=no-member
     _COLUMN_SET: Optional[int] = None
     _RAM_WRITE: Optional[int] = None
     _RAM_READ: Optional[int] = None
-    _X_START = 0  # pylint: disable=invalid-name
-    _Y_START = 0  # pylint: disable=invalid-name
+    _X_START = 0
+    _Y_START = 0
     _INIT: Tuple[Tuple[int, Union[ByteString, None]], ...] = ()
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
@@ -150,7 +150,6 @@ class Display:  # pylint: disable-msg=no-member
         for command, data in self._INIT:
             self.write(command, data)
 
-    # pylint: disable-msg=invalid-name,too-many-arguments
     def _block(
         self, x0: int, y0: int, x1: int, y1: int, data: Optional[ByteString] = None
     ) -> Optional[ByteString]:
@@ -162,8 +161,6 @@ class Display:  # pylint: disable-msg=no-member
             return self.read(self._RAM_READ, (x1 - x0 + 1) * (y1 - y0 + 1) * size)
         self.write(self._RAM_WRITE, data)
         return None
-
-    # pylint: enable-msg=invalid-name,too-many-arguments
 
     def _encode_pos(self, x: int, y: int) -> bytes:
         """Encode a position into bytes."""
@@ -219,7 +216,6 @@ class Display:  # pylint: disable-msg=no-member
                     pixels[2 * (j * imwidth + i) + 1] = pix & 0xFF
         self._block(x, y, x + imwidth - 1, y + imheight - 1, pixels)
 
-    # pylint: disable-msg=too-many-arguments
     def fill_rectangle(self, x: int, y: int, width: int, height: int, color: Union[int, Tuple]) -> None:
         """Draw a rectangle at specified position with specified width and
         height, and fill it with the specified color."""
@@ -235,8 +231,6 @@ class Display:  # pylint: disable-msg=no-member
             for _ in range(chunks):
                 self.write(None, data)
         self.write(None, pixel * rest)
-
-    # pylint: enable-msg=too-many-arguments
 
     def fill(self, color: Union[int, Tuple] = 0) -> None:
         """Fill the whole display with the specified color."""
@@ -265,7 +259,6 @@ class Display:  # pylint: disable-msg=no-member
 class DisplaySPI(Display):
     """Base class for SPI type devices"""
 
-    # pylint: disable-msg=too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,
@@ -289,11 +282,9 @@ class DisplaySPI(Display):
         if self.rst:
             self.rst.switch_to_output(value=0)
             self.reset()
-        self._X_START = x_offset  # pylint: disable=invalid-name
-        self._Y_START = y_offset  # pylint: disable=invalid-name
+        self._X_START = x_offset
+        self._Y_START = y_offset
         super().__init__(width, height, rotation)
-
-    # pylint: enable-msg=too-many-arguments
 
     def reset(self) -> None:
         """Reset the device"""
@@ -304,7 +295,6 @@ class DisplaySPI(Display):
         self.rst.value = 1
         time.sleep(0.050)  # 50 milliseconds
 
-    # pylint: disable=no-member
     def write(self, command: Optional[int] = None, data: Optional[ByteString] = None) -> None:
         """SPI write to the device: commands and data"""
         if command is not None:
