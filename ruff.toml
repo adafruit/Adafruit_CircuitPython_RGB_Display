@@ -95,10 +95,6 @@ ignore = [
     "PLW1514",  # unspecified-encoding
     "PLR0913",  # too many arguments
     "PLR0917",  # too many positional arguments
-#    "",
-#    "",
-#    "",
-#    "",
 ]
 
 [format]
