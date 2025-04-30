@@ -1,11 +1,11 @@
 # SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
 # SPDX-License-Identifier: MIT
 
-import digitalio
 import board
+import digitalio
 
-from adafruit_rgb_display.rgb import color565
 from adafruit_rgb_display import st7789
+from adafruit_rgb_display.rgb import color565
 
 # Configuration for CS and DC pins for Raspberry Pi
 cs_pin = digitalio.DigitalInOut(board.CE0)

@@ -11,13 +11,16 @@ A simple driver for the HX8353-based displays.
 
 * Author(s): Radomir Dopieralski, Michael McWethy, Matt Land
 """
+
 from micropython import const
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
     from typing import Optional
-    import digitalio
+
     import busio
+    import digitalio
 except ImportError:
     pass
 
@@ -65,7 +68,6 @@ class HX8353(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
 
-    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,

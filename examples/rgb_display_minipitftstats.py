@@ -3,13 +3,14 @@
 
 # -*- coding: utf-8 -*-
 
-import time
 import subprocess
-import digitalio
-import board
-from PIL import Image, ImageDraw, ImageFont
-from adafruit_rgb_display import st7789
+import time
 
+import board
+import digitalio
+from PIL import Image, ImageDraw, ImageFont
+
+from adafruit_rgb_display import st7789
 
 # Configuration for CS and DC pins (these are FeatherWing defaults on M0/M4):
 cs_pin = digitalio.DigitalInOut(board.CE0)
@@ -81,7 +82,7 @@ while True:
     MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
     cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
     Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
+    cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"
     Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
     # Write four lines of text.

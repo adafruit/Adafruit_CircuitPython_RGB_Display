@@ -1,14 +1,16 @@
 # SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
 # SPDX-License-Identifier: MIT
 
-import time
-import os
 import fcntl
 import mmap
+import os
 import struct
-import digitalio
+import time
+
 import board
+import digitalio
 from PIL import Image, ImageDraw
+
 from adafruit_rgb_display import st7789
 
 # definitions from linux/fb.h
@@ -35,7 +37,7 @@ FB_BLANK_UNBLANK = 0
 FB_BLANK_POWERDOWN = 4
 
 
-class Bitfield:  # pylint: disable=too-few-public-methods
+class Bitfield:
     def __init__(self, offset, length, msb_right):
         self.offset = offset
         self.length = length
@@ -44,7 +46,7 @@ class Bitfield:  # pylint: disable=too-few-public-methods
 
 # Kind of like a pygame Surface object, or not!
 # http://www.pygame.org/docs/ref/surface.html
-class Framebuffer:  # pylint: disable=too-many-instance-attributes
+class Framebuffer:
     def __init__(self, dev):
         self.dev = dev
         self.fbfd = os.open(dev, os.O_RDWR)
@@ -52,16 +54,12 @@ class Framebuffer:  # pylint: disable=too-many-instance-attributes
             "8I12I16I4I",
             fcntl.ioctl(self.fbfd, FBIOGET_VSCREENINFO, " " * ((8 + 12 + 16 + 4) * 4)),
         )
-        finfo = struct.unpack(
-            "16cL4I3HI", fcntl.ioctl(self.fbfd, FBIOGET_FSCREENINFO, " " * 48)
-        )
+        finfo = struct.unpack("16cL4I3HI", fcntl.ioctl(self.fbfd, FBIOGET_FSCREENINFO, " " * 48))
 
         bytes_per_pixel = (vinfo[6] + 7) // 8
         screensize = vinfo[0] * vinfo[1] * bytes_per_pixel
 
-        fbp = mmap.mmap(
-            self.fbfd, screensize, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ
-        )
+        fbp = mmap.mmap(self.fbfd, screensize, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ)
 
         self.fbp = fbp
         self.xres = vinfo[0]
@@ -93,7 +91,7 @@ class Framebuffer:  # pylint: disable=too-many-instance-attributes
                 fcntl.ioctl(self.fbfd, FBIOBLANK, FB_BLANK_POWERDOWN)
             else:
                 fcntl.ioctl(self.fbfd, FBIOBLANK, FB_BLANK_UNBLANK)
-        except IOError:
+        except OSError:
             pass
 
     def __str__(self):
@@ -122,9 +120,9 @@ class Framebuffer:  # pylint: disable=too-many-instance-attributes
             type_name = type_list[self.type]
 
         return (
-            'mode "%sx%s"\n' % (self.xres, self.yres)
+            'mode "%sx%s"\n' % (self.xres, self.yres)  # noqa: UP031
             + "    nonstd %s\n" % self.nonstd
-            + "    rgba %s/%s,%s/%s,%s/%s,%s/%s\n"
+            + "    rgba %s/%s,%s/%s,%s/%s,%s/%s\n"  # noqa: UP031
             % (
                 self.red.length,
                 self.red.offset,

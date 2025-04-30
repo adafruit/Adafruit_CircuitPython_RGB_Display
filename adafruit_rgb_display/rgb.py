@@ -16,10 +16,10 @@ import struct
 import time
 
 try:
-    from typing import Optional, Union, Tuple, List, Any, ByteString
-    import digitalio
-    import busio
+    from typing import Any, ByteString, List, Optional, Tuple, Union
 
+    import busio
+    import digitalio
     from circuitpython_typing.pil import Image
 except ImportError:
     pass
@@ -58,9 +58,7 @@ def color565(
         if len(r) >= 3:
             red, g, b = r[0:3]
         else:
-            raise ValueError(
-                "Not enough values to unpack (expected 3, got %d)" % len(r)
-            )
+            raise ValueError("Not enough values to unpack (expected 3, got %d)" % len(r))
     else:
         red = r
     return (red & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
@@ -71,11 +69,7 @@ def image_to_data(image: Image) -> Any:
     # NumPy is much faster at doing this. NumPy code provided by:
     # Keith (https://www.blogger.com/profile/02555547344016007163)
     data = numpy.array(image.convert("RGB")).astype("uint16")
-    color = (
-        ((data[:, :, 0] & 0xF8) << 8)
-        | ((data[:, :, 1] & 0xFC) << 3)
-        | (data[:, :, 2] >> 3)
-    )
+    color = ((data[:, :, 0] & 0xF8) << 8) | ((data[:, :, 1] & 0xFC) << 3) | (data[:, :, 2] >> 3)
     return numpy.dstack(((color >> 8) & 0xFF, color & 0xFF)).flatten().tolist()
 
 
@@ -118,7 +112,7 @@ class DummyPin:
         pass
 
 
-class Display:  # pylint: disable-msg=no-member
+class Display:
     """Base class for all RGB display devices
     :param width: number of pixels wide
     :param height: number of pixels high
@@ -128,8 +122,8 @@ class Display:  # pylint: disable-msg=no-member
     _COLUMN_SET: Optional[int] = None
     _RAM_WRITE: Optional[int] = None
     _RAM_READ: Optional[int] = None
-    _X_START = 0  # pylint: disable=invalid-name
-    _Y_START = 0  # pylint: disable=invalid-name
+    _X_START = 0
+    _Y_START = 0
     _INIT: Tuple[Tuple[int, Union[ByteString, None]], ...] = ()
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
@@ -138,14 +132,12 @@ class Display:  # pylint: disable-msg=no-member
     def __init__(self, width: int, height: int, rotation: int) -> None:
         self.width = width
         self.height = height
-        if rotation not in (0, 90, 180, 270):
+        if rotation not in {0, 90, 180, 270}:
             raise ValueError("Rotation must be 0/90/180/270")
         self._rotation = rotation
         self.init()
 
-    def write(
-        self, command: Optional[int] = None, data: Optional[ByteString] = None
-    ) -> None:
+    def write(self, command: Optional[int] = None, data: Optional[ByteString] = None) -> None:
         """Abstract method"""
         raise NotImplementedError()
 
@@ -158,24 +150,17 @@ class Display:  # pylint: disable-msg=no-member
         for command, data in self._INIT:
             self.write(command, data)
 
-    # pylint: disable-msg=invalid-name,too-many-arguments
     def _block(
         self, x0: int, y0: int, x1: int, y1: int, data: Optional[ByteString] = None
     ) -> Optional[ByteString]:
         """Read or write a block of data."""
-        self.write(
-            self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START)
-        )
-        self.write(
-            self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START)
-        )
+        self.write(self._COLUMN_SET, self._encode_pos(x0 + self._X_START, x1 + self._X_START))
+        self.write(self._PAGE_SET, self._encode_pos(y0 + self._Y_START, y1 + self._Y_START))
         if data is None:
             size = struct.calcsize(self._DECODE_PIXEL)
             return self.read(self._RAM_READ, (x1 - x0 + 1) * (y1 - y0 + 1) * size)
         self.write(self._RAM_WRITE, data)
         return None
-
-    # pylint: enable-msg=invalid-name,too-many-arguments
 
     def _encode_pos(self, x: int, y: int) -> bytes:
         """Encode a position into bytes."""
@@ -189,9 +174,7 @@ class Display:  # pylint: disable-msg=no-member
         """Decode bytes into a pixel color."""
         return color565(*struct.unpack(self._DECODE_PIXEL, data))
 
-    def pixel(
-        self, x: int, y: int, color: Optional[Union[int, Tuple]] = None
-    ) -> Optional[int]:
+    def pixel(self, x: int, y: int, color: Optional[Union[int, Tuple]] = None) -> Optional[int]:
         """Read or write a pixel at a given position."""
         if color is None:
             return self._decode_pixel(self._block(x, y, x, y))  # type: ignore[arg-type]
@@ -212,19 +195,15 @@ class Display:  # pylint: disable-msg=no-member
         the supplied origin."""
         if rotation is None:
             rotation = self.rotation
-        if not img.mode in ("RGB", "RGBA"):
+        if not img.mode in {"RGB", "RGBA"}:
             raise ValueError("Image must be in mode RGB or RGBA")
-        if rotation not in (0, 90, 180, 270):
+        if rotation not in {0, 90, 180, 270}:
             raise ValueError("Rotation must be 0/90/180/270")
         if rotation != 0:
             img = img.rotate(rotation, expand=True)
         imwidth, imheight = img.size
         if x + imwidth > self.width or y + imheight > self.height:
-            raise ValueError(
-                "Image must not exceed dimensions of display ({0}x{1}).".format(
-                    self.width, self.height
-                )
-            )
+            raise ValueError(f"Image must not exceed dimensions of display ({self.width}x{self.height}).")
         if numpy:
             pixels = bytes(image_to_data(img))
         else:
@@ -237,10 +216,7 @@ class Display:  # pylint: disable-msg=no-member
                     pixels[2 * (j * imwidth + i) + 1] = pix & 0xFF
         self._block(x, y, x + imwidth - 1, y + imheight - 1, pixels)
 
-    # pylint: disable-msg=too-many-arguments
-    def fill_rectangle(
-        self, x: int, y: int, width: int, height: int, color: Union[int, Tuple]
-    ) -> None:
+    def fill_rectangle(self, x: int, y: int, width: int, height: int, color: Union[int, Tuple]) -> None:
         """Draw a rectangle at specified position with specified width and
         height, and fill it with the specified color."""
         x = min(self.width - 1, max(0, x))
@@ -255,8 +231,6 @@ class Display:  # pylint: disable-msg=no-member
             for _ in range(chunks):
                 self.write(None, data)
         self.write(None, pixel * rest)
-
-    # pylint: enable-msg=too-many-arguments
 
     def fill(self, color: Union[int, Tuple] = 0) -> None:
         """Fill the whole display with the specified color."""
@@ -277,7 +251,7 @@ class Display:  # pylint: disable-msg=no-member
 
     @rotation.setter
     def rotation(self, val: int) -> None:
-        if val not in (0, 90, 180, 270):
+        if val not in {0, 90, 180, 270}:
             raise ValueError("Rotation must be 0/90/180/270")
         self._rotation = val
 
@@ -285,7 +259,6 @@ class Display:  # pylint: disable-msg=no-member
 class DisplaySPI(Display):
     """Base class for SPI type devices"""
 
-    # pylint: disable-msg=too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,
@@ -300,22 +273,18 @@ class DisplaySPI(Display):
         *,
         x_offset: int = 0,
         y_offset: int = 0,
-        rotation: int = 0
+        rotation: int = 0,
     ):
-        self.spi_device = spi_device.SPIDevice(
-            spi, cs, baudrate=baudrate, polarity=polarity, phase=phase
-        )
+        self.spi_device = spi_device.SPIDevice(spi, cs, baudrate=baudrate, polarity=polarity, phase=phase)
         self.dc_pin = dc
         self.rst = rst
         self.dc_pin.switch_to_output(value=0)
         if self.rst:
             self.rst.switch_to_output(value=0)
             self.reset()
-        self._X_START = x_offset  # pylint: disable=invalid-name
-        self._Y_START = y_offset  # pylint: disable=invalid-name
+        self._X_START = x_offset
+        self._Y_START = y_offset
         super().__init__(width, height, rotation)
-
-    # pylint: enable-msg=too-many-arguments
 
     def reset(self) -> None:
         """Reset the device"""
@@ -326,10 +295,7 @@ class DisplaySPI(Display):
         self.rst.value = 1
         time.sleep(0.050)  # 50 milliseconds
 
-    # pylint: disable=no-member
-    def write(
-        self, command: Optional[int] = None, data: Optional[ByteString] = None
-    ) -> None:
+    def write(self, command: Optional[int] = None, data: Optional[ByteString] = None) -> None:
         """SPI write to the device: commands and data"""
         if command is not None:
             self.dc_pin.value = 0

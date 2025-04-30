@@ -13,12 +13,14 @@ A simple driver for the S6D02A1-based displays.
 """
 
 from micropython import const
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
     from typing import Optional
-    import digitalio
+
     import busio
+    import digitalio
 except ImportError:
     pass
 
@@ -66,7 +68,6 @@ class S6D02A1(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
 
-    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,

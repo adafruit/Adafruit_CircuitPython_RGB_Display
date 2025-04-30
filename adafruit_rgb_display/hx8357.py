@@ -11,13 +11,16 @@ A simple driver for the HX8357-based displays.
 
 * Author(s): Melissa LeBlanc-Williams, Matt Land
 """
+
 from micropython import const
+
 from adafruit_rgb_display.rgb import DisplaySPI
 
 try:
     from typing import Optional
-    import digitalio
+
     import busio
+    import digitalio
 except ImportError:
     pass
 
@@ -72,21 +75,21 @@ class HX8357(DisplaySPI):
     _RAM_READ = _RAMRD
     _INIT = (
         (_SWRESET, None),
-        (_SETC, b"\xFF\x83\x57"),
+        (_SETC, b"\xff\x83\x57"),
         (_SETRGB, b"\x80\x00\x06\x06"),  # 0x80 enables SDO pin (0x00 disables)
         (_SETCOM, b"\x25"),  # -1.52V
         (_SETOSC, b"\x68"),  # Normal mode 70Hz, Idle mode 55 Hz
         (_SETPANEL, b"\x05"),  # BGR, Gate direction swapped
-        (_SETPWR1, b"\x00\x15\x1C\x1C\x83\xAA"),  # Not deep standby BT VSPR VSNR AP
-        (_SETSTBA, b"\x50\x50\x01\x3C\x1E\x08"),  # OPON normal OPON idle STBA GEN
+        (_SETPWR1, b"\x00\x15\x1c\x1c\x83\xaa"),  # Not deep standby BT VSPR VSNR AP
+        (_SETSTBA, b"\x50\x50\x01\x3c\x1e\x08"),  # OPON normal OPON idle STBA GEN
         (
             _SETCYC,
-            b"\x02\x40\x00\x2A\x2A\x0D\x78",
+            b"\x02\x40\x00\x2a\x2a\x0d\x78",
         ),  # NW 0x02 RTN DIV DUM DUM GDON GDOFF
         (
             _SETGAMMA,
-            b"\x02\x0A\x11\x1d\x23\x35\x41\x4b\x4b\x42\x3A\x27\x1B\x08\x09\x03\x02"
-            b"\x0A\x11\x1d\x23\x35\x41\x4b\x4b\x42\x3A\x27\x1B\x08\x09\x03\x00\x01",
+            b"\x02\x0a\x11\x1d\x23\x35\x41\x4b\x4b\x42\x3a\x27\x1b\x08\x09\x03\x02"
+            b"\x0a\x11\x1d\x23\x35\x41\x4b\x4b\x42\x3a\x27\x1b\x08\x09\x03\x00\x01",
         ),
         (_COLMOD, b"\x55"),  # 16 bit
         (_MADCTL, b"\xc0"),
@@ -99,7 +102,6 @@ class HX8357(DisplaySPI):
     _ENCODE_PIXEL = ">H"
     _ENCODE_POS = ">HH"
 
-    # pylint: disable-msg=useless-super-delegation, too-many-arguments
     def __init__(
         self,
         spi: busio.SPI,
