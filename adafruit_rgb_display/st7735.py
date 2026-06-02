@@ -106,7 +106,7 @@ class ST7735(DisplaySPI):
         # 1 clk cycle nonoverlap, 2 cycle gate rise, 3 sycle osc equalie,
         # fix on VTL
         (_DISSET5, b"\x15\x02"),
-        (_INVCTR, b"0x00"),  # line inversion
+        (_INVCTR, b"\x00"),  # line inversion
         (_PWCTR1, b"\x02\x70"),  # GVDD = 4.7V, 1.0uA
         (_PWCTR2, b"\x05"),  # VGH=14.7V, VGL=-7.35V
         (_PWCTR3, b"\x01\x02"),  # Opamp current small, Boost frequency
